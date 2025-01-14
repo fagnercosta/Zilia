@@ -1,0 +1,61 @@
+stages:
+  - build_image
+  - tests
+
+variables:
+  BACKEND_IMAGE_NAME: registry.gitlab.com/devs-ped/smart/dashboard/backend
+
+  BACKEND_TEST_IMAGE: $BACKEND_IMAGE_NAME:$CI_COMMIT_SHA
+
+  BACKEND_BRANCH_IMAGE: $BACKEND_IMAGE_NAME:$CI_COMMIT_REF_SLUG
+
+  BACKEND_TAG_IMAGE: $BACKEND_IMAGE_NAME:$CI_COMMIT_TAG
+
+  # DB Variables
+  ACCEPT_EULA: Y
+  SA_PASSWORD: Developer@123
+  MSSQL_HOST: sqlserver
+
+
+build backend:
+  except:
+    - tags
+  services:
+    - docker:dind
+  image: docker:stable
+  stage: build_image
+  script:
+    - DATETIME_STR=$(date)
+    - echo "Starting backend build..."
+    - echo "Current datetime   ${DATETIME_STR}"
+    - echo "Branch / TAG       ${CI_COMMIT_REF_NAME}"
+    - echo "Commit SHA         ${CI_COMMIT_SHA}"
+    - echo "Commit Title       ${CI_COMMIT_TITLE}"
+    - cd backend
+    - docker login -u=$CI_REGISTRY_USER -p=$CI_REGISTRY_PASSWORD registry.gitlab.com
+    - docker build -t $BACKEND_TEST_IMAGE .
+    - docker push $BACKEND_TEST_IMAGE
+    - echo "Published image $BACKEND_TEST_IMAGE"
+
+test backend:
+  except:
+    - tags
+  stage: tests
+  before_script:
+    - export $(cat backend/.env | grep -v -e '^[[:space:]]*$' | grep -v \# | xargs)
+    - export DB_HOST=sqlserver
+  services:
+  - name: mcr.microsoft.com/mssql/server:2017-latest
+    alias: sqlserver
+  image: $BACKEND_TEST_IMAGE
+  script:
+    - DATETIME_STR=$(date)
+    - echo "Starting backend automatic tests..."
+    - echo "Current datetime   ${DATETIME_STR}"
+    - echo "Branch / TAG       ${CI_COMMIT_REF_NAME}"
+    - echo "Commit SHA         ${CI_COMMIT_SHA}"
+    - echo "Commit Title       ${CI_COMMIT_TITLE}"
+    - sqlcmd -S $DB_HOST -U sa -P $SA_PASSWORD -d master -i ./infra/db-data/scripts/01.sql
+    - cd backend
+    - make ci
+  coverage: '/\d+\%\s*$/'
