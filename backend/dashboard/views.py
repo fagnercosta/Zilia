@@ -13,6 +13,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
 
+from rest_framework.exceptions import AuthenticationFailed
+from rest_framework.permissions import AllowAny
+
 
 from rest_framework import generics
 from dashboard.models import CustomUser  # Importe seu modelo de usuário
@@ -344,9 +347,16 @@ class UserDetailView(generics.RetrieveAPIView):
     lookup_field = 'id'  # Use o campo "id" como parâmetro de busca
 
 class LoginView(APIView):
+    permission_classes = [AllowAny]  # Permite acesso público
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)  # Valida os dados
+        try:
+            serializer.is_valid(raise_exception=True)  # Valida os dados
+        except AuthenticationFailed:
+            return Response(
+                {"detail": "Acesso negado. Credenciais inválidas."},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
 
         user = serializer.validated_data['user']  # Pega o usuário autenticado
 

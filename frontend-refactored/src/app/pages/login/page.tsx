@@ -7,6 +7,8 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { Button } from "@/components/ui/button"
+import React, { useCallback, useEffect, useState } from "react";
+import { Barcode, Calendar, ChartColumnIncreasing, ChartNoAxesColumnIncreasing, CircleX, ClipboardMinus, Diameter, DollarSign, RefreshCcw, Search, SquareActivity } from "lucide-react";
 import {
     Form,
     FormControl,
@@ -16,6 +18,7 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form"
+import IconButton from '@mui/material/IconButton';
 import { Input } from "@/components/ui/input"
 import cookie from 'cookie';
 import { sign } from 'jsonwebtoken';
@@ -25,9 +28,13 @@ import { useRouter } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
 import { ToastProvider } from "@radix-ui/react-toast"
 import { Toast } from "@/components/ui/toast"
+import Snackbar, { SnackbarCloseReason } from '@mui/material/Snackbar';
+import { Alert, AlertColor } from "@mui/material";
 
 export default function Login() {
-
+    const [openSnackBar, setOpenSnackBar] = useState(false)
+    const [messageSnack, setMessageSnack] = useState("")
+    const [alert, setAlert] = useState<AlertColor>("success")
     const router = useRouter()
     const { toast } = useToast()
     const formSchema = z.object({
@@ -47,6 +54,37 @@ export default function Login() {
         },
     })
 
+     const handleClick = () => {
+        setOpenSnackBar(true);
+      };
+    
+      const handleClose = (
+        event: React.SyntheticEvent | Event,
+        reason?: SnackbarCloseReason,
+      ) => {
+        if (reason === 'clickaway') {
+          return;
+        }
+    
+        setOpenSnackBar(false);
+      };
+
+      const action = (
+        <React.Fragment>
+          <Button color="secondary" size="sm" onClick={handleClose}>
+            UNDO
+          </Button>
+          <IconButton
+            size="small"
+            aria-label="close"
+            color="inherit"
+            onClick={handleClose}
+          >
+            <CircleX fontSize="small" />
+          </IconButton>
+        </React.Fragment>
+      );
+
 
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -54,44 +92,49 @@ export default function Login() {
         console.log(values)
         const email = values.username
         const password = values.password
+        
 
         try {
-
             const response = await fetch(`${BASE_URL}login/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ email, password }),
-            })
-            console.log(response)
-
+            });
+        
             if (response.ok) {
-                const data = await response.json()
+                const data = await response.json();
                 if (typeof window !== 'undefined') {
                     const now = new Date().getTime();
                     localStorage.setItem('token', data.token);
                     localStorage.setItem('tokenTimestamp', now.toString());
-                    router.push("/")
+                    router.push("/");
                 }
-            } else if (response.status === 404) {
-                const error = await response.json()
-                toast({
-                    title: error,
-                    variant: "destructive"
-                })
+            } else if (response.status === 401 || response.status==400) { // Altera para verificar o status 401
+                const error = await response.json();
+                setMessageSnack("Usuário ou senha inválidos")
+                setOpenSnackBar(true)
+                setAlert("error")
+            } 
+        } catch (error:any) {
+            if (error.message.includes('Failed to fetch')) {
+                
+
+                setMessageSnack("Não foi possível conectar ao servidor. Verifique sua conexão ou tente novamente mais tarde. ")
+                setOpenSnackBar(true)
+                setAlert("info")
             }
-        } catch (error: any) {
-            console.log(error)
         }
+        
 
     }
 
     return (
-        <main className="w-full h-screen bg-blue-500 flex items-center justify-center">
+        <main className="w-full h-screen bg-blue-500 flex items-center justify-center px-5">
             <ToastProvider>
 
-                <Card className="w-2/6 backgroun to-transparent backdrop-blur-[10px]">
+                <Card className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 backdrop-blur-[10px]">
                     <CardHeader>
                         <div className="flex flex-col items-center justify-center gap-7">
                             <Image
@@ -132,14 +175,39 @@ export default function Login() {
                                         </FormItem>
                                     )}
                                 />
-                                <Button type="submit" className="w-full bg-blue-500 text-xl p-5 font-bold">ENTRAR</Button>
+                                <Button type="submit" className="w-full bg-blue-500 text-sm p-5 font-bold">ENTRAR</Button>
                             </form>
                         </Form>
+                        <div>
+                            
+                        </div>
                     </CardContent>
 
                 </Card>
                 <Toast />
             </ToastProvider>
+
+            <Snackbar
+                    open={openSnackBar}
+                    autoHideDuration={6000}
+                    onClose={handleClose}
+                    message={messageSnack}
+            
+                    action={action}
+                    anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                  >
+                    <Alert
+                      onClose={handleClose}
+                      severity={alert}
+                      variant="standard"
+                      sx={{ width: '100%' }}
+
+                      
+            
+                    >
+                      {messageSnack}
+                    </Alert>
+                  </Snackbar>
 
         </main>
     )
