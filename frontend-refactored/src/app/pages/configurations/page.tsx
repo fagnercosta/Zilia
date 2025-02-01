@@ -210,7 +210,7 @@ export default function Configurations() {
         <main className="lg:ml-[23rem] p-4">
             <Sidebar logouFunction={handleLogout} />
             <div className="w-full h-screen flex items-start justify-center relative">
-                <InovaBottomImage />
+               
                 <div className="w-full h-screen flex items-center  flex-col">
                     <Card className="w-[60%] bg-slate-50">
                         <CardHeader>

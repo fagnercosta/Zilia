@@ -8,6 +8,7 @@ import { Button } from "../ui/button"
 import { ModalOpenConfigurations } from "../Modals/ModalOpenConfigurations"
 import SnackBarControl from "../SnackBarControl"
 import { SnackControl } from "@/types/utils"
+import InovaBottomImage from "../InovaBottomImage"
 
 interface Props {
     logouFunction?: () => void
@@ -89,6 +90,8 @@ const Sidebar = ({ logouFunction }: Props) => {
                                     </div>
                                     <span className="w-[60%]">Formulário de conformidade</span>
                                 </Link>
+
+                                
                                 {/* <Link
                                     href={"/pages/list_stencil_medition"}
                                     className="flex h-9 w-auto items-center text-muted-foreground text-lg gap-3 hover:opacity-60"
@@ -102,6 +105,15 @@ const Sidebar = ({ logouFunction }: Props) => {
                             </div>
                         </CollapsibleContent>
                     </Collapsible>
+                    <Link
+                                    href={"/pages/users"}
+                                    className="flex h-9 w-auto items-center text-muted-foreground text-lg gap-3 hover:opacity-60"
+                                >
+                                    <div className="flex h-9 w-9 shrink-0 items-center justify-center bg-blue-400 text-primary-foreground rounded-full">
+                                        <FileClock className="h-4 w-4" />
+                                    </div>
+                                    <span className="">Usuários</span>
+                                </Link>
 
                     <div
                         className="flex h-9 w-auto items-center text-muted-foreground text-lg gap-3 hover:opacity-60 cursor-pointer"
@@ -109,27 +121,34 @@ const Sidebar = ({ logouFunction }: Props) => {
                         <div className="flex h-9 w-9 shrink-0 items-center justify-center bg-blue-400 text-primary-foreground rounded-full">
                             <Settings className="h-4 w-4" />
                         </div>
-                        <ModalOpenConfigurations setSnackControl={setSnackControl}/>
+                        <ModalOpenConfigurations setSnackControl={setSnackControl} />
 
                     </div>
                 </nav>
                 <nav className="mt-auto flex flex-col items-center gap-4 px-2 py-5">
+                        
+                            
+                        
                     <div
                         className="flex h-9 w-auto shrink-0 items-center justify-center gap-3 rounded-lg text-red-600 transition-colors hover:text-foreground hover: cursor-pointer"
                         onClick={logouFunction}
                     >
+                        
+                        
                         <LogOut className="h-5 w-5" />
                         <span className="">Sair</span>
                     </div>
+
+                    <InovaBottomImage />
                 </nav>
             </aside>
 
             <SnackBarControl
                 alert={snackControl.alert}
-                handleClose={()=> setSnackControl({...snackControl, openSnackBar: false})}
+                handleClose={() => setSnackControl({ ...snackControl, openSnackBar: false })}
                 messageSnack={snackControl.message}
                 openSnackBar={snackControl.openSnackBar}
-            />  
+            />
         </div>
     )
 }

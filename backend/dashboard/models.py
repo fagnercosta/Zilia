@@ -78,8 +78,7 @@ class StencilTensionValues(models.Model):
     p2 = models.FloatField()
     p3 = models.FloatField()
     p4 = models.FloatField()
-    start_of_specific_range = models.FloatField()
-    end_of_specific_range = models.FloatField()
+    
     measurement_datetime = models.DateTimeField()
     description = models.CharField(max_length=200)
     is_registration_measurement = models.BooleanField()

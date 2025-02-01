@@ -33,7 +33,7 @@ const ConformityReport = () => {
     <main className="lg:ml-[23rem] p-4">
       <Sidebar logouFunction={handleLogout} />
       <div className="flex flex-col min-h-screen relative">
-        <InovaBottomImage />
+        
         <form onSubmit={handleSubmit(onSubmit)} className="max-w-4xl mx-auto p-4 relative">
           <h1 className="text-3xl font-bold mb-4">Relatório de Conformidade</h1>
           <div className="grid grid-cols-3 gap-4 mb-4">

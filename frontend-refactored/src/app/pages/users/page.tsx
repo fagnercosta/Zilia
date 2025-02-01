@@ -5,7 +5,7 @@ import cookie from 'cookie';
 import { useRouter } from "next/navigation";
 import Sidebar from "@/components/Sidebar";
 import { SelectHistory } from "@/components/Select/SelectHistory";
-import { Stencil, StencilTensionValues } from "@/types/models";
+import { Stencil, StencilTensionValues, UsersTipe } from "@/types/models";
 import axios from "axios";
 import { BASE_URL } from "@/types/api";
 import { Alert, AlertColor, Grid, IconButton, LinearProgress, Paper, Snackbar, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from "@mui/material";
@@ -13,20 +13,16 @@ import { Button } from "@/components/ui/button";
 import { CirclePlus, CircleX, Search } from "lucide-react";
 import { formatDateTime } from "@/functions/functions";
 import Link from "next/link";
-import InovaBottomImage from "@/components/InovaBottomImage";
 
 
 const columns = [
-    { label: 'P1', minWidth: 50 },
-    { label: 'P2', minWidth: 50 },
-    { label: 'P3', minWidth: 50 },
-    { label: 'P4', minWidth: 50 },
-    { label: 'Ciclos', minWidth: 50 },
-    { label: 'Data da medição', minWidth: 100 },
-
+    { label: 'Primeiro Nome', minWidth: 50 },
+    { label: 'E-mail', minWidth: 50 },
+    
+    
 ];
 
-export default function ListStencilMedition() {
+export default function Users() {
 
     const router = useRouter()
     const [stencils, setStencils] = useState<Stencil[]>([])
@@ -34,7 +30,7 @@ export default function ListStencilMedition() {
         null
     )
     const [loadingValues, setLoadingValues] = useState(false)
-    const [tensionValues, setTensionValues] = useState<StencilTensionValues[]>([])
+    const [users, setUsers] = useState<UsersTipe[]>([])
     const [openSnackBar, setOpenSnackBar] = useState(false)
     const [message, setMessage] = useState("")
     const [typeMessage, setTypeMessage] = useState<AlertColor>("success")
@@ -61,12 +57,12 @@ export default function ListStencilMedition() {
         router.push('/pages/login');
     }, [router]);
 
-    const getStencils = async () => {
+    const getUsers = async () => {
         try {
-            const response = await axios.get(`${BASE_URL}/api/stencil/`)
+            const response = await axios.get(`${BASE_URL}/users/`)
             if (response) {
-                console.log(response)
-                setStencils(response.data.results)
+                setUsers(response.data.results)
+                
             }
         } catch (error: any) {
             console.log(error)
@@ -74,41 +70,10 @@ export default function ListStencilMedition() {
     }
 
     useEffect(() => {
-        getStencils()
+        getUsers()
     }, [])
 
-    const handleStencilValuePoints = async (stencil_identification: any) => {
-        setLoadingValues(true)
-
-        const timeout = setTimeout(async () => {
-            try {
-                const responseValues = await axios.get(`http://127.0.0.1:8000/api/stencilTensionValues/?stencil_identification=${stencil_identification}`)
-                console.log(responseValues.data.results)
-                setTensionValues(responseValues.data.results)
-
-                if (responseValues && responseValues.data.results.length > 0) {
-                    setMessage("Medições encontradas!")
-                    setTypeMessage("success")
-                    setOpenSnackBar(true);
-                    setLoadingValues(false)
-                } else {
-                    setMessage("Não foram encontrados medições para este Stencil!")
-                    setTypeMessage("warning")
-                    setOpenSnackBar(true);
-                    setLoadingValues(false)
-                }
-            } catch (error: any) {
-                if (error.response.status === 404) {
-                    // Erro 404 - não encontrado
-                    setMessage('Stencil não encontrado.');
-                    setOpenSnackBar(true);
-                    setLoadingValues(false)
-                }
-            }
-        }, 1200)
-
-        return () => clearTimeout(timeout)
-    }
+    
 
     const action = (
         <React.Fragment>
@@ -129,27 +94,17 @@ export default function ListStencilMedition() {
     return (
         <main className="lg:ml-[23rem] p-4">
             <Sidebar logouFunction={handleLogout} />
-            <div className="flex flex-col min-h-screen relative">
-                
-                <header className="w-full h-2 p-5 flex items-center justify-start">
-                    <h1 className="text-4xl font-bold">Histórico de medições</h1>
-                </header>
-                <section className="w-full h-auto p-5 items-center justify-start flex">
-                    <SelectHistory
-                        stencils={stencils}
-                        selectedStencil={selectedStencil}
-                        setSelectedStencil={setSelectedStencil}
-                    />
-                    <Button className="h-[50px] ml-4 bg-blue-400 flex gap-2 font-bold hover:opacity-60" onClick={() => handleStencilValuePoints(selectedStencil?.stencil_id)}>
-                        BUSCAR
-                        <Search className="w-5 h-5" />
-                    </Button>
-                    <Link href={"/pages/stencil_medition"} className="h-[50px] ml-auto bg-blue-400 flex gap-2 rounded-[6px] justify-end items-center px-2 text-white font-bold hover:opacity-60">
-                        REALIZAR UMA NOVA MEDIÇÃO
+            <div className="flex flex-col min-h-screen">
+
+            <section className="w-full h-auto p-5 items-center justify-start flex">
+                   
+                    <Link href={"/pages/cadastro_user"} className="h-[50px] ml-auto bg-blue-400 flex gap-2 rounded-[6px] justify-end items-center px-2 text-white font-bold hover:opacity-60">
+                        Cadastrar Novo Usuário
                         <CirclePlus className="w-5 h-5" />
                     </Link>
 
                 </section>
+                
                 <section className="w-full p-5 items-center justify-center">
                     <TableContainer component={Paper}>
                         <Table stickyHeader aria-label="sticky table">
@@ -177,14 +132,11 @@ export default function ListStencilMedition() {
                                         </TableCell>
                                     </TableRow>
                                     :
-                                    tensionValues.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((item, index) => (
+                                    users.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((item, index) => (
                                         <TableRow key={index}>
-                                            <TableCell>{item.p1}</TableCell>
-                                            <TableCell>{item.p2}</TableCell>
-                                            <TableCell>{item.p3}</TableCell>
-                                            <TableCell>{item.p4}</TableCell>
-                                            <TableCell>{item.cicles}</TableCell>
-                                            <TableCell>{formatDateTime(item.measurement_datetime)}</TableCell>
+                                            <TableCell>{item.first_name}</TableCell>
+                                            <TableCell>{item.email}</TableCell>
+                                            
 
                                         </TableRow>
                                     ))

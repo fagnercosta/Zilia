@@ -28,7 +28,7 @@ interface FormData {
 
 }
 
-export default function StencilMedition() {
+export default function StencilAutomaticMedition() {
 
     const [stencilList, setStencilList] = useState<Stencil[] | undefined>([]);
     const [stencilSelected, setStencilSelected] = useState(0)
@@ -166,7 +166,7 @@ export default function StencilMedition() {
         <main className="lg:ml-[23rem] p-4">
             <Sidebar />
             <div className="w-full min-h-screen mt-10 flex flex-col items-start justify-start relative">
-               
+                
                 
                 <Card className="w-[90%] bg-slate-50">
                     <CardHeader>

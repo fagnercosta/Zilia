@@ -151,7 +151,7 @@ export default function Home() {
     } else {
       try {
         const response = await axios.get(`${BASE_URL}/api/stencil/?stencil_id=${stencilDigited}`)
-        
+
         if (response.status === 200) {
           setStencil(response.data.results[0])
           const responseValues = await axios.get(`${BASE_URL}/api/stencilTensionValues/?stencil_identification=${response.data.results[0].stencil_id}`)
@@ -182,10 +182,10 @@ export default function Home() {
           const responseLastMedition = await axios.get(`${BASE_URL}api/processedimages/?stencil_id=${response.data.results[0].stencil_id}`)
           if (responseLastMedition) {
             setLastRobotMedition(responseLastMedition.data.results[responseLastMedition.data.results.length - 1])
-          }else{
+          } else {
 
           }
-        }else{
+        } else {
           setMessageSnack('Stencil não encontrado...');
           setOpenSnackBar(true);
           setAlert("warning")
@@ -198,7 +198,7 @@ export default function Home() {
           setOpenSnackBar(true);
         } else if (error.response.status === 404) {
           // Erro 404 - não encontrado
-          setMessageSnack('Stencil não encontrado.'+error.response.status);
+          setMessageSnack('Stencil não encontrado.' + error.response.status);
           setOpenSnackBar(true);
           setAlert("warning")
 
@@ -294,7 +294,7 @@ export default function Home() {
       <Sidebar logouFunction={handleLogout} />
       <div className="flex flex-col min-h-screen relative">
         <section className="grid grid-cols-4 gap-4">
-          <InovaBottomImage/>
+          
           {/*Card de pesquisa*/}
           <Card className="bg-slate-50">
             <CardHeader>
@@ -396,7 +396,7 @@ export default function Home() {
             </CardHeader>
             <CardContent>
               {/* Aqui aparecerá data da ultima medição do Stencil*/}
-              {stencil  && (
+              {stencil && (
                 <p className="text-base font-bold">
                   {stencilTensionValues && (
                     formatDateTime(stencilTensionValues[stencilTensionValues.length - 1].measurement_datetime || "")
@@ -407,7 +407,7 @@ export default function Home() {
           </Card>
 
           {/*Card dos últimos pontos medidos*/}
-          <Card className="bg-slate-50">
+          <Card className="bg-slate-50 ">
             <CardHeader>
               <div className="flex items-center justify-center">
                 <CardTitle className="text-lg sm:text-xl text-blue-400 font-bold">
@@ -432,50 +432,7 @@ export default function Home() {
             </CardContent>
           </Card>
 
-          {/*Card do relatório*/}
-          <Card className="bg-slate-50">
-            <CardHeader>
-              <div className="flex items-center justify-center">
-                <CardTitle className="text-lg sm:text-xl text-blue-400 font-bold">
-                  Relatório
-                </CardTitle>
-                <ClipboardMinus className="ml-auto w-6 h-6 text-blue-400" />
-              </div>
-              <CardDescription>
-                Gera um relatório referente as medições do Stencil
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {/* Aqui aparecerá o botao do relatório*/}
-              {stencil && (
-                <HoverCard>
-                  <HoverCardTrigger asChild>
-                    <PDFDownloadLink
-                      document={
-                        <StencilReport
-                          stencil={stencil}
-                          tensionValues={stencilTensionValues}
-                          lastRobotMedition={lastRobotMedition}
-                        />
-                      }
-                      fileName={`Relatorio_Stencil_${stencil?.stencil_id}.pdf`}
-                      className="w-full bg-blue-400 text-white font-bold p-2 rounded"
-                    >
-                      {({ blob, url, loading, error }) =>
-                        loading ? 'Gerando Relatório...' : 'Gerar relatório'
-                      }
-                    </PDFDownloadLink>
-                  </HoverCardTrigger>
-                  <HoverCardContent>
-                    <div className="flex items-start space-x-4 flex-col gap-3">
-                      <h3 className="font-bold ">Geração de relatório de conformidade</h3>
-                      Esta função gera um relatório referente a conformidade do stencil pesquisado e demais medidas realizadas.
-                    </div>
-                  </HoverCardContent>
-                </HoverCard>
-              )}
-            </CardContent>
-          </Card>
+
 
           {/*Card do limite de vida*/}
           <Card className="bg-slate-50">
@@ -494,13 +451,13 @@ export default function Home() {
               {/* Aqui aparecerá gráfico do limite de vida*/}
               {/* <StencilGraphicLimit/> */}
               {stencil && (
-                <Progress value={33} />
+                <Progress value={66}/>
               )}
             </CardContent>
           </Card>
 
           {/*Card do novas medições*/}
-          <Card className="bg-slate-50">
+          <Card className="bg-slate-50 col-span-2">
             <CardHeader>
               <div className="flex items-center justify-center">
                 <CardTitle className="text-lg sm:text-xl text-blue-400 font-bold">
@@ -514,33 +471,69 @@ export default function Home() {
             </CardHeader>
             <CardContent>
               {/* Aqui aparecerá os botoes*/}
-              <div className=" flex w-full justify-between items-center ">
+              <div className=" flex w-full justify-between items-center gap-2 ">
                 <HoverCard>
                   <HoverCardTrigger asChild>
-                    <Button className="bg-blue-400 text-white w-[45%] hover:opacity-60" onClick={() => handlePage("/pages/stencil_medition")}>
-                      Medição Manual
+                    <Button className="bg-blue-400 text-white w-[25%] hover:opacity-60" onClick={() => handlePage("/pages/stencil_medition")}>
+                      Tensão Manual
                     </Button>
+
+                  </HoverCardTrigger>
+                  <HoverCardTrigger asChild>
+                    <Button className="bg-blue-400 text-white w-[25%] hover:opacity-60" onClick={() => handlePage("/pages/stencil_automatic_medition")}>
+                      Tensão Automática
+                    </Button>
+
                   </HoverCardTrigger>
                   <HoverCardContent>
                     <div className="flex items-start space-x-4 flex-col gap-3">
-                      <h3 className="font-bold ">Medição Manual</h3>
+                      <h3 className="font-bold ">Medir Tensão</h3>
                       Esta função levará para uma aba específica para realizar medidas manuais, fornecendo informações e preenchendo-as conforme o necessário no sistema.
                     </div>
                   </HoverCardContent>
                 </HoverCard>
                 <HoverCard>
                   <HoverCardTrigger asChild>
-                    <Button className="bg-blue-400 text-white w-[45%] hover:opacity-60" onClick={() => handlePage("/pages/automatic_medition")}>
-                      Medição Automática
+                    <Button className="bg-blue-400 text-white w-[25%] hover:opacity-60" onClick={() => handlePage("/pages/automatic_medition")}>
+                      Medir Aranhões
                     </Button>
                   </HoverCardTrigger>
                   <HoverCardContent>
                     <div className="flex items-start space-x-4 flex-col gap-3">
-                      <h3 className="font-bold ">Medição Automática</h3>
+                      <h3 className="font-bold ">Medir Aranhões</h3>
                       Esta função abre um modal onde será necessário escolher o Stencil a ser medido e iniciará o processo de conexão com o robô e demais processos e equipamentos.
                     </div>
                   </HoverCardContent>
                 </HoverCard>
+
+                {stencil && (
+                  <HoverCard>
+                    <HoverCardTrigger asChild>
+                      <PDFDownloadLink
+                        document={
+                          <StencilReport
+                            stencil={stencil}
+                            tensionValues={stencilTensionValues}
+                            lastRobotMedition={lastRobotMedition}
+                          />
+                        }
+                        fileName={`Relatorio_Stencil_${stencil?.stencil_id}.pdf`}
+                        className="bg-orange-300 text-white w-[25%] hover:opacity-60 p-1.5 rounded"
+                      >
+                        {({ blob, url, loading, error }) =>
+                          loading ? 'Gerando Relatório...' : 'Gerar relatório'
+                        }
+                      </PDFDownloadLink>
+                    </HoverCardTrigger>
+                    <HoverCardContent>
+                      <div className="flex items-start space-x-4 flex-col gap-3">
+                        <h3 className="font-bold ">Geração de relatório de conformidade</h3>
+                        Esta função gera um relatório referente a conformidade do stencil pesquisado e demais medidas realizadas.
+                      </div>
+                    </HoverCardContent>
+                  </HoverCard>
+                )}
+
               </div>
             </CardContent>
           </Card>
@@ -614,14 +607,14 @@ export default function Home() {
         autoHideDuration={6000}
         onClose={handleClose}
         message={messageSnack}
-
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         action={action}
       >
         <Alert
           onClose={handleClose}
           severity={alert}
           variant="standard"
-          sx={{ width: '100%' }}
+          sx={{ width: '100%', height: '100px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
 
         >
           {messageSnack}

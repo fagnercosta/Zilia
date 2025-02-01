@@ -86,7 +86,7 @@ export default function AutomaticMedition() {
         <main className="lg:ml-[23rem] p-4">
             <Sidebar logouFunction={handleLogout} />
             <section className="w-full h-screen flex items-center justify-center relative">
-                <InovaBottomImage />
+               
                 <Card className="w-[70%] bg-slate-50">
                     <CardHeader>
                         <div className="flex items-center  justify-between w-full">

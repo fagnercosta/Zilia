@@ -32,6 +32,12 @@ export interface Stencil {
     object_status: string;
 }
 
+export interface UsersTipe{
+    first_name: string;
+    email: string;
+
+}
+
 
 export interface StencilTensionValues {
     url: string;

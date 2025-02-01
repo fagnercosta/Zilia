@@ -6,9 +6,9 @@ const InovaBottomImage = () => {
         <Image
             src={InovaImage.src}
             alt="InovaImage"
-            width={150}
-            height={50}
-            className="absolute bottom-[30px] right-[20px]"
+            width={200}
+            height={60}
+            
         />
     )
 }
