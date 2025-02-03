@@ -5,7 +5,7 @@ import os
 
 def binarizar():
     # Carregar a imagem em escala de cinza
-    image_path = 'final_image_stencil_123.png'
+    image_path = 'foto_posicao_47.png'
     image = cv2.imread(image_path)
 
     imgTratada = image[50:660, 300:1000]

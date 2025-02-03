@@ -11,7 +11,7 @@ pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tessera
 class TensionService:
     def __init__(self, stencil_id):
         self.stencil_id = stencil_id
-        self.image_dir = 'ipoints'
+        self.image_points_dir = 'images_final'
         self.clp_url = "opc.tcp://192.168.1.1:4840"
         self.client = Client(self.clp_url)
 
@@ -19,6 +19,14 @@ class TensionService:
         self.raspberry_ip = '192.168.1.98'
         self.username = 'smart'
         self.password = 'smart'
+
+    def getFotos(self):
+        path_p1 = os.path.join(self.image_points_dir, f"ponto_1.png")
+        path_p2 = os.path.join(self.image_points_dir, f"ponto_2.png")
+        path_p3 = os.path.join(self.image_points_dir, f"ponto_3.png") 
+        path_p4 = os.path.join(self.image_points_dir, f"ponto_4.png")
+       
+        return path_p1.replace("\\", "/"), path_p2.replace("\\", "/"), path_p3.replace("\\", "/"), path_p4.replace("\\", "/")
 
     def take_photo_1(self):
         # Conectar via SSH
@@ -38,7 +46,8 @@ class TensionService:
 
         # Transferindo a imagem da Raspberry Pi para o Windows
         sftp = ssh.open_sftp()
-        sftp.get('images/ValuePoint1.jpg', "ponto_1.png")
+        destination_path_image = os.path.join(self.final_image_dir,"ponto_1.png") 
+        sftp.get('images/ValuePoint1.jpg', destination_path_image)
         sftp.close()
         ssh.close()
 
@@ -60,27 +69,21 @@ class TensionService:
 
         # Transferindo a imagem da Raspberry Pi para o Windows
         sftp = ssh.open_sftp()
-        sftp.get('images/ValuePoint2.jpg', "ponto_1.png")
+        destination_path_image = os.path.join(self.final_image_dir,"ponto_1.png") 
+        sftp.get('images/ValuePoint2.jpg', destination_path_image)
         sftp.close()
         ssh.close()
 
-    
-
-    def capture_image_raspberry_pi(self):
-        # Defina o endereço IP da Raspberry Pi, usuário e senha
-        raspberry_ip = '192.168.1.98'
-        username = 'smart'
-        password = 'smart'
-
+    def take_photo_3(self):
         # Conectar via SSH
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(raspberry_ip, username=username, password=password)
+        ssh.connect(self.raspberry_ip, username=self.username, password=self.password)
 
         # Comando para capturar a imagem e salvar na Raspberry Pi
         #stdin, stdout, stderr = ssh.exec_command('libcamera-still -o images/image.jpg')
 
-        stdin, stdout, stderr = ssh.exec_command('sudo fswebcam -r 1920x1080 images/ValuePoint.jpg')
+        stdin, stdout, stderr = ssh.exec_command('sudo fswebcam -r 1920x1080 images/ValuePoint3.jpg')
         error = stderr.read().decode()
         if error:
             print(f"Erro ao capturar imagem: {error}")
@@ -89,208 +92,37 @@ class TensionService:
 
         # Transferindo a imagem da Raspberry Pi para o Windows
         sftp = ssh.open_sftp()
-        sftp.get('images/ValuePoint.jpg', 'ValuePoint42.jpg')
+        destination_path_image = os.path.join(self.final_image_dir,"ponto_3.png") 
+        sftp.get('images/ValuePoint3.jpg', destination_path_image)
         sftp.close()
         ssh.close()
-    @staticmethod
-    def point3():
-            raspberry_ip = '192.168.1.98'
-            username = 'smart'
-            password = 'smart'
 
-            # Conectar via SSH
-            ssh = paramiko.SSHClient()
-            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            ssh.connect(raspberry_ip, username=username, password=password)
+    def take_photo_4(self):
+        # Conectar via SSH
+        ssh = paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        ssh.connect(self.raspberry_ip, username=self.username, password=self.password)
 
-            # Comando para capturar a imagem e salvar na Raspberry Pi
-            #stdin, stdout, stderr = ssh.exec_command('libcamera-still -o images/image.jpg')
+        # Comando para capturar a imagem e salvar na Raspberry Pi
+        #stdin, stdout, stderr = ssh.exec_command('libcamera-still -o images/image.jpg')
 
-            stdin, stdout, stderr = ssh.exec_command('sudo fswebcam -r 1920x1080 images/ValuePoint.jpg')
-            error = stderr.read().decode()
-            if error:
-                print(f"Erro ao capturar imagem: {error}")
+        stdin, stdout, stderr = ssh.exec_command('sudo fswebcam -r 1920x1080 images/ValuePoint4.jpg')
+        error = stderr.read().decode()
+        if error:
+            print(f"Erro ao capturar imagem: {error}")
 
-            time.sleep(2)  # Aguarda a captura da imagem
+        time.sleep(2)  # Aguarda a captura da imagem
 
-            # Transferindo a imagem da Raspberry Pi para o Windows
-            sftp = ssh.open_sftp()
-            sftp.get('images/ValuePoint.jpg', 'ValuePoint42.jpg')
-            sftp.close()
-            ssh.close()
+        # Transferindo a imagem da Raspberry Pi para o Windows
+        sftp = ssh.open_sftp()
+        destination_path_image = os.path.join(self.final_image_dir,"ponto_4.png") 
+        sftp.get('images/ValuePoint4.jpg', destination_path_image)
+        sftp.close()
+        ssh.close()
 
-            # Inicia o processamento da imagem
-            imagemOriginal = cv2.imread('ValuePoint42.jpg')
 
-            # Convertendo para escala de cinza
-            gray_image = cv2.cvtColor(imagemOriginal, cv2.COLOR_BGR2GRAY)
 
-            # Aplicando filtro de mediana e recorte
-            imgTratada = cv2.medianBlur(gray_image, 7)
-            imgTratada = imgTratada[290:500, 720:1210]  # Recorte da área desejada
-
-            # Binarizações adaptativas
-            th2 = cv2.adaptiveThreshold(imgTratada, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 17, 5)
-            th3 = cv2.adaptiveThreshold(imgTratada, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 19, 2)
-
-            # Operações morfológicas para melhorar a imagem
-            nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
-            th2Open = cv2.dilate(th2, nucleo, iterations=8)
-            th2Open = cv2.dilate(th2, nucleo, iterations=8)
-            th2Open = cv2.dilate(th2, nucleo, iterations=8)
-
-            for _ in range(7):  # Aplica erosão múltiplas vezes
-                th2Open = cv2.erode(th2Open, nucleo)
-
-            th2Open = cv2.dilate(th2, nucleo, iterations=8)
-            th2Open = cv2.dilate(th2, nucleo, iterations=8)
-
-            th2Open = cv2.erode(th2Open, nucleo)
-            th2Open = cv2.erode(th2Open, nucleo)
-            th2Open = cv2.erode(th2Open, nucleo)
-            th2Open = cv2.erode(th2Open, nucleo)
-            th2Open = cv2.erode(th2Open, nucleo)
-            th2Open = cv2.erode(th2Open, nucleo)
-            th2Open = cv2.erode(th2Open, nucleo)
-            th2Open = cv2.erode(th2Open, nucleo)
-
-            th2Open = cv2.dilate(th2, nucleo, iterations=8)
-
-            th2Open = cv2.erode(th2Open, nucleo)
-            th2Open = cv2.erode(th2Open, nucleo)
-            th2Open = cv2.erode(th2Open, nucleo)
-            th2Open = cv2.erode(th2Open, nucleo)
-            th2Open = cv2.erode(th2Open, nucleo)
-
-            # Pegar o caminho da pasta onde o script está sendo executado
-
-            # Salvar as imagens processadas no disco
-            caminho_pasta = os.path.dirname(os.path.abspath(__file__))
-            cv2.imwrite(f'{caminho_pasta}/BinarizadaGausianaAberta.jpg', th2Open)
-
-            # Reconhecimento de dígitos na imagem "BinarizadaGausianaAberta.jpg"
-            contornos, _ = cv2.findContours(th2Open, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-            recognized_digits = ""
-
-            for cnt in contornos:
-                # Obter a caixa delimitadora do contorno
-                x, y, w, h = cv2.boundingRect(cnt)
-
-                # Extração da região de interesse (ROI)
-                roi = th2Open[y:y+h, x:x+w]
-
-                # Reconhecer dígitos na região de interesse
-                custom_config = r'--oem 3 --psm 6 outputbase digits'
-                text = pytesseract.image_to_string(roi, config=custom_config)
-
-                # Adicionar dígitos reconhecidos à variável final
-                recognized_digits += text.strip()
-
-            # Retorna os dígitos reconhecidos ou 0 se nenhum for detectado
-            if recognized_digits == "":
-                return "0"
-            else:
-                return recognized_digits
     
-    def point11(self):
-        imagemOriginal = cv2.imread('ValuePoint42.jpg')
-
-        # Convertendo para escala de cinza
-        gray_image = cv2.cvtColor(imagemOriginal, cv2.COLOR_BGR2GRAY)
-
-        imgTratada = cv2.medianBlur(gray_image, 7)
-        # Definir as coordenadas do corte (y_inicial:y_final, x_inicial:x_final)
-        # Exemplo: (50, 200) para y e (100, 300) para x
-        imgTratada = imgTratada[285:500, 650:1180]
-
-
-        th2 = cv2.adaptiveThreshold(imgTratada, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
-        th3 = cv2.adaptiveThreshold(imgTratada, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 19, 2)
-
-        nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3,3))
-        th2Open = cv2.dilate(th2, nucleo, iterations = 8)
-        th3Open = cv2.dilate(th3, nucleo, iterations = 8)
-        th3Open = cv2.dilate(th3, nucleo, iterations = 8)
-
-        th2Open = cv2.erode(th2Open,nucleo)
-        th2Open = cv2.erode(th2Open,nucleo)
-        th2Open = cv2.erode(th2Open,nucleo)
-        th2Open = cv2.erode(th2Open,nucleo)
-        th2Open = cv2.erode(th2Open,nucleo)
-        th2Open = cv2.erode(th2Open,nucleo)
-        th2Open = cv2.erode(th2Open,nucleo)
-
-        nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5,5))
-        th2Open = cv2.dilate(th2Open, nucleo, iterations = 2)
-
-        th2Open = cv2.erode(th2Open,nucleo)
-        th2Open = cv2.erode(th2Open,nucleo)
-        th2Open = cv2.dilate(th2Open, nucleo, iterations = 3)
-
-        # Pegar o caminho da pasta onde o script está sendo executado
-        caminho_pasta = os.path.dirname(os.path.abspath(__file__))
-            
-            # Salvar a imagem no disco
-        cv2.imwrite(f'{caminho_pasta}/Tratada.jpg', imgTratada)
-        cv2.imwrite(f'{caminho_pasta}/NivelCinza.jpg', gray_image)
-        cv2.imwrite(f'{caminho_pasta}/BinarizadaMedia.jpg', th2)
-        cv2.imwrite(f'{caminho_pasta}/BinarizadaGausiana.jpg', th3)
-
-        cv2.imwrite(f'{caminho_pasta}/BinarizadaMediaAberta.jpg', th2Open)
-        cv2.imwrite(f'{caminho_pasta}/BinarizadaGausianaAberta.jpg', th3Open)
-
-        return th2
-    
-    def point13(self):
-        imagemOriginal = cv2.imread('ValuePoint42.jpg')
-
-        # Convertendo para escala de cinza
-        gray_image = cv2.cvtColor(imagemOriginal, cv2.COLOR_BGR2GRAY)
-
-        imgTratada = cv2.medianBlur(gray_image, 7)
-        # Definir as coordenadas do corte (y_inicial:y_final, x_inicial:x_final)
-        # Exemplo: (50, 200) para y e (100, 300) para x
-        imgTratada = imgTratada[285:500, 650:1180]
-
-
-        th2 = cv2.adaptiveThreshold(imgTratada, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
-        th3 = cv2.adaptiveThreshold(imgTratada, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 19, 2)
-
-        nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3,3))
-        th2Open = cv2.dilate(th2, nucleo, iterations = 8)
-        th3Open = cv2.dilate(th3, nucleo, iterations = 8)
-        th3Open = cv2.dilate(th3, nucleo, iterations = 8)
-
-        th2Open = cv2.erode(th2Open,nucleo)
-        th2Open = cv2.erode(th2Open,nucleo)
-        th2Open = cv2.erode(th2Open,nucleo)
-        th2Open = cv2.erode(th2Open,nucleo)
-        th2Open = cv2.erode(th2Open,nucleo)
-        th2Open = cv2.erode(th2Open,nucleo)
-        th2Open = cv2.erode(th2Open,nucleo)
-
-        nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5,5))
-        th2Open = cv2.dilate(th2Open, nucleo, iterations = 2)
-
-        th2Open = cv2.erode(th2Open,nucleo)
-        th2Open = cv2.erode(th2Open,nucleo)
-        th2Open = cv2.dilate(th2Open, nucleo, iterations = 3)
-
-        # Pegar o caminho da pasta onde o script está sendo executado
-        caminho_pasta = os.path.dirname(os.path.abspath(__file__))
-            
-            # Salvar a imagem no disco
-        cv2.imwrite(f'{caminho_pasta}/Tratada.jpg', imgTratada)
-        cv2.imwrite(f'{caminho_pasta}/NivelCinza.jpg', gray_image)
-        cv2.imwrite(f'{caminho_pasta}/BinarizadaMedia.jpg', th2)
-        cv2.imwrite(f'{caminho_pasta}/BinarizadaGausiana.jpg', th3)
-
-        cv2.imwrite(f'{caminho_pasta}/BinarizadaMediaAberta.jpg', th2Open)
-        cv2.imwrite(f'{caminho_pasta}/BinarizadaGausianaAberta.jpg', th3Open)
-
-        return th2
-    
-    def point18(self):
         imagemOriginal = cv2.imread('ValuePoint42.jpg')
 
         # Convertendo para escala de cinza
@@ -373,7 +205,7 @@ class TensionService:
         return textoExtraido
 
     def main(self):
-        try:
+        '''try:
             self.client.connect()
             print("Conectado ao CLP")
 
@@ -400,6 +232,19 @@ class TensionService:
                         if complete and not moving:
                             self.take_photo_1()
                             break
+                    if posicao == 8:
+                        if complete and not moving:
+                            self.take_photo_2()
+                            break
+                    if posicao == 13:
+                        if complete and not moving:
+                            self.take_photo_2()
+                            break
+
+                    if posicao == 18:
+                        if complete and not moving:
+                            self.take_photo_2()
+                            break
 
 
 
@@ -407,14 +252,22 @@ class TensionService:
                 time.sleep(0.5)
             
             valorDaPosicao.set_value(ua.DataValue(ua.Variant(99, ua.VariantType.UInt16)))
-            final_image_path = self.combine_images()
-            final_image = cv2.imread(final_image_path)
-            final_image, scratch_count = self.detect_scratches(final_image)
+            final_image_path_p1 = self.combine_images()
+            final_image_path_p2 = self.combine_images()
+            final_image_path_p3 = self.combine_images()
+            final_image_path_p4 = self.combine_images()
+            
+           
 
-            return final_image_path, scratch_count
+            return final_image_path_p1, final_image_path_p2, final_image_path_p3, final_image_path_p4
 
         except Exception as e:
             print(f"Erro: {e}")
         finally:
             self.client.disconnect()
-            print("Conexão com o CLP encerrada.")
+            print("Conexão com o CLP encerrada.")'''
+            
+        final_image_path_p1 , final_image_path_p2, final_image_path_p3, final_image_path_p4 = self.getFotos()
+        
+
+        return final_image_path_p1, final_image_path_p2, final_image_path_p3, final_image_path_p4

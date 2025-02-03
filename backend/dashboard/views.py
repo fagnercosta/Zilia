@@ -16,6 +16,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.permissions import AllowAny
 
+from datetime import datetime
 
 from rest_framework import generics
 from dashboard.models import CustomUser  # Importe seu modelo de usuário
@@ -45,6 +46,7 @@ from django.shortcuts import get_object_or_404
 
 from dashboard.services.OpencvService import OpencvService
 from dashboard.services.ReaderPointersService import ReaderPointerService
+from dashboard.services.TensionService import TensionService
 
 from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
@@ -203,6 +205,53 @@ def takephoto(request, stencil_id_request):
         {
             "message": "Imagem processada com sucesso",
             **serializer.data
+        },
+        status=status.HTTP_200_OK
+    )
+
+@api_view(['POST'])
+def takephotoraspy(request, stencil_id_request):
+    stencil_id = stencil_id_request
+    
+    # Verifica se o stencil_id foi fornecido
+    if not stencil_id:
+        return Response(
+            {"error": "stencil_id is required"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    # Tenta buscar o stencil pelo ID fornecido
+    try:
+        stencil = Stencil.objects.get(stencil_id=stencil_id)
+    except Stencil.DoesNotExist:
+        
+        return Response(
+            {"error": "Stencil not found"},
+            status=status.HTTP_404_NOT_FOUND
+        )
+    
+    # Inicializa o serviço OpenCV e realiza o processo de tirar as fotos e combinar
+
+    #CHAMA A FUNÇÃO DO TENCIONService
+    opencv_command = TensionService(stencil_id=stencil_id)
+    final_image_path_p1, final_image_path_p2, final_image_path_p3, final_image_path_p4 = opencv_command.main()
+
+
+
+    # Salva os dados no banco de dados
+    
+
+
+    # Serializa os dados e retorna a resposta
+    
+    return Response(
+        {
+            "message": "Imagem processada com sucesso",
+            "p1":final_image_path_p1,
+            "p2":final_image_path_p2,
+            "p3":final_image_path_p3,
+            "p4":final_image_path_p4
+            
         },
         status=status.HTTP_200_OK
     )

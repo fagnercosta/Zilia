@@ -8,7 +8,7 @@ import { Stencil } from "@/types/models";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Alert, AlertColor, Button, Checkbox, Divider, FormControl, FormControlLabel, Grid, IconButton, InputLabel, MenuItem, Select, SelectChangeEvent, Snackbar, TextField } from "@mui/material";
 import axios from "axios";
-import { CircleX } from "lucide-react";
+import { CircleX, Link } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -19,7 +19,7 @@ interface FormData {
     p2: null;
     p3: null;
     p4: null;
-    measurement_datetime: null;
+    measurement_datetime: Date | null;
     description: string;
     is_registration_measurement: boolean;
     is_approved_status: boolean;
@@ -28,20 +28,33 @@ interface FormData {
 
 }
 
+interface RequestRaspy {
+
+    message: string
+    p1: string;
+    p2: string;
+    p3: string;
+    p4: string;
+
+
+}
+
 export default function StencilAutomaticMedition() {
 
     const [stencilList, setStencilList] = useState<Stencil[] | undefined>([]);
     const [stencilSelected, setStencilSelected] = useState(0)
-    
+    const [resposta, setResposta] = useState<RequestRaspy>()
     const [openSnackBar, setOpenSnackBar] = useState(false)
     const [alert, setAlert] = useState<AlertColor>("success")
     const [message, setMessage] = useState('')
     const navigate = useRouter()
 
+    const [loadingRobot, setLoadingRobot] = useState(false)
+
     const getStencils = async () => {
         try {
             const response = await axios.get(`http://127.0.0.1:8000/api/stencil/`);
-            
+
             if (response && response.data.results.length > 0) {
                 setStencilList(response.data.results);
             } else if (!response || response.data.results.length === 0) {
@@ -66,23 +79,31 @@ export default function StencilAutomaticMedition() {
                 // Algum outro erro ocorreu durante a configuração da solicitação
                 setMessage('Ocorreu um erro inesperado.');
             }
-        
+
             setAlert("error");
             setOpenSnackBar(true);
         }
-        
+
     }
 
     useEffect(() => {
         getStencils()
+        resetForm()
     }, [])
+
+    const resetForm = () => {
+        setFormData(prev => ({
+            ...prev,
+            measurement_datetime: new Date() // Atualiza apenas a data
+        }));
+    };
 
     const [formData, setFormData] = useState<FormData>({
         p1: null,
         p2: null,
         p3: null,
         p4: null,
-        measurement_datetime: null,
+        measurement_datetime: new Date(),
         description: "",
         is_registration_measurement: false,
         is_approved_status: false,
@@ -91,7 +112,30 @@ export default function StencilAutomaticMedition() {
 
     });
 
-    ;
+    const takePhotoRaspRequest = async (stencilId: number) => {
+        setResposta(undefined);
+        setLoadingRobot(true);
+        console.log("Stencil selecionado:", stencilSelected);
+        
+        if(stencilSelected === 0){
+            setMessage("Selecione um stencil");
+            setAlert("error");
+            setOpenSnackBar(true);
+            
+        }
+
+        try {
+            const response = await axios.post(`http://127.0.0.1:8000/api/takephotraspy/${stencilSelected}/`);
+            if (response) {
+                setLoadingRobot(false);
+                console.log(response.data);
+                setResposta(response.data);
+                console.log("Resposta:", resposta?.message);
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
 
     const handleClose = (event: React.SyntheticEvent | Event, reason?: string) => {
@@ -134,7 +178,8 @@ export default function StencilAutomaticMedition() {
     const handleChangeSelect = (event: SelectChangeEvent<unknown>) => {
         event.preventDefault();
         const { name, value } = event.target;
-        console.log(value)
+        setStencilSelected(value as number)
+        console.log("Selecinou Stencil's: " + value)
         setFormData(prevData => ({
             ...prevData,
             [name]: value
@@ -166,8 +211,8 @@ export default function StencilAutomaticMedition() {
         <main className="lg:ml-[23rem] p-4">
             <Sidebar />
             <div className="w-full min-h-screen mt-10 flex flex-col items-start justify-start relative">
-                
-                
+
+
                 <Card className="w-[90%] bg-slate-50">
                     <CardHeader>
                         <CardTitle className="text-2xl font-bold">Medição manual dos valores de tensão</CardTitle>
@@ -251,7 +296,7 @@ export default function StencilAutomaticMedition() {
                                     </FormControl>
                                 </Grid>
 
-                               
+
 
                                 <Grid item xs={12} sm={12} md={6} flexShrink={'initial'}>
                                     <TextField
@@ -274,17 +319,14 @@ export default function StencilAutomaticMedition() {
                                         required={true}
                                         label="Data da medição"
                                         size="small"
-
                                         name="measurement_datetime"
-                                        value={formData.measurement_datetime}
+                                        value={formData.measurement_datetime ? new Date(formData.measurement_datetime).toISOString().slice(0, 16) : ""}
                                         onChange={handleChange}
-                                        InputLabelProps={
-                                            {
-                                                shrink: true,
-                                            }
-                                        }
-
+                                        InputLabelProps={{
+                                            shrink: true,
+                                        }}
                                     />
+
                                 </Grid>
 
                                 <Grid item xs={12} sm={12} md={6} flexShrink={'initial'}>
@@ -315,14 +357,70 @@ export default function StencilAutomaticMedition() {
                                     />
                                 </Grid>
 
-                                <Grid item xs={12}>
-                                    <Button type="submit" disabled ={stencilList?.length === 0}variant="contained" color="primary">Cadastrar</Button>
+                                <Grid item xs={12} sm={12} md={12} style={{ display: "flex", flexDirection: 'row', justifyContent: 'space-between' }}>
+                                    <Button type="submit" disabled={stencilList?.length === 0 || !resposta} variant="contained" color="primary">Cadastrar</Button>
+                                    <a style={{ cursor: 'pointer', padding:'10px', backgroundColor: 'rgb(96 165 250)', color: 'white', borderRadius: '5px' }} onClick={() => takePhotoRaspRequest(stencilSelected)}> Iniciar coleta de dados</a>
+
                                 </Grid>
-                               
+
                             </Grid>
                         </form>
                     </CardContent>
                 </Card>
+
+                {
+                    resposta && (
+                        <Card className="mt-4 p rounded-none w-[90%] bg-slate-50">
+                            <CardHeader className="">
+                                <CardTitle className="text-2xl font-bold align-baseline">Imagens coletadas</CardTitle>
+                            </CardHeader>
+                            <Grid container spacing={2} className="p-4">
+                                <Grid item xs={12} sm={12} md={3}>
+                                    <Card className="p rounded-none w-[90%] bg-slate-50">
+                                        <CardHeader>
+                                            <CardTitle>Ponto 1</CardTitle>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <img src={`http://localhost:8000/${resposta.p2}?timestamp=${new Date().getTime()}`} width="100%" height="100%" />
+                                        </CardContent>
+                                    </Card>
+                                </Grid>
+                                <Grid item xs={12} sm={12} md={3}>
+                                    <Card className="p rounded-none w-[90%] bg-slate-50">
+                                        <CardHeader>
+                                            <CardTitle>Ponto 2</CardTitle>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <img src={`http://localhost:8000/${resposta.p2}?timestamp=${new Date().getTime()}/`} width="100%" height="100%" />
+                                        </CardContent>
+                                    </Card>
+                                </Grid>
+
+                                <Grid item xs={12} sm={12} md={3}>
+                                    <Card className="p rounded-none w-[90%] bg-slate-50">
+                                        <CardHeader>
+                                            <CardTitle>Ponto 3</CardTitle>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <img src={`http://localhost:8000/${resposta.p3}?timestamp=${new Date().getTime()}/`} width="100%" height="100%" />
+                                        </CardContent>
+                                    </Card>
+                                </Grid>
+
+                                <Grid item xs={12} sm={12} md={3}>
+                                    <Card className="p rounded-none w-[90%] bg-slate-50">
+                                        <CardHeader>
+                                            <CardTitle>Ponto 4</CardTitle>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <img src={`http://localhost:8000/${resposta.p4}?timestamp=${new Date().getTime()}/`} width="100%" height="100%" />
+                                        </CardContent>
+                                    </Card>
+                                </Grid>
+                            </Grid>
+                        </Card>
+                    )
+                }
             </div>
             <Snackbar
                 open={openSnackBar}
@@ -330,6 +428,7 @@ export default function StencilAutomaticMedition() {
                 action={action}
                 onClose={handleClose}
                 message={message}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
             >
                 <Alert
                     onClose={handleClose}
@@ -340,6 +439,8 @@ export default function StencilAutomaticMedition() {
                     {message}
                 </Alert>
             </Snackbar>
+
+
         </main>
     )
 }

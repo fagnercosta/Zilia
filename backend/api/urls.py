@@ -13,6 +13,8 @@ from dashboard.views import (
    
     ProcessedImageViewSet,
     takephoto,
+    takephotoraspy,
+
    
     changeLamp,
     # ConfigurationsViewSet,
@@ -57,6 +59,7 @@ urlpatterns = [
     # path('api/conection',testeConexao, name='conection'),
     # path('api/save-compliance-report', save_compliance_report, name='save_compliance_report'),
     path("api/takephoto/<int:stencil_id_request>/",takephoto, name='takephoto'),
+    path("api/takephotraspy/<int:stencil_id_request>/",takephotoraspy, name='takephotoraspy'),
     # path("api/sinck_data_stencil/",sincronizedStencilData, name='sinck_data_stencil'),
     path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
    

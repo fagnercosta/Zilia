@@ -58,6 +58,7 @@ export default function AutomaticMedition() {
                 setLoadingRobot(false)
                 console.log(response.data)
                 setResposta(response.data)
+                
             }
         } catch (error) {
             console.error(error)
