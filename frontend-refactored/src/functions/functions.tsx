@@ -43,9 +43,9 @@ export function getRGBFromDate(targetDate: Date) {
 }
 
 export function getRGB(value: number) {
-    if (value < 30 || value > 40) {
-        return
-    }
+    //if (value < 30 || value > 40) {
+       // return
+  //  }
     if (value === 35) {
         return `rgb(255,255,0)`;
     }

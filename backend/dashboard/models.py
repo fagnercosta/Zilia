@@ -46,8 +46,8 @@ class Stencil(models.Model):
     index_of_suggested_stencil = models.IntegerField()
     object_status = models.CharField(max_length=50, null=True, blank=True)
 
-    #def __str__(self):
-     #    return self.stencil_part_nbr
+    def __str__(self):
+         return self.stencil_part_nbr
 
 class ProcessedImage(models.Model):
     stencil = models.ForeignKey(Stencil, null=True, on_delete=models.SET_NULL)

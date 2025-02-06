@@ -6,7 +6,9 @@ from opcua import Client, ua
 from pypylon import pylon
 import paramiko
 import pytesseract
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+
+import easyocr
+pytesseract.pytesseract.tesseract_cmd = r'C:\Tesseract-OCR\tesseract.exe'
 
 class TensionService:
     def __init__(self, stencil_id):
@@ -21,10 +23,11 @@ class TensionService:
         self.password = 'smart'
 
     def getFotos(self):
-        path_p1 = os.path.join(self.image_points_dir, f"ponto_1.png")
-        path_p2 = os.path.join(self.image_points_dir, f"ponto_2.png")
-        path_p3 = os.path.join(self.image_points_dir, f"ponto_3.png") 
-        path_p4 = os.path.join(self.image_points_dir, f"ponto_4.png")
+        path_p1 = os.path.join(self.image_points_dir, f"ponto_1_bin.png")
+        path_p2 = os.path.join(self.image_points_dir, f"ponto_2_bin.png")
+        path_p3 = os.path.join(self.image_points_dir, f"ponto_3_bin.png") 
+        path_p4 = os.path.join(self.image_points_dir, f"ponto_4_bin.png")
+        
        
         return path_p1.replace("\\", "/"), path_p2.replace("\\", "/"), path_p3.replace("\\", "/"), path_p4.replace("\\", "/")
 
@@ -120,89 +123,139 @@ class TensionService:
         sftp.close()
         ssh.close()
 
+        
+
 
 
     
-        imagemOriginal = cv2.imread('ValuePoint42.jpg')
+    def prepare_images1(self):
+        imagemOriginal = cv2.imread('images_final/ponto_1.png') 
+        imagemOriginal = imagemOriginal[540:700,800:1210]
 
-        # Convertendo para escala de cinza
-        gray_image = cv2.cvtColor(imagemOriginal, cv2.COLOR_BGR2GRAY)
+        path_p1 = "images_final/ponto_1_tratada.png"
+        cv2.imwrite(path_p1, imagemOriginal)
 
-        imgTratada = cv2.medianBlur(gray_image, 7)
+        reader = easyocr.Reader(['pt'])
+        results = reader.readtext(
+            image=path_p1
+        )   
 
+        text=''
+        textoResposta = ''
+        for result in results:
+            print(result[1])
+            text = result[1]
 
-        # Definir as coordenadas do corte (y_inicial:y_final, x_inicial:x_final)
-        # Exemplo: (50, 200) para y e (100, 300) para x
-        imgTratada = imgTratada[285:485, 770:1160]
+        for i, l in enumerate(text):
+            if i  <= 1:
+                textoResposta += l
+            else:
+                textoResposta += "."+l
 
+        print("RESPOSTA", textoResposta)
 
-        th2 = cv2.adaptiveThreshold(imgTratada, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
-        th3 = cv2.adaptiveThreshold(imgTratada, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 19, 2)
-
-        nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3,3))
-        th2Open = cv2.dilate(th2, nucleo, iterations = 8)
-        th3Open = cv2.dilate(th3, nucleo, iterations = 8)
-        th3Open = cv2.dilate(th3, nucleo, iterations = 4)
-
-        th2Open = cv2.erode(th2Open,nucleo)
-        th2Open = cv2.erode(th2Open,nucleo)
-        th2Open = cv2.erode(th2Open,nucleo)
-        th2Open = cv2.erode(th2Open,nucleo)
-        th2Open = cv2.erode(th2Open,nucleo)
-        th2Open = cv2.erode(th2Open,nucleo)
-        th2Open = cv2.erode(th2Open,nucleo)
-
-        th2Open = cv2.erode(th2Open,nucleo)
-        th2Open = cv2.erode(th2Open,nucleo)
-
-
-        nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5,5))
-        th2Open = cv2.dilate(th2Open, nucleo, iterations = 7)
-
-        th2Open = cv2.erode(th2Open,nucleo)
-        th2Open = cv2.erode(th2Open,nucleo)
-        th2Open = cv2.erode(th2Open,nucleo)
-        th2Open = cv2.erode(th2Open,nucleo)
-        th2Open = cv2.erode(th2Open,nucleo)
-        th2Open = cv2.erode(th2Open,nucleo)
-        th2Open = cv2.erode(th2Open,nucleo)
-        th2Open = cv2.erode(th2Open,nucleo)
-
-        th2Open = cv2.dilate(th2Open, nucleo, iterations = 4)
-        th2Open = cv2.erode(th2Open,nucleo)
-        th2Open = cv2.erode(th2Open,nucleo)
-
-
-        # Pegar o caminho da pasta onde o script está sendo executado
-        caminho_pasta = os.path.dirname(os.path.abspath(__file__))
+        self.binarizar("images_final/ponto_1.png",1)
             
-            # Salvar a imagem no disco
-        cv2.imwrite(f'{caminho_pasta}/Tratada.jpg', imgTratada)
-        cv2.imwrite(f'{caminho_pasta}/NivelCinza.jpg', gray_image)
-        cv2.imwrite(f'{caminho_pasta}/BinarizadaMedia.jpg', th2)
-        cv2.imwrite(f'{caminho_pasta}/BinarizadaGausiana.jpg', th3)
+        
+        return  textoResposta
 
-        cv2.imwrite(f'{caminho_pasta}/BinarizadaMediaAberta.jpg', th2Open)
-        cv2.imwrite(f'{caminho_pasta}/BinarizadaGausianaAberta.jpg', th3Open)
+    
 
-        # Carregar a imagem binarizada
-        image_path = 'BinarizadaMediaAberta.jpg'
-        img = cv2.imread(image_path)
+    def prepare_images2(self):
+        imagemOriginal = cv2.imread('images_final/ponto_2.png') 
+        imagemOriginal = imagemOriginal[520:720,800:1210]
 
-        # Inverter as cores (se necessário, dependendo do binarizado: fundo preto e números brancos)
-            # Neste caso, parece que o fundo é preto, então não é necessário inverter.
-        inverted = img
+        path_p1 = "images_final/ponto_2_tratada.png"
+        cv2.imwrite(path_p1, imagemOriginal)
 
-        custom_config = r'--oem 3 --psm 6 outputbase digits'
-        text = pytesseract.image_to_string(img, config=custom_config)
+        reader = easyocr.Reader(['pt'])
+        results = reader.readtext(
+            image=path_p1
+        )   
 
-                # Exibir a região detectada e os números reconhecidos
+        text=''
+        textoResposta = ''
+        for result in results:
+            print(result[1])
+            text = result[1]
 
+        for i, l in enumerate(text):
+            if i  <= 1:
+                textoResposta += l
+            else:
+                textoResposta += "."+l
 
-        print(f"Números detectados na região: {text.strip()}")
-        textoExtraido = text.strip()
+        print("RESPOSTA", textoResposta)
+        self.binarizar("images_final/ponto_2.png",2) 
+        
+        return  textoResposta
+        
+    
+    def prepare_images3(self):
+        imagemOriginal = cv2.imread('images_final/ponto_3.png') 
+        imagemOriginal = imagemOriginal[520:720,800:1210]
 
-        return textoExtraido
+        path_p1 = "images_final/ponto_3_tratada.png"
+        cv2.imwrite(path_p1, imagemOriginal)
+
+        reader = easyocr.Reader(['pt'])
+        results = reader.readtext(
+            image=path_p1
+        )   
+
+        text=''
+        textoResposta = ''
+        for result in results:
+            print(result[1])
+            text = result[1]
+
+        for i, l in enumerate(text):
+            if i  <= 1:
+                textoResposta += l
+            else:
+                textoResposta += "."+l
+
+        print("RESPOSTA", textoResposta)
+        self.binarizar("images_final/ponto_3.png",3)   
+        
+        return  textoResposta
+    
+    def prepare_images4(self):
+        imagemOriginal = cv2.imread('images_final/ponto_4.png') 
+        imagemOriginal = imagemOriginal[520:720,800:1210]
+
+        path_p1 = "images_final/ponto_4_tratada.png"
+        cv2.imwrite(path_p1, imagemOriginal)
+
+        reader = easyocr.Reader(['pt'])
+        results = reader.readtext(
+            image=path_p1
+        )   
+
+        text=''
+        textoResposta = ''
+        for result in results:
+            print(result[1])
+            text = result[1]
+
+        for i, l in enumerate(text):
+            if i  <= 1:
+                textoResposta += l
+            else:
+                textoResposta += "."+l
+
+        print("RESPOSTA", textoResposta)
+            
+        self.binarizar("images_final/ponto_4.png",4)
+        return  textoResposta
+    
+
+    def binarizar(self, path,point):
+        img = cv2.imread(path)
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
+        cv2.imwrite(f"{self.image_points_dir}/ponto_{point}_bin.png", thresh)
+        
 
     def main(self):
         '''try:
@@ -266,8 +319,13 @@ class TensionService:
         finally:
             self.client.disconnect()
             print("Conexão com o CLP encerrada.")'''
+        
+        textoP1 = self.prepare_images1()   
+        textoP2 = self.prepare_images2()
+        textoP3 = self.prepare_images3()
+        textoP4 = self.prepare_images4() 
             
         final_image_path_p1 , final_image_path_p2, final_image_path_p3, final_image_path_p4 = self.getFotos()
         
 
-        return final_image_path_p1, final_image_path_p2, final_image_path_p3, final_image_path_p4
+        return final_image_path_p1, final_image_path_p2, final_image_path_p3, final_image_path_p4, textoP1, textoP2, textoP3, textoP4

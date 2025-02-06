@@ -4,7 +4,10 @@ import numpy as np
 import os
 
 
-imagemOriginal = cv2.imread('ImageTeste.png')
+imagemOriginal = cv2.imread('ponto_1.png')
+imagemOriginal = imagemOriginal[540:700,800:1210]
+
+cv2.imwrite(f'ImagemTesteCORTADA.png', imagemOriginal)
 
 # Convertendo para escala de cinza
 gray_image = cv2.cvtColor(imagemOriginal, cv2.COLOR_BGR2GRAY)
@@ -29,25 +32,28 @@ th2Open = cv2.erode(th2Open,nucleo)
 th2Open = cv2.erode(th2Open,nucleo)
 
 
-
-
-
-
 nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5,5))
 th2Open = cv2.dilate(th2Open, nucleo, iterations = 7)
 
 th2Open = cv2.erode(th2Open,nucleo)
 th2Open = cv2.erode(th2Open,nucleo)
 th2Open = cv2.erode(th2Open,nucleo)
+
 th2Open = cv2.erode(th2Open,nucleo)
 th2Open = cv2.erode(th2Open,nucleo)
 th2Open = cv2.erode(th2Open,nucleo)
 
+th2Open = cv2.erode(th2Open,nucleo)
+
+
+th2Open = cv2.dilate(th2Open, nucleo, iterations = 2)
 
 
 
 
-cv2.imwrite(f'Fagner.jpg', th2Open)
+
+
+cv2.imwrite(f'ImagemTeste.png', th2Open)
 
 
 

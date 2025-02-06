@@ -13,6 +13,8 @@ class OpencvService:
         self.clp_url = "opc.tcp://192.168.1.1:4840"
         self.client = Client(self.clp_url)
 
+        self.erro = "Erro ao conectar ao CLP"
+
     def take_photo(self):
         camera = pylon.InstantCamera(pylon.TlFactory.GetInstance().CreateFirstDevice())
         camera.StartGrabbing(pylon.GrabStrategy_LatestImageOnly)
@@ -118,7 +120,7 @@ class OpencvService:
             return final_image_path, scratch_count
 
         except Exception as e:
-            print(f"Erro: {e}")
+            return self.erro
         finally:
             self.client.disconnect()
             print("Conexão com o CLP encerrada.")

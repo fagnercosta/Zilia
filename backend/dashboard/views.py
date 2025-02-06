@@ -187,27 +187,35 @@ def takephoto(request, stencil_id_request):
     # Inicializa o serviço OpenCV e realiza o processo de tirar as fotos e combinar
 
     
-    opencv_command = OpencvService(stencil_id=stencil_id)
-    final_image_path, scratch_count = opencv_command.main()
+    try:
+        opencv_command = OpencvService(stencil_id=stencil_id)
+        final_image_path, scratch_count = opencv_command.main()
 
 
 
+        # Salva os dados no banco de dados
+        processed_image = ProcessedImage.objects.create(
+            stencil=stencil,
+            image_path=final_image_path,
+            scratch_count=scratch_count
+        )
+
+        # Serializa os dados e retorna a resposta
+        serializer = ProcessedImageSerializer(processed_image)
+        return Response(
+            {
+                "message": "Imagem processada com sucesso",
+                **serializer.data
+            },
+            status=status.HTTP_200_OK
+        )
+    except Exception as e:
+        print(f"Erro ao executar o serviço: {e}")
+        return Response(
+            {"error": "Error executing service"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR    
+        )
     # Salva os dados no banco de dados
-    processed_image = ProcessedImage.objects.create(
-        stencil=stencil,
-        image_path=final_image_path,
-        scratch_count=scratch_count
-    )
-
-    # Serializa os dados e retorna a resposta
-    serializer = ProcessedImageSerializer(processed_image)
-    return Response(
-        {
-            "message": "Imagem processada com sucesso",
-            **serializer.data
-        },
-        status=status.HTTP_200_OK
-    )
 
 @api_view(['POST'])
 def takephotoraspy(request, stencil_id_request):
@@ -234,7 +242,7 @@ def takephotoraspy(request, stencil_id_request):
 
     #CHAMA A FUNÇÃO DO TENCIONService
     opencv_command = TensionService(stencil_id=stencil_id)
-    final_image_path_p1, final_image_path_p2, final_image_path_p3, final_image_path_p4 = opencv_command.main()
+    final_image_path_p1, final_image_path_p2, final_image_path_p3, final_image_path_p4, textoP1, textoP2, textoP3,textoP4 = opencv_command.main()
 
 
 
@@ -250,7 +258,11 @@ def takephotoraspy(request, stencil_id_request):
             "p1":final_image_path_p1,
             "p2":final_image_path_p2,
             "p3":final_image_path_p3,
-            "p4":final_image_path_p4
+            "p4":final_image_path_p4,
+            "textoP1":textoP1,
+            "textoP2":textoP2,
+            "textoP3":textoP3,
+            "textoP4":textoP4,
             
         },
         status=status.HTTP_200_OK

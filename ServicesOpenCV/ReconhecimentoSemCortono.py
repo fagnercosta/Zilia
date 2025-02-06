@@ -1,17 +1,28 @@
 import cv2
 import pytesseract
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+pytesseract.pytesseract.tesseract_cmd = r'C:\Tesseract-OCR\tesseract.exe'
 
 # Carregar a imagem binarizada
-image_path = 'BinarizadaMediaAberta.jpg'
+image_path = 'Teste.png'
 img = cv2.imread(image_path)
 
-# Inverter as cores (se necessário, dependendo do binarizado: fundo preto e números brancos)
-# Neste caso, parece que o fundo é preto, então não é necessário inverter.
-inverted = img
 
-custom_config = r'--oem 3 --psm 6 outputbase digits'
-text = pytesseract.image_to_string(img, config=custom_config)
+
+nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (7,7))
+
+
+
+th2Open = cv2.dilate(img,nucleo)
+cv2.imwrite('Teste2.png', th2Open)
+
+img2 = cv2.imread("Teste2.png")
+
+
+#custom_config = r'--oem 3 --psm 6 outputbase numers'
+#text = pytesseract.image_to_string(img2, config=custom_config)
+custom_config = r'--oem 3 --psm 6 -c tessedit_char_whitelist=0123456789'
+text = pytesseract.image_to_string(img2, config=custom_config)
+
 
     # Exibir a região detectada e os números reconhecidos
 

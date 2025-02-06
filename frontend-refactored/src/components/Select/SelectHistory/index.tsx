@@ -66,7 +66,7 @@ export function SelectHistory({ stencils, setSelectedStencil, selectedStencil }:
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
                 <Button variant="outline" className="w-[30%] justify-start h-[50px]">
-                    {selectedStencil ? <>{selectedStencil.stencil_id}</> : <>Selecione o stencil</>}
+                    {selectedStencil ? <>{selectedStencil.stencil_part_nbr}</> : <>Selecione o stencil</>}
                 </Button>
             </PopoverTrigger>
             <PopoverContent className="w-[300px] p-0" align="start">
@@ -78,15 +78,15 @@ export function SelectHistory({ stencils, setSelectedStencil, selectedStencil }:
                             {stencils.map((status) => (
                                 <CommandItem
                                     key={status.stencil_id}
-                                    value={status.stencil_id.toString()}
+                                    value={status.stencil_part_nbr.toString()}
                                     onSelect={(value: any) => {
                                         setSelectedStencil(
-                                            stencils.find((priority) => priority.stencil_id.toString() === value) || null
+                                            stencils.find((priority) => priority.stencil_part_nbr.toString() === value) || null
                                         )
                                         setOpen(false)
                                     }}
                                 >
-                                    {status.stencil_id}
+                                    {status.stencil_part_nbr}
                                 </CommandItem>
                             ))}
                         </CommandGroup>

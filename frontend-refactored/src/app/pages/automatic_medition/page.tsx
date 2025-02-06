@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import cookie from "cookie"
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AlarmClock, Clock10, SquareActivity } from "lucide-react";
+import { AlarmClock, Clock10, Search, SquareActivity } from "lucide-react";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import axios from "axios";
 import { BASE_URL } from "@/types/api";
@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { CircularProgress } from "@mui/material";
 import InovaBottomImage from "@/components/InovaBottomImage";
 import Stopwatch from "@/components/StopWatch";
+import { SelectHistory } from "@/components/Select/SelectHistory";
 
 interface RequestRobot {
     id: number
@@ -21,6 +22,7 @@ interface RequestRobot {
     scratch_count: number
     stencil: number
     timestamp: string
+
 }
 
 export default function AutomaticMedition() {
@@ -31,6 +33,13 @@ export default function AutomaticMedition() {
     const [resposta, setResposta] = useState<RequestRobot>()
     const [loadingRobot, setLoadingRobot] = useState(false)
     const [time, setTime] = useState(18000)
+
+    const [message, setMessage] = useState("Erro na comunicação com o robo")
+    const [erroRobot, setErroRobot] = useState(false)
+
+    const [selectedStencil, setSelectedStencil] = useState<Stencil | null>(
+        null
+    )
 
 
     const getStencils = async () => {
@@ -50,18 +59,23 @@ export default function AutomaticMedition() {
 
 
     const takephotorequest = async () => {
+        setErroRobot(false)
         setLoadingRobot(true)
         console.log(stencilSelected)
         try {
-            const response = await axios.post(`http://127.0.0.1:8000/api/takephoto/${stencilSelected}/`)
+            const response = await axios.post(`http://127.0.0.1:8000/api/takephoto/${selectedStencil?.stencil_id}/`)
             if (response) {
                 setLoadingRobot(false)
                 console.log(response.data)
                 setResposta(response.data)
-                
+                setStencils(response.data)
+
             }
-        } catch (error) {
-            console.error(error)
+        } catch (error: any) {
+
+
+            setLoadingRobot(false)
+            setErroRobot(true)
         }
     }
 
@@ -87,7 +101,7 @@ export default function AutomaticMedition() {
         <main className="lg:ml-[23rem] p-4">
             <Sidebar logouFunction={handleLogout} />
             <section className="w-full h-screen flex items-center justify-center relative">
-               
+
                 <Card className="w-[70%] bg-slate-50">
                     <CardHeader>
                         <div className="flex items-center  justify-between w-full">
@@ -96,28 +110,18 @@ export default function AutomaticMedition() {
                         </div>
                     </CardHeader>
                     <CardContent>
+
+
+
+
+
                         <header className="w-full flex items-center justify-between">
-                            <Select onValueChange={(value) => setStencilSelected(parseInt(value))}>
-                                <SelectTrigger className="w-[70%] h-[50px] bg-white text-xl">
-                                    <SelectValue placeholder="Selecione um Stencil..." />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectGroup>
-                                        <SelectLabel className="text-xl">Stencils</SelectLabel>
-                                        {stencils.map((stencil) => {
-                                            return (
-                                                <SelectItem
-                                                    value={stencil.stencil_id.toString()}
-                                                    className="text-xl"
-                                                    key={stencil.stencil_id}
-                                                >
-                                                    {stencil.stencil_id}
-                                                </SelectItem>
-                                            )
-                                        })}
-                                    </SelectGroup>
-                                </SelectContent>
-                            </Select>
+
+                            <SelectHistory
+                                stencils={stencils}
+                                selectedStencil={selectedStencil}
+                                setSelectedStencil={setSelectedStencil}
+                            />
                             <Button
                                 className="w-[25%] bg-blue-400 h-[50px] text-xl font-bold" onClick={takephotorequest}
                             >
@@ -128,17 +132,18 @@ export default function AutomaticMedition() {
                         {
                             loadingRobot
                                 ?
-                                <div className="flex w-full items-center justify-center">
+                                <div className="flex w-full items-start justify-center">
                                     <div className="flex w-full items-center justify-between">
-                                        <span className="text-2xl font-bold">Tempo de espera estimado:</span>
+                                        <span className="text-2xl font-bold text-blue-300" >Procesamendo. Tempo  estimado...</span>
+
                                         <div className="
                                             flex 
                                             items-center 
                                             justify-center 
                                             gap-3 
                                             border-[2px]
-                                            p-2
-                                            border-blue-400
+                                            p-1
+                                            border-white
                                         ">
                                             <Stopwatch
                                                 isRunning={loadingRobot}
@@ -150,12 +155,13 @@ export default function AutomaticMedition() {
                                                     }
                                                 }}
                                             />
-                                            <AlarmClock size={40} className="text-blue-400" />
+                                            <AlarmClock size={40} className="text-blue-300" />
                                         </div>
                                     </div>
                                 </div>
                                 :
                                 resposta ?
+
                                     <div className="w-full flex relative">
                                         <img src={`http://localhost:8000/${resposta.image_path}`} alt="imagem" className="w-full object-cover" />
                                         <label className="absolute top-0 left-0 p-2 text-green-500 text-4xl font-bold">
@@ -163,6 +169,16 @@ export default function AutomaticMedition() {
                                         </label>
                                     </div>
                                     : <></>
+
+
+                        }
+
+                        {
+                            erroRobot ?
+                                <div>
+                                    <span className="text-2xl font-bold text-red-500" >Erro na comunicação com o robo...</span>
+                                </div>
+                                : <></>
                         }
 
                     </CardContent>
