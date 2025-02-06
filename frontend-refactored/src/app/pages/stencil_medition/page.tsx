@@ -20,7 +20,6 @@ interface FormData {
     p3: null;
     p4: null;
     measurement_datetime: null;
-    description: string;
     is_registration_measurement: boolean;
     is_approved_status: boolean;
     cicles: number;
@@ -83,7 +82,6 @@ export default function StencilMedition() {
         p3: null,
         p4: null,
         measurement_datetime: null,
-        description: "",
         is_registration_measurement: false,
         is_approved_status: false,
         cicles: 0,
@@ -287,22 +285,8 @@ export default function StencilMedition() {
                                     />
                                 </Grid>
 
-                                <Grid item xs={12} sm={12} md={6} flexShrink={'initial'}>
-                                    <TextField
-                                        fullWidth
-                                        size="small"
-                                        type="text"
-                                        required={true}
-                                        label="Descrição"
-
-                                        name="description"
-                                        value={formData.description}
-                                        onChange={handleChange}
-
-
-                                    />
-                                </Grid>
-                                <Grid item xs={12} sm={12} md={12}>
+                                
+                                <Grid item xs={12} sm={12} md={6}>
                                     <FormControlLabel
                                         control={
                                             <Checkbox
@@ -315,7 +299,7 @@ export default function StencilMedition() {
                                     />
                                 </Grid>
 
-                                <Grid item xs={12}>
+                                <Grid item xs={12} style={{marginTop:'20px'}}>
                                     <Button type="submit" disabled ={stencilList?.length === 0}variant="contained" color="primary">Cadastrar</Button>
                                 </Grid>
                                

@@ -145,10 +145,11 @@ export default function ListStencilMedition() {
                         <Search className="w-5 h-5" />
                     </Button>
                     <Link href={"/pages/stencil_medition"} className="h-[50px] ml-auto bg-blue-400 flex gap-2 rounded-[6px] justify-end items-center px-2 text-white font-bold hover:opacity-60">
-                        REALIZAR UMA NOVA MEDIÇÃO
+                        Realizar Medição Manual
                         <CirclePlus className="w-5 h-5" />
                     </Link>
 
+                   
                 </section>
                 <section className="w-full p-5 items-center justify-center">
                     <TableContainer component={Paper}>

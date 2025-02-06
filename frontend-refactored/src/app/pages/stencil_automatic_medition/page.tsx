@@ -20,7 +20,7 @@ interface FormData {
     p3: null;
     p4: null;
     measurement_datetime: Date | null;
-    description: string;
+    
     is_registration_measurement: boolean;
     is_approved_status: boolean;
     cicles: number;
@@ -52,6 +52,8 @@ export default function StencilAutomaticMedition() {
     const [alert, setAlert] = useState<AlertColor>("success")
     const [message, setMessage] = useState('')
     const navigate = useRouter()
+
+    const [disabledInput, setDisabledInput] = useState(false)
 
     const [loadingPhotos, setLoadingPhotos] = useState(false)
 
@@ -104,13 +106,18 @@ export default function StencilAutomaticMedition() {
         }));
     };
 
+    const handleDisableInput = ()=>{
+        if (formData.p1 !== null && formData.p2 !== null && formData.p3 !== null && formData.p4 !== null) {
+            setDisabledInput(true)                    
+    }}
+
     const [formData, setFormData] = useState<FormData>({
         p1: null,
         p2: null,
         p3: null,
         p4: null,
         measurement_datetime: new Date(),
-        description: "",
+        
         is_registration_measurement: false,
         is_approved_status: false,
         cicles: 0,
@@ -120,6 +127,7 @@ export default function StencilAutomaticMedition() {
 
     const takePhotoRaspRequest = async (stencilId: number) => {
         setResposta(undefined);
+        setDisabledInput(false)    
         
         console.log("Stencil selecionado:", stencilSelected);
 
@@ -148,6 +156,8 @@ export default function StencilAutomaticMedition() {
     
     
                 }
+
+                handleDisableInput();
             } catch (error) {
                 console.error(error);
             }
@@ -247,6 +257,7 @@ export default function StencilAutomaticMedition() {
                                         name="p1"
                                         type="number"
                                         size="small"
+                                        disabled={disabledInput}
                                         required={true}
                                         value={formData.p1}
                                         onChange={handleChange}
@@ -262,6 +273,7 @@ export default function StencilAutomaticMedition() {
                                         required={true}
                                         label="P2"
                                         name="p2"
+                                        disabled={disabledInput}
                                         size="small"
                                         value={formData.p2}
                                         onChange={handleChange}
@@ -276,6 +288,7 @@ export default function StencilAutomaticMedition() {
                                         type="number"
                                         label="P3"
                                         required={true}
+                                        disabled={disabledInput}
                                         name="p3"
                                         size="small"
                                         value={formData.p3}
@@ -292,6 +305,7 @@ export default function StencilAutomaticMedition() {
                                         required={true}
                                         label="P4"
                                         name="p4"
+                                        disabled={disabledInput}
                                         size="small"
                                         value={formData.p4}
                                         onChange={handleChange}
@@ -361,22 +375,8 @@ export default function StencilAutomaticMedition() {
 
                                 </Grid>
 
-                                <Grid item xs={12} sm={12} md={6} flexShrink={'initial'}>
-                                    <TextField
-                                        fullWidth
-                                        size="small"
-                                        type="text"
-                                        required={true}
-                                        label="Descrição"
-
-                                        name="description"
-                                        value={formData.description}
-                                        onChange={handleChange}
-
-
-                                    />
-                                </Grid>
-                                <Grid item xs={12} sm={12} md={12}>
+                                
+                                <Grid item xs={12} sm={12} md={6}>
                                     <FormControlLabel
                                         control={
                                             <Checkbox
@@ -389,7 +389,7 @@ export default function StencilAutomaticMedition() {
                                     />
                                 </Grid>
 
-                                <Grid item xs={12} sm={12} md={12} style={{ display: "flex", flexDirection: 'row', justifyContent: 'space-between' }}>
+                                <Grid item xs={12} sm={12} md={12} style={{ display: "flex", flexDirection: 'row', justifyContent: 'space-between', marginTop: '20px' }}>
                                     <Button type="submit" disabled={stencilList?.length === 0 || !resposta} variant="contained" color="primary">Cadastrar</Button>
                                     {!loadingRobot && (
                                         <a style={{ cursor: 'pointer', padding: '10px', backgroundColor: 'rgb(96 165 250)', color: 'white', borderRadius: '5px' }} onClick={() => takePhotoRaspRequest(stencilSelected)}> Iniciar coleta de dados</a>
@@ -426,18 +426,18 @@ export default function StencilAutomaticMedition() {
 
                 {
                     resposta && (
-                        <Card className="mt-4 p rounded-none w-[90%] min-h-600 bg-slate-50" style={{minHeight:'500px'}}>
+                        <Card className="mt-4 p rounded-none w-[90%]  bg-slate-50" style={{minHeight:'400px'}}>
                             <CardHeader className="">
                                 <CardTitle className="text-2xl font-bold align-baseline">Imagens coletadas</CardTitle>
                             </CardHeader>
-                            <Grid container spacing={2} className="p-4">
+                            <Grid container spacing={2} className="p-4 " style={{minHeight:'100%'}}>
                                 <Grid item xs={12} sm={12} md={3}>
                                     <Card className="p rounded-none w-[90%] bg-slate-50">
                                         <CardHeader>
                                             <CardTitle>Ponto 1</CardTitle>
                                         </CardHeader>
                                         <CardContent>
-                                            <img src={`http://localhost:8000/${resposta.p1}?timestamp=${new Date().getTime()}`} width="100%" height="100%" />
+                                            <img src={`http://localhost:8000/${resposta.p1}?timestamp=${new Date().getTime()}`} width="100%" height="100%"  />
                                         </CardContent>
                                     </Card>
                                 </Grid>
