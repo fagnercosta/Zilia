@@ -6,7 +6,7 @@ import { Form } from "@/components/ui/form";
 import { BASE_URL } from "@/types/api";
 import { Stencil } from "@/types/models";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Alert, AlertColor, Button, Checkbox, Divider,LinearProgress, CircularProgress, Typography, FormControl, FormControlLabel, Grid, IconButton, InputLabel, MenuItem, Select, SelectChangeEvent, Snackbar, TextField } from "@mui/material";
+import { Alert, AlertColor, Button, Checkbox, Divider, LinearProgress, CircularProgress, Typography, FormControl, FormControlLabel, Grid, IconButton, InputLabel, MenuItem, Select, SelectChangeEvent, Snackbar, TextField } from "@mui/material";
 import axios from "axios";
 import { CircleX, Link } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -20,7 +20,7 @@ interface FormData {
     p3: null;
     p4: null;
     measurement_datetime: Date | null;
-    
+
     is_registration_measurement: boolean;
     is_approved_status: boolean;
     cicles: number;
@@ -48,6 +48,8 @@ export default function StencilAutomaticMedition() {
     const [stencilList, setStencilList] = useState<Stencil[] | undefined>([]);
     const [stencilSelected, setStencilSelected] = useState(0)
     const [resposta, setResposta] = useState<RequestRaspy>()
+
+    const [salvando, setSalvando] = useState(false)
     const [openSnackBar, setOpenSnackBar] = useState(false)
     const [alert, setAlert] = useState<AlertColor>("success")
     const [message, setMessage] = useState('')
@@ -106,10 +108,11 @@ export default function StencilAutomaticMedition() {
         }));
     };
 
-    const handleDisableInput = ()=>{
+    const handleDisableInput = () => {
         if (formData.p1 !== null && formData.p2 !== null && formData.p3 !== null && formData.p4 !== null) {
-            setDisabledInput(true)                    
-    }}
+            setDisabledInput(true)
+        }
+    }
 
     const [formData, setFormData] = useState<FormData>({
         p1: null,
@@ -117,7 +120,7 @@ export default function StencilAutomaticMedition() {
         p3: null,
         p4: null,
         measurement_datetime: new Date(),
-        
+
         is_registration_measurement: false,
         is_approved_status: false,
         cicles: 0,
@@ -127,8 +130,8 @@ export default function StencilAutomaticMedition() {
 
     const takePhotoRaspRequest = async (stencilId: number) => {
         setResposta(undefined);
-        setDisabledInput(false)    
-        
+        setDisabledInput(false)
+
         console.log("Stencil selecionado:", stencilSelected);
 
         if (stencilSelected === 0) {
@@ -136,7 +139,7 @@ export default function StencilAutomaticMedition() {
             setAlert("error");
             setOpenSnackBar(true);
 
-        }else{
+        } else {
             setLoadingRobot(true);
             try {
                 const response = await axios.post(`http://127.0.0.1:8000/api/takephotraspy/${stencilSelected}/`);
@@ -145,16 +148,16 @@ export default function StencilAutomaticMedition() {
                     console.log(response.data);
                     setResposta(response.data);
                     console.log("Resposta:", resposta);
-    
+
                     setFormData((prevFormData) => ({
                         ...prevFormData,
-                        p1: response.data.textoP1,  
+                        p1: response.data.textoP1,
                         p2: response.data.textoP2,
                         p3: response.data.textoP3,
                         p4: response.data.textoP4 // Assume que a resposta tem um campo `p1`
                     }));
-    
-    
+
+
                 }
 
                 handleDisableInput();
@@ -163,7 +166,7 @@ export default function StencilAutomaticMedition() {
             }
         }
 
-        
+
     };
 
 
@@ -219,10 +222,18 @@ export default function StencilAutomaticMedition() {
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         console.log(formData)
 
+        setSalvando(true)
+        
+
         event.preventDefault();
         try {
             const response = await axios.post(`${BASE_URL}api/stencilTensionValues/`, formData);
             if (response) {
+                setTimeout(() => {
+                    setSalvando(false)
+                },3000)
+                
+                
                 setMessage("Cadastro realizado com sucesso")
                 setAlert("success")
                 setOpenSnackBar(true)
@@ -375,7 +386,7 @@ export default function StencilAutomaticMedition() {
 
                                 </Grid>
 
-                                
+
                                 <Grid item xs={12} sm={12} md={6}>
                                     <FormControlLabel
                                         control={
@@ -390,13 +401,24 @@ export default function StencilAutomaticMedition() {
                                 </Grid>
 
                                 <Grid item xs={12} sm={12} md={12} style={{ display: "flex", flexDirection: 'row', justifyContent: 'space-between', marginTop: '20px' }}>
-                                    <Button type="submit" disabled={stencilList?.length === 0 || !resposta} variant="contained" color="primary">Cadastrar</Button>
+                                    {!salvando && (
+                                        <Button type="submit" disabled={stencilList?.length === 0 || !resposta} variant="contained" color="primary">Cadastrar</Button>
+                                    )}
+
+                                    {salvando && (
+                                        <div>
+                                            <CircularProgress color="primary" style={{ width: '4%', paddingRight: '2px' }} />
+                                            <Typography variant="h6" marginBottom='10px' color="textSecondary" align="center" gutterBottom>
+                                                Salvando dados....
+                                            </Typography>
+                                        </div>
+                                    )}
                                     {!loadingRobot && (
                                         <a style={{ cursor: 'pointer', padding: '10px', backgroundColor: 'rgb(96 165 250)', color: 'white', borderRadius: '5px' }} onClick={() => takePhotoRaspRequest(stencilSelected)}> Iniciar coleta de dados</a>
                                     )}
 
                                     {loadingRobot && (
-                                        <Typography variant="body2" style={{ color: '#FFF', marginRight: '20px', fontSize: '16px', backgroundColor: 'rgb(196, 125, 67)', padding: '10px',paddingRight: '20px',     borderRadius: '5px' }} fontWeight={700} align="center" gutterBottom>Aguarde o processamento...</Typography>
+                                        <Typography variant="body2" style={{ color: '#FFF', marginRight: '20px', fontSize: '16px', backgroundColor: 'rgb(196, 125, 67)', padding: '10px', paddingRight: '20px', borderRadius: '5px' }} fontWeight={700} align="center" gutterBottom>Aguarde o processamento...</Typography>
                                     )}
 
                                 </Grid>
@@ -409,35 +431,35 @@ export default function StencilAutomaticMedition() {
                 {loadingRobot && (
 
                     <Card className="mt-4 p p-6  w-[90%] bg-slate-50 rounded">
-                        <div style={{width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
-                            
+                        <div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
+
                             <CircularProgress color="primary" style={{ width: '4%', paddingRight: '2px' }} />
-                            <Typography variant="h6" marginBottom='10px' color="textSecondary"  align="center" gutterBottom>
+                            <Typography variant="h6" marginBottom='10px' color="textSecondary" align="center" gutterBottom>
                                 Coletando dados...
                             </Typography>
-                            
-                            </div>
+
+                        </div>
                     </Card>
-                    
-                       
-                                    
-                    )
+
+
+
+                )
                 }
 
                 {
                     resposta && (
-                        <Card className="mt-4 p rounded-none w-[90%]  bg-slate-50" style={{minHeight:'400px'}}>
+                        <Card className="mt-4 p rounded-none w-[90%]  bg-slate-50" style={{ minHeight: '400px' }}>
                             <CardHeader className="">
                                 <CardTitle className="text-2xl font-bold align-baseline">Imagens coletadas</CardTitle>
                             </CardHeader>
-                            <Grid container spacing={2} className="p-4 " style={{minHeight:'100%'}}>
+                            <Grid container spacing={2} className="p-4 " style={{ minHeight: '100%' }}>
                                 <Grid item xs={12} sm={12} md={3}>
                                     <Card className="p rounded-none w-[90%] bg-slate-50">
                                         <CardHeader>
                                             <CardTitle>Ponto 1</CardTitle>
                                         </CardHeader>
                                         <CardContent>
-                                            <img src={`http://localhost:8000/${resposta.p1}?timestamp=${new Date().getTime()}`} width="100%" height="100%"  />
+                                            <img src={`http://localhost:8000/${resposta.p1}?timestamp=${new Date().getTime()}`} width="100%" height="100%" />
                                         </CardContent>
                                     </Card>
                                 </Grid>
