@@ -123,7 +123,9 @@ export default function AutomaticMedition() {
                                 setSelectedStencil={setSelectedStencil}
                             />
                             <Button
-                                className="w-[25%] bg-blue-400 h-[50px] text-xl font-bold" onClick={takephotorequest}
+                                className="w-[25%] bg-blue-400 h-[50px] text-xl font-bold" 
+                                onClick={takephotorequest}
+                                disabled={loadingRobot}
                             >
                                 Iniciar Medição
                             </Button>
@@ -176,7 +178,7 @@ export default function AutomaticMedition() {
                         {
                             erroRobot ?
                                 <div>
-                                    <span className="text-2xl font-bold text-red-500" >Erro na comunicação com o robo...</span>
+                                    <span className="text-1xl font-bold text-red-400" >Erro na comunicação com o CLP. Verifique se o mesmo está em funcionamento</span>
                                 </div>
                                 : <></>
                         }

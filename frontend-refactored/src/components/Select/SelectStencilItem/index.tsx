@@ -56,9 +56,10 @@ interface Props {
     selectedStencil: Stencil | null
     setSelectedStencil: any
     
+    
 }
 
-export function SelectHistory({ stencils, setSelectedStencil, selectedStencil }: Props) {
+export function SelectStencilItem({ stencils, setSelectedStencil, selectedStencil}: Props) {
     const [open, setOpen] = React.useState(false)
     //   const isDesktop = useMediaQuery("(min-width: 768px)")
     
@@ -66,8 +67,9 @@ export function SelectHistory({ stencils, setSelectedStencil, selectedStencil }:
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
-                <Button variant="outline" className="w-[30%] justify-start h-[50px]">
+                <Button variant="outline" className="w-[100%] justify-start h-[40px] mb-5">
                     {selectedStencil ? <>{selectedStencil.stencil_part_nbr}</> : <>Selecione o stencil</>}
+                    
                 </Button>
             </PopoverTrigger>
             <PopoverContent className="w-[300px] p-0" align="start">
@@ -84,6 +86,8 @@ export function SelectHistory({ stencils, setSelectedStencil, selectedStencil }:
                                         setSelectedStencil(
                                             stencils.find((priority) => priority.stencil_part_nbr.toString().toLowerCase().includes(String(value).toLowerCase())) || null
                                         )
+
+                                       
                                         setOpen(false)
                                     }}
                                 >

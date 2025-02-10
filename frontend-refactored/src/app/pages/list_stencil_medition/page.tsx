@@ -126,14 +126,26 @@ export default function ListStencilMedition() {
                 </header>
                 <section className="w-full h-auto p-5 flex items-center">
                     <SelectHistory stencils={stencils} selectedStencil={selectedStencil} setSelectedStencil={setSelectedStencil} />
-                    <Button className="h-[50px] ml-4 bg-blue-400 flex gap-2 font-bold hover:opacity-60" onClick={() => handleStencilValuePoints(selectedStencil?.stencil_id)}>
-                        BUSCAR
+                    <Button
+                        className="h-[50px] ml-4 bg-blue-400 flex gap-2 font-bold hover:opacity-60"
+                        onClick={() => handleStencilValuePoints(selectedStencil?.stencil_id)}
+                        disabled={selectedStencil === null ? true : false}
+
+                    >
+                        Buscar Medições do Stencil
                         <Search className="w-5 h-5" />
                     </Button>
-                    <Link href={"/pages/stencil_medition"} className="h-[50px] ml-auto bg-blue-400 flex gap-2 rounded-[6px] px-2 text-white font-bold hover:opacity-60">
-                        Realizar Medição Manual
-                        <CirclePlus className="w-5 h-5" />
-                    </Link>
+                    <section className="ml-auto flex gap-2">
+                        <Link href={"/pages/stencil_medition"} className="h-[50px]  bg-blue-400  gap-2 rounded-[6px] px-2 text-white font-bold hover:opacity-60 flex items-center">
+                            Realizar Medição Manual
+                            <CirclePlus className="w-5 h-5" />
+                        </Link>
+
+                        <Link href={"/pages/stencil_automatic_medition"} className="h-[50px]  bg-yellow-400  gap-2 rounded-[6px] px-2 text-white font-bold hover:opacity-60 flex items-center">
+                            Realizar Medição Automática
+                            <CirclePlus className="w-5 h-5" />
+                        </Link>
+                    </section>
                 </section>
                 <section className="w-full p-5">
                     <TableContainer component={Paper}>
@@ -141,7 +153,7 @@ export default function ListStencilMedition() {
                             <TableHead>
                                 <TableRow>
                                     {columns.map((column, index) => (
-                                        <TableCell key={index} style={{ backgroundColor: "rgb(96, 165, 250)", color: "white", fontWeight: "bold" }}>
+                                        <TableCell key={index} style={{ fontWeight: "bold" }}>
                                             {column.label}
                                         </TableCell>
                                     ))}

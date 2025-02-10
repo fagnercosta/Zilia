@@ -2,7 +2,6 @@
 
 import InovaBottomImage from "@/components/InovaBottomImage";
 import { SelectHistory } from "@/components/Select/SelectHistory";
-import { SelectStencilItem } from "@/components/Select/SelectStencilItem";
 import Sidebar from "@/components/Sidebar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
@@ -60,7 +59,7 @@ export default function StencilAutomaticMedition() {
 
     function handleInputChange(text: String) {
         setInputValue(text);
-        console.log("Input.." + text)
+        console.log("Input.."+text)
     }
 
     const [formData, setFormData] = useState<FormData>({
@@ -72,7 +71,7 @@ export default function StencilAutomaticMedition() {
         is_registration_measurement: false,
         is_approved_status: false,
         cicles: 0,
-        stencil_id: selectedStencil ? selectedStencil.stencil_id : 0,
+        stencil_id: stencilSelected,
     });
 
     const getStencils = async () => {
@@ -117,13 +116,6 @@ export default function StencilAutomaticMedition() {
         }));
     };
 
-    const handleFormStencilId = () => {
-        setFormData(prev => ({
-            ...prev,
-            stencil_id: selectedStencil ? selectedStencil.stencil_id : 0,
-        }));
-    };
-
     const handleDisableInput = () => {
         if (formData.p1 !== null && formData.p2 !== null && formData.p3 !== null && formData.p4 !== null) {
             setDisabledInput(true);
@@ -134,15 +126,14 @@ export default function StencilAutomaticMedition() {
         setResposta(undefined);
         setDisabledInput(false);
 
-        if (selectedStencil?.stencil_id === 0 || selectedStencil === null) {
+        if (stencilSelected === 0) {
             setMessage("Selecione um stencil para realizar a medição.");
             setAlert("error");
             setOpenSnackBar(true);
         } else {
             setLoadingRobot(true);
-            handleFormStencilId();
             try {
-                const response = await axios.post(`http://127.0.0.1:8000/api/takephotraspy/${selectedStencil?.stencil_id}/`);
+                const response = await axios.post(`http://127.0.0.1:8000/api/takephotraspy/${stencilSelected}/`);
                 if (response) {
                     setLoadingRobot(false);
                     setResposta(response.data);
@@ -219,46 +210,6 @@ export default function StencilAutomaticMedition() {
                     </CardHeader>
                     <CardContent>
                         <form onSubmit={handleSubmit}>
-                            <Grid item xs={12} sm={12} md={12}>
-                                <FormControl fullWidth>
-
-                                    <SelectStencilItem
-                                        stencils={stencils}
-                                        selectedStencil={selectedStencil}
-                                        setSelectedStencil={setSelectedStencil}
-                                    />
-                                    {/**<Autocomplete
-                                            id="stencil-autocomplete"
-                                            options={stencils}
-                                            inputValue={String(inputValue)} // Controla o input manualmente
-                                            onInputChange={(event, text) => handleInputChange(text) } // Atualiza o inputValue sempre que o usuário digitar
-                                            
-                                            getOptionLabel={(option) => String(option.stencil_part_nbr)}
-                                            value={selectedStencil}
-                                            onChange={handleChangeAutocomplete}
-                                            
-                                            filterOptions={(options, state) => {
-                                                if (state.inputValue.length === 0){
-                                                    console.log("AQUI 01");
-                                                    return options;
-                                                }else
-                                                    console.log("AQUI 02");
-                                                    //setStencils(options.filter((option) => String(option.stencil_part_nbr).toLowerCase().startsWith(state.inputValue.toLowerCase())));
-                                                    return options.filter((option) => String(option.stencil_part_nbr).toLowerCase().startsWith(state.inputValue.toLowerCase()));
-                                            }}
-                                            renderInput={(params) => (
-                                                <TextField
-                                                    {...params}
-                                                    label="Stencils"
-                                                    size="small"
-                                                    required
-                                                />
-                                            )}
-                                        /> **/}
-
-                                </FormControl>
-                            </Grid>
-
                             <Grid container spacing={2}>
                                 {/* Campos P1, P2, P3, P4 */}
                                 <Grid item xs={12} sm={12} md={3}>
@@ -322,6 +273,39 @@ export default function StencilAutomaticMedition() {
                                 </Grid>
 
                                 {/* Autocomplete para Stencils */}
+                                <Grid item xs={12} sm={12} md={6}>
+                                    <FormControl fullWidth>
+                                        <Autocomplete
+                                            id="stencil-autocomplete"
+                                            options={stencils}
+                                            inputValue={String(inputValue)} // Controla o input manualmente
+                                            onInputChange={(event, text) => handleInputChange(text) } // Atualiza o inputValue sempre que o usuário digitar
+                                            
+                                            getOptionLabel={(option) => String(option.stencil_part_nbr)}
+                                            value={selectedStencil}
+                                            onChange={handleChangeAutocomplete}
+                                            
+                                            filterOptions={(options, state) => {
+                                                if (state.inputValue.length === 0){
+                                                    console.log("AQUI 01");
+                                                    return options;
+                                                }else
+                                                    console.log("AQUI 02");
+                                                    //setStencils(options.filter((option) => String(option.stencil_part_nbr).toLowerCase().startsWith(state.inputValue.toLowerCase())));
+                                                    return options.filter((option) => String(option.stencil_part_nbr).toLowerCase().startsWith(state.inputValue.toLowerCase()));
+                                            }}
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    label="Stencils"
+                                                    size="small"
+                                                    required
+                                                />
+                                            )}
+                                        />
+
+                                    </FormControl>
+                                </Grid>
 
                                 {/* Outros campos do formulário */}
                                 <Grid item xs={12} sm={12} md={6}>

@@ -3,7 +3,7 @@ import Sidebar from "@/components/Sidebar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import { BASE_URL } from "@/types/api";
-import { Stencil, UsersTipe } from "@/types/models";
+//import { Stencil, UsersTipe } from "@/types/models";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Alert, AlertColor, Button, Checkbox, Divider, FormControl, FormControlLabel, Grid, IconButton, InputLabel, MenuItem, Select, SelectChangeEvent, Snackbar, TextField } from "@mui/material";
 import axios from "axios";
@@ -26,7 +26,7 @@ interface FormData {
 
  
 
-export default function CadastroUser(user:UsersTipe) {
+export default function CadastroUser() {
     
 
     

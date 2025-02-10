@@ -26,6 +26,7 @@ import { PDFDownloadLink, renderToStream } from '@react-pdf/renderer';
 import StencilReport from "@/components/Report/ReportDashboard";
 import InovaImage from "../assets/inova.png"
 import InovaBottomImage from "@/components/InovaBottomImage";
+import { fstat } from "fs";
 
 
 
@@ -117,6 +118,9 @@ export default function Home() {
       path: '/',
     });
 
+    localStorage.removeItem("token");
+    localStorage.removeItem("tokenTimestamp");
+
     // Redireciona para a página de login
     router.push('/pages/login');
   }, [router]);
@@ -150,11 +154,11 @@ export default function Home() {
       setAlert("warning")
     } else {
       try {
-        const response = await axios.get(`${BASE_URL}/api/stencil/?stencil_id=${stencilDigited}`)
+        const response = await axios.get(`${BASE_URL}/api/stencil/?stencil_id=${stencilDigited}&timestamp=${new Date().getTime()}`)
 
         if (response.status === 200) {
           setStencil(response.data.results[0])
-          const responseValues = await axios.get(`${BASE_URL}/api/stencilTensionValues/?stencil_identification=${response.data.results[0].stencil_id}`)
+          const responseValues = await axios.get(`${BASE_URL}/api/stencilTensionValues/?stencil_identification=${response.data.results[0].stencil_id}&timestamp=${new Date().getTime()}`)
 
           const stencilValues: StencilTensionValues[] = responseValues.data.results
 
@@ -173,13 +177,15 @@ export default function Home() {
             setOpenSnackBar(true)
             setAlert("success")
 
+            
+
           } else {
             setMessageSnack('Não foram encontrados valores para o Stencil')
             setAlert("warning")
             setOpenSnackBar(true)
           }
 
-          const responseLastMedition = await axios.get(`${BASE_URL}api/processedimages/?stencil_id=${response.data.results[0].stencil_id}`)
+          const responseLastMedition = await axios.get(`${BASE_URL}api/processedimages/?stencil_id=${response.data.results[0].stencil_id}&timestamp=${new Date().getTime()}`)
           if (responseLastMedition) {
             setLastRobotMedition(responseLastMedition.data.results[responseLastMedition.data.results.length - 1])
           } else {
@@ -224,7 +230,7 @@ export default function Home() {
           const response = await axios.get(`${BASE_URL}/api/stencil/?stencil_id=${stencilDigited}`)
           if (response.status === 200) {
             setStencil(response.data.results[0])
-            const responseValues = await axios.get(`${BASE_URL}/api/stencilTensionValues/?stencil_identification=${response.data.results[0].stencil_id}`)
+            const responseValues = await axios.get(`${BASE_URL}/api/stencilTensionValues/?stencil_identification=${response.data.results[0].stencil_id}?timestamp=${new Date().getTime()}`)
 
             const stencilValues: StencilTensionValues[] = responseValues.data.results
 
@@ -318,6 +324,7 @@ export default function Home() {
                     onChange={(e) => setStencilDigited(e.target.value)}
                     onKeyDown={handleKeyDown}
                     value={stencilDigited}
+                    
                   />
                   <HoverCard>
                     <HoverCardTrigger asChild>
@@ -333,7 +340,7 @@ export default function Home() {
                     </HoverCardContent>
                   </HoverCard>
                 </div>
-                <Button className="w-full bg-blue-400" onClick={handleStencil}>Pesquisar</Button>
+                <Button className="w-full bg-blue-400" onClick={handleStencil} disabled={stencilDigited.length === 0 ? true : false}>Pesquisar</Button>
               </div>
 
             </CardContent>
@@ -471,7 +478,7 @@ export default function Home() {
             </CardHeader>
             <CardContent>
               {/* Aqui aparecerá os botoes*/}
-              <div className=" flex w-full justify-between items-center gap-2 ">
+              <div className=" flex w-full justify-between gap-1 flex-wrap text-wrap ">
                 <HoverCard>
                   <HoverCardTrigger asChild>
                     <Button className="bg-blue-400 text-white w-[25%] hover:opacity-60" onClick={() => handlePage("/pages/stencil_medition")}>

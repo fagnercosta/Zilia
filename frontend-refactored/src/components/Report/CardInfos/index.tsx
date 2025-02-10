@@ -2,7 +2,7 @@ import { Page, Text, View, Document, StyleSheet, Image } from '@react-pdf/render
 
 interface Props {
     textHeader: string,
-    attribute: string | number
+    attribute: string | number | boolean 
 }
 
 const CardInfos = ({

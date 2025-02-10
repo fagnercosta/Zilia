@@ -269,7 +269,7 @@ const StencilReport = ({
                     />
                     <CardInfos
                         textHeader="Manufacturing"
-                        attribute={formatDateTime(stencil.mfg_date)}
+                        attribute={formatDateTime(stencil.mfg_date) ?? "N/A"}
                     />
                 </View>
                 <View style={stylesBody.containerItemsInfo}>
