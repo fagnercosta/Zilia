@@ -1,4 +1,4 @@
-"use client"; // Adicione esta linha no topo do arquivo
+"use client"
 
 import React, { useCallback, useEffect, useState } from "react";
 import cookie from 'cookie';
@@ -13,21 +13,27 @@ import { Button } from "@/components/ui/button";
 import { CirclePlus, CircleX, Search } from "lucide-react";
 import { formatDateTime } from "@/functions/functions";
 import Link from "next/link";
+
+
 const columns = [
     { label: 'Primeiro Nome', minWidth: 50 },
     { label: 'E-mail', minWidth: 50 },
+    
+    
 ];
 
 export default function Users() {
-    const router = useRouter();
-    const [stencils, setStencils] = useState<Stencil[]>([]);
-    const [selectedStencil, setSelectedStencil] = useState<Stencil | null>(null);
-    const [loadingValues, setLoadingValues] = useState(false);
-    const [users, setUsers] = useState<UsersTipe[]>([]);
-    const [totalUsers, setTotalUsers] = useState(0);  // Variável para o total de usuários
-    const [openSnackBar, setOpenSnackBar] = useState(false);
-    const [message, setMessage] = useState("");
-    const [typeMessage, setTypeMessage] = useState<AlertColor>("success");
+
+    const router = useRouter()
+    const [stencils, setStencils] = useState<Stencil[]>([])
+    const [selectedStencil, setSelectedStencil] = useState<Stencil | null>(
+        null
+    )
+    const [loadingValues, setLoadingValues] = useState(false)
+    const [users, setUsers] = useState<UsersTipe[]>([])
+    const [openSnackBar, setOpenSnackBar] = useState(false)
+    const [message, setMessage] = useState("")
+    const [typeMessage, setTypeMessage] = useState<AlertColor>("success")
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
 
@@ -39,39 +45,35 @@ export default function Users() {
     };
 
     const handleLogout = useCallback(() => {
+        // Remover o cookie definindo uma data de expiração no passado
         document.cookie = cookie.serialize('authToken', '', {
-            httpOnly: false,
+            httpOnly: false, // No lado do cliente, httpOnly deve ser false
             secure: process.env.NODE_ENV !== 'development',
-            maxAge: -1,
+            maxAge: -1, // Expira imediatamente
             path: '/',
         });
+
+        // Redireciona para a página de login
         router.push('/pages/login');
     }, [router]);
 
     const getUsers = async () => {
         try {
-            const response = await axios.get(`${BASE_URL}/users/`);
+            const response = await axios.get(`${BASE_URL}/users/`)
             if (response) {
-                setUsers(response.data.results || []);  // Garantir que os dados sejam corretos
-                setTotalUsers(response.data.count || 0);  // Definindo o total de usuários para a paginação
+                setUsers(response.data.results)
+                
             }
         } catch (error: any) {
-            console.log(error);
+            console.log(error)
         }
-    };
+    }
 
     useEffect(() => {
-        getUsers();
-    }, []);
+        getUsers()
+    }, [])
 
-    const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
-        setPage(newPage);
-    };
-
-    const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0);
-    };
+    
 
     const action = (
         <React.Fragment>
@@ -93,13 +95,16 @@ export default function Users() {
         <main className="lg:ml-[23rem] p-4">
             <Sidebar logouFunction={handleLogout} />
             <div className="flex flex-col min-h-screen">
-                <section className="w-full h-auto p-5 items-center justify-start flex">
+
+            <section className="w-full h-auto p-5 items-center justify-start flex">
+                   
                     <Link href={"/pages/cadastro_user"} className="h-[50px] ml-auto bg-blue-400 flex gap-2 rounded-[6px] justify-end items-center px-2 text-white font-bold hover:opacity-60">
                         Cadastrar Novo Usuário
                         <CirclePlus className="w-5 h-5" />
                     </Link>
-                </section>
 
+                </section>
+                
                 <section className="w-full p-5 items-center justify-center">
                     <TableContainer component={Paper}>
                         <Table stickyHeader aria-label="sticky table">
@@ -113,50 +118,61 @@ export default function Users() {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {loadingValues ? (
+                                {loadingValues ?
                                     <TableRow>
                                         <TableCell>
                                             <Grid item xs={12} md={12} lg={12}>
-                                                <div style={{ width: 400 }}>
+                                                <div style={{
+                                                    width: 400,
+                                                }}>
                                                     <Typography variant="h6" color="#121212">Carregando...</Typography>
                                                     <LinearProgress color="info" />
                                                 </div>
                                             </Grid>
                                         </TableCell>
                                     </TableRow>
-                                ) : (
+                                    :
                                     users.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((item, index) => (
                                         <TableRow key={index}>
                                             <TableCell>{item.first_name}</TableCell>
                                             <TableCell>{item.email}</TableCell>
+                                            
+
                                         </TableRow>
                                     ))
-                                )}
+                                }
                             </TableBody>
                         </Table>
                     </TableContainer>
-                    <TablePagination
+                    {/* <TablePagination
                         rowsPerPageOptions={[5, 10, 25, 50]}
                         component="div"
-                        count={totalUsers}  // Usando a variável totalUsers
+                        count={data.length}
                         rowsPerPage={rowsPerPage}
                         page={page}
                         onPageChange={handleChangePage}
                         onRowsPerPageChange={handleChangeRowsPerPage}
-                    />
+                    /> */}
                     <Snackbar
                         open={openSnackBar}
                         autoHideDuration={4000}
                         action={action}
                         onClose={handleClose}
                         message={message}
+
                     >
-                        <Alert onClose={handleClose} severity={typeMessage} variant="standard" sx={{ width: '100%' }}>
+                        <Alert
+                            onClose={handleClose}
+                            severity={typeMessage}
+                            variant="standard"
+                            sx={{ width: '100%' }}
+
+                        >
                             {message}
                         </Alert>
                     </Snackbar>
                 </section>
             </div>
         </main>
-    );
+    )
 }

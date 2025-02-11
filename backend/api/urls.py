@@ -14,8 +14,7 @@ from dashboard.views import (
     ProcessedImageViewSet,
     takephoto,
     takephotoraspy,
-
-   
+    positionRoboPoint,
     changeLamp,
     # ConfigurationsViewSet,
     configurations_manager,
@@ -66,7 +65,9 @@ urlpatterns = [
     path('api/changeLamp/<str:status>/', changeLamp, name='change_lamp'),
     # path('api/verifyCLP/', verifyConectCLP, name="veirfyCLP"),
     path('api/configurations/', configurations_manager ),
-    path('api/testpoints/', pointsResult, name="testservicepoints")
+    path('api/testpoints/', pointsResult, name="testservicepoints"),
+
+    path('api/position-point/',positionRoboPoint, name="position-point")
     #path('api/verifyCLP/', verifyConectCLP, name="veirfyCLP"),
     #path('api/configurations/', configurations_manager )
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

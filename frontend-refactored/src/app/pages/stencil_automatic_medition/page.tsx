@@ -56,11 +56,26 @@ export default function StencilAutomaticMedition() {
     const [loadingPhotos, setLoadingPhotos] = useState(false);
     const [loadingRobot, setLoadingRobot] = useState(false);
 
+    const [menssagemRobo, setMenssagemRobo] = useState(null)
+
     const [inputValue, setInputValue] = useState<String>("0");
 
     function handleInputChange(text: String) {
         setInputValue(text);
         console.log("Input.." + text)
+    }
+
+    async function handlePosicionarRobo(){
+        try {
+            const responseRobo = await axios.get(`http://127.0.0.1:8000/api/position-point/`);
+            console.log("Resposta Robo"+responseRobo.data.menssage)
+            setMenssagemRobo(responseRobo.data.menssage)
+            setMessage(menssagemRobo || "");
+            setAlert("success");
+            setOpenSnackBar(true);
+        } catch (error) {
+            
+        }
     }
 
     const [formData, setFormData] = useState<FormData>({
@@ -189,22 +204,28 @@ export default function StencilAutomaticMedition() {
 
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        setSalvando(true);
-        try {
-            const response = await axios.post(`${BASE_URL}api/stencilTensionValues/`, formData);
-            if (response) {
-                setTimeout(() => {
-                    setSalvando(false);
-                }, 3000);
-                setMessage("Cadastro realizado com sucesso");
-                setAlert("success");
+        if (formData.cicles !== 0) {
+            setSalvando(true);
+            try {
+                const response = await axios.post(`${BASE_URL}api/stencilTensionValues/`, formData);
+                if (response) {
+                    setTimeout(() => {
+                        setSalvando(false);
+                    }, 3000);
+                    setMessage("Cadastro realizado com sucesso");
+                    setAlert("success");
+                    setOpenSnackBar(true);
+                    navigate.push("/pages/list_stencil_medition");
+                }
+            } catch (error) {
+                console.log(error);
+                setMessage("Erro ao realizar a operação.");
+                setAlert("error");
                 setOpenSnackBar(true);
-                navigate.push("/pages/list_stencil_medition");
-            }
-        } catch (error) {
-            console.log(error);
-            setMessage("Erro ao realizar a operação.");
-            setAlert("error");
+            }  
+        }else{
+            setMessage("O campo ciclos não pode estar ser igual a zero");
+            setAlert("warning");
             setOpenSnackBar(true);
         }
     };
@@ -376,11 +397,12 @@ export default function StencilAutomaticMedition() {
                                         </div>
                                     )}
                                     {!loadingRobot && (
-                                        <a style={{ cursor: 'pointer', padding: '10px', backgroundColor: 'rgb(96 165 250)', color: 'white', borderRadius: '5px' }} onClick={() => takePhotoRaspRequest(stencilSelected)}> Iniciar coleta de dados</a>
+                                        <div>
+                                            <a style={{ cursor: 'pointer', padding: '10px', backgroundColor: 'rgb(100 100 250)', color: 'white', borderRadius: '5px', marginRight:'10px' }} onClick={() => handlePosicionarRobo()}> Posicionar Robô</a>
+                                            <a style={{ cursor: 'pointer', padding: '10px', backgroundColor: 'rgb(96 165 250)', color: 'white', borderRadius: '5px' }} onClick={() => takePhotoRaspRequest(stencilSelected)}> Iniciar coleta de dados</a>
+                                        </div>
                                     )}
-                                    {loadingRobot && (
-                                        <Typography variant="body2" style={{ color: '#FFF', marginRight: '20px', fontSize: '16px', backgroundColor: 'rgb(196, 125, 67)', padding: '10px', paddingRight: '20px', borderRadius: '5px' }} fontWeight={700} align="center" gutterBottom>Aguarde o processamento...</Typography>
-                                    )}
+                                    
                                 </Grid>
                             </Grid>
                         </form>
@@ -437,6 +459,17 @@ export default function StencilAutomaticMedition() {
                         </Grid>
                     </Card>
                 )}
+
+                {
+                    loadingRobot && (
+                        <div className="mt-4 p rounded-none w-[90%]" style={{ minHeight: '400px' }}>
+
+                            <Typography variant="h6" className="mb-4">Coletando dados...</Typography>
+                            <LinearProgress color="success" style={{paddingTop: '5px', paddingBottom: '5px',     borderRadius: '5px' }}/>
+                            
+                        </div>
+                    )
+                }
 
                 {/* Snackbar para feedback */}
                 <Snackbar

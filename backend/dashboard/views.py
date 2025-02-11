@@ -47,6 +47,7 @@ from django.shortcuts import get_object_or_404
 from dashboard.services.OpencvService import OpencvService
 from dashboard.services.ReaderPointersService import ReaderPointerService
 from dashboard.services.TensionService import TensionService
+from dashboard.services.PositionService  import PositionService
 
 from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
@@ -248,21 +249,19 @@ def takephotoraspy(request, stencil_id_request):
 
     # Salva os dados no banco de dados
     
+@api_view(['GET'])
+def positionRoboPoint(request):
+    #CHAMA A FUNÇÃO DO TENCIONService
+    #opencv_command = PositionService()
+    #menssagem = opencv_command.main()
+    menssagem = "Robo posicionado"
 
 
     # Serializa os dados e retorna a resposta
     
     return Response(
         {
-            "message": "Imagem processada com sucesso",
-            "p1":final_image_path_p1,
-            "p2":final_image_path_p2,
-            "p3":final_image_path_p3,
-            "p4":final_image_path_p4,
-            "textoP1":textoP1,
-            "textoP2":textoP2,
-            "textoP3":textoP3,
-            "textoP4":textoP4,
+            "menssage": menssagem, 
             
         },
         status=status.HTTP_200_OK
@@ -339,9 +338,9 @@ class StencilViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         print("Aqui buscando...")
         queryset = Stencil.objects.all()
-        id = self.request.query_params.get('stencil_id', None)
-        if id:
-            queryset = queryset.filter(stencil_id=id)
+        part_nbr= self.request.query_params.get('stencil_id', None)
+        if part_nbr:
+            queryset = queryset.filter(stencil_part_nbr=part_nbr)
             if not queryset.exists():
                 raise Http404("Nenhum stencil encontrado com essa identificação.")
         return queryset

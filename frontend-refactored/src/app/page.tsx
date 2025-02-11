@@ -34,7 +34,7 @@ export default function Home() {
 
   const router = useRouter();
   const [stencilDigited, setStencilDigited] = useState("")
-  const [stencil, setStencil] = useState<Stencil>()
+  const [stencil, setStencil] = useState<Stencil|null>()
   const [openSnackBar, setOpenSnackBar] = useState(false)
   const [messageSnack, setMessageSnack] = useState("")
   const [alert, setAlert] = useState<AlertColor>("success")
@@ -154,7 +154,9 @@ export default function Home() {
       setAlert("warning")
     } else {
       try {
-        const response = await axios.get(`${BASE_URL}/api/stencil/?stencil_id=${stencilDigited}&timestamp=${new Date().getTime()}`)
+
+        setStencil(null);
+        const response = await axios.get(`${BASE_URL}/api/stencil/?stencil_id=${stencilDigited.toUpperCase()}`)
 
         if (response.status === 200) {
           setStencil(response.data.results[0])
@@ -185,14 +187,22 @@ export default function Home() {
             setOpenSnackBar(true)
           }
 
+         
           const responseLastMedition = await axios.get(`${BASE_URL}api/processedimages/?stencil_id=${response.data.results[0].stencil_id}&timestamp=${new Date().getTime()}`)
-          if (responseLastMedition) {
-            setLastRobotMedition(responseLastMedition.data.results[responseLastMedition.data.results.length - 1])
-          } else {
-
+          if (responseLastMedition.status === 200){ 
+              setLastRobotMedition(responseLastMedition.data.results[responseLastMedition.data.results.length - 1])
+          }else{
+                setMessageSnack('Stencil sem medição de arranhões ');
+                setOpenSnackBar(true);
+                setAlert("warning")
           }
+          
+            
+
+          
+
         } else {
-          setMessageSnack('Stencil não encontrado...');
+          setMessageSnack('Stencil não encontrado. Ou o Stencil está sem medições de arranhões');
           setOpenSnackBar(true);
           setAlert("warning")
         }
@@ -204,9 +214,23 @@ export default function Home() {
           setOpenSnackBar(true);
         } else if (error.response.status === 404) {
           // Erro 404 - não encontrado
-          setMessageSnack('Stencil não encontrado.' + error.response.status);
-          setOpenSnackBar(true);
-          setAlert("warning")
+          if(stencil!=null){
+
+            if(stencilTensionValues?.length === 0){
+              setMessageSnack(`Stencil ${stencil.stencil_part_nbr} está sem medições de  tensão `);
+              setOpenSnackBar(true);
+              setAlert("warning")
+            }else{
+              setMessageSnack(`Stencil ${stencil.stencil_part_nbr} foi encontrado, mas está sem medições de arranhões `);
+              setOpenSnackBar(true);
+              setAlert("success")
+            }
+            
+          }else{
+            setMessageSnack('Stencil não encontrado');
+            setOpenSnackBar(true);
+            setAlert("error")
+          }
 
         } else {
           // Outros erros
@@ -227,38 +251,57 @@ export default function Home() {
         setAlert("warning")
       } else {
         try {
-          const response = await axios.get(`${BASE_URL}/api/stencil/?stencil_id=${stencilDigited}`)
+  
+          setStencil(null);
+          const response = await axios.get(`${BASE_URL}/api/stencil/?stencil_id=${stencilDigited.toUpperCase()}`)
+  
           if (response.status === 200) {
             setStencil(response.data.results[0])
-            const responseValues = await axios.get(`${BASE_URL}/api/stencilTensionValues/?stencil_identification=${response.data.results[0].stencil_id}?timestamp=${new Date().getTime()}`)
-
+            const responseValues = await axios.get(`${BASE_URL}/api/stencilTensionValues/?stencil_identification=${response.data.results[0].stencil_id}&timestamp=${new Date().getTime()}`)
+  
             const stencilValues: StencilTensionValues[] = responseValues.data.results
-
+  
             if (stencilValues.length > 0) {
               const valuesp1 = stencilValues.map((stencil) => { return { cycles: stencil.cicles, tension: stencil.p1 } })
               const valuesp2 = stencilValues.map((stencil) => { return { cycles: stencil.cicles, tension: stencil.p2 } })
               const valuesp3 = stencilValues.map((stencil) => { return { cycles: stencil.cicles, tension: stencil.p3 } })
               const valuesp4 = stencilValues.map((stencil) => { return { cycles: stencil.cicles, tension: stencil.p4 } })
-
-
+  
+  
               setGraphData({ P1: valuesp1, P2: valuesp2, P3: valuesp3, P4: valuesp4 })
-
+  
               // setCicles(stencilValues[stencilValues.length - 1].cicles);
               setStencilTensionValues(stencilValues)
               setMessageSnack("Valores encontrados!")
               setOpenSnackBar(true)
               setAlert("success")
-
+  
+              
+  
             } else {
               setMessageSnack('Não foram encontrados valores para o Stencil')
               setAlert("warning")
               setOpenSnackBar(true)
             }
-
-            const responseLastMedition = await axios.get(`${BASE_URL}api/processedimages/?stencil_id=${response.data.results[0].stencil_id}`)
-            if (responseLastMedition) {
-              setLastRobotMedition(responseLastMedition.data.results[responseLastMedition.data.results.length - 1])
+  
+           
+            const responseLastMedition = await axios.get(`${BASE_URL}api/processedimages/?stencil_id=${response.data.results[0].stencil_id}&timestamp=${new Date().getTime()}`)
+            if (responseLastMedition.status === 200){ 
+                setLastRobotMedition(responseLastMedition.data.results[responseLastMedition.data.results.length - 1])
+            }else{
+                  setMessageSnack('Stencil sem medição de arranhões ');
+                  setOpenSnackBar(true);
+                  setAlert("warning")
             }
+            
+              
+  
+            
+  
+          } else {
+            setMessageSnack('Stencil não encontrado. Ou o Stencil está sem medições de arranhões');
+            setOpenSnackBar(true);
+            setAlert("warning")
           }
         } catch (error: any) {
           if (!error.response) {
@@ -268,10 +311,24 @@ export default function Home() {
             setOpenSnackBar(true);
           } else if (error.response.status === 404) {
             // Erro 404 - não encontrado
-            setMessageSnack('Stencil não encontrado.');
-            setOpenSnackBar(true);
-            setAlert("warning")
-
+            if(stencil!=null){
+  
+              if(stencilTensionValues?.length === 0){
+                setMessageSnack(`Stencil ${stencil.stencil_part_nbr} está sem medições de  tensão `);
+                setOpenSnackBar(true);
+                setAlert("warning")
+              }else{
+                setMessageSnack(`Stencil ${stencil.stencil_part_nbr} foi encontrado, mas está sem medições de arranhões `);
+                setOpenSnackBar(true);
+                setAlert("success")
+              }
+              
+            }else{
+              setMessageSnack('Stencil não encontrado');
+              setOpenSnackBar(true);
+              setAlert("error")
+            }
+  
           } else {
             // Outros erros
             setMessageSnack('Ocorreu um erro ao buscar os dados. Por favor, tente novamente.');
