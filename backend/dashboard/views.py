@@ -248,6 +248,27 @@ def takephotoraspy(request, stencil_id_request):
 
 
     # Salva os dados no banco de dados
+     # Salva os dados no banco de dados
+    
+
+
+    # Serializa os dados e retorna a resposta
+    
+    return Response(
+        {
+            "message": "Imagem processada com sucesso",
+            "p1":final_image_path_p1,
+            "p2":final_image_path_p2,
+            "p3":final_image_path_p3,
+            "p4":final_image_path_p4,
+            "textoP1":textoP1,
+            "textoP2":textoP2,
+            "textoP3":textoP3,
+            "textoP4":textoP4,
+            
+        },
+        status=status.HTTP_200_OK
+    )
     
 @api_view(['GET'])
 def positionRoboPoint(request):

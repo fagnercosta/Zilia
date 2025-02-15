@@ -155,6 +155,7 @@ export default function StencilAutomaticMedition() {
             setOpenSnackBar(true);
         } else {
             setLoadingRobot(true);
+            setMenssagemRobo(null)
             handleFormStencilId();
             try {
                 const response = await axios.post(`http://127.0.0.1:8000/api/takephotraspy/${selectedStencil?.stencil_id}/`);
@@ -468,6 +469,15 @@ export default function StencilAutomaticMedition() {
                             <LinearProgress color="success" style={{paddingTop: '5px', paddingBottom: '5px',     borderRadius: '5px' }}/>
                             
                         </div>
+                    )
+                }
+
+                {
+                    (menssagemRobo!=null && String(menssagemRobo)!="") &&(
+                        <div className="mt-4 p rounded-none w-[90%]">
+                                <Typography variant="h6" className="mb-4">Robo posicionado</Typography>
+                        </div>
+                        
                     )
                 }
 
