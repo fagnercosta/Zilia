@@ -68,7 +68,7 @@ export default function AutomaticMedition() {
                 setLoadingRobot(false)
                 console.log(response.data)
                 setResposta(response.data)
-                setStencils(response.data)
+               // setStencils(response.data)
 
             }
         } catch (error: any) {

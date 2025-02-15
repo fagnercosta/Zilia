@@ -11,7 +11,7 @@ call venv\Scripts\activate
 
 :: Inicia o servidor do Django
 echo Iniciando o servidor Django...
-start /B python manage.py runserver
+start /min python manage.py runserver
 
 :: Fecha o terminal após iniciar o servidor
 exit

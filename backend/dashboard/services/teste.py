@@ -1,4 +1,4 @@
 
-for posicao in range(1, 21):
+for posicao in range(1, 4):
     print(f"AQUI{posicao}")
  

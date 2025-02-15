@@ -273,8 +273,8 @@ def takephotoraspy(request, stencil_id_request):
 @api_view(['GET'])
 def positionRoboPoint(request):
     #CHAMA A FUNÇÃO DO TENCIONService
-    #opencv_command = PositionService()
-    #menssagem = opencv_command.main()
+    opencv_command = PositionService()
+    menssagem = opencv_command.main()
     menssagem = "Robo posicionado"
 
 

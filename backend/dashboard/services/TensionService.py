@@ -128,7 +128,7 @@ class TensionService:
     def prepare_images1(self):
         imagemOriginal = cv2.imread('images_final/ponto_1.png') 
         #imagemOriginal = imagemOriginal[540:700,800:1210]
-        imagemOriginal = imagemOriginal[540:720,840:1210]
+        imagemOriginal = imagemOriginal[540:730,840:1230]
 
         path_p1 = "images_final/ponto_1_tratada.png"
         cv2.imwrite(path_p1, imagemOriginal)
@@ -143,7 +143,7 @@ class TensionService:
 
         reader = easyocr.Reader(['pt'])
         results = reader.readtext(
-            image=img 
+            image=th2Open
             
         )   
 
@@ -306,7 +306,7 @@ class TensionService:
         
 
     def main(self):
-        '''try:
+        try:
             self.client.connect()
             print("Conectado ao CLP")
 
@@ -344,13 +344,14 @@ class TensionService:
                 if posicao == 13:
                         print("Tirando foto 03")
                         self.take_photo_3()
-                        #time.sleep(5)
+                        time.sleep(1)
                             
 
                 if posicao == 18:
+                        #time.sleep(1)
                         print("Tirando foto 04")
                         self.take_photo_4()
-                        time.sleep(1)
+                        time.sleep(2)
                             
 
                 time.sleep(2)
@@ -373,10 +374,10 @@ class TensionService:
             print(f"Erro: {e}")
         finally:
             self.client.disconnect()
-            print("Conexão com o CLP encerrada.")'''
+            print("Conexão com o CLP encerrada.")
             
             
-        final_image_path_p1, final_image_path_p2,final_image_path_p3, final_image_path_p4 = self.getFotos()
+        '''final_image_path_p1, final_image_path_p2,final_image_path_p3, final_image_path_p4 = self.getFotos()
            
 
         textoP1 = self.prepare_images1()   
@@ -387,6 +388,6 @@ class TensionService:
         final_image_path_p1 , final_image_path_p2, final_image_path_p3, final_image_path_p4 = self.getFotos()
             
 
-        return final_image_path_p1, final_image_path_p2, final_image_path_p3, final_image_path_p4, textoP1, textoP2, textoP3, textoP4
+        return final_image_path_p1, final_image_path_p2, final_image_path_p3, final_image_path_p4, textoP1, textoP2, textoP3, textoP4'''
         
        

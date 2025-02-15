@@ -6,7 +6,7 @@ from opcua import Client, ua
 from pypylon import pylon
 
 class PositionService:
-    def __init__(self, stencil_id):
+    def __init__(self):
         self.clp_url = "opc.tcp://192.168.1.1:4840"
         self.client = Client(self.clp_url)
 
@@ -18,7 +18,7 @@ class PositionService:
         try:
             self.client.connect()
             print("Conectado ao CLP")
-
+            menssagem = ""
             topLamp = self.client.get_node("ns=2;s=GVL_OPC.xTopLamp")
             bottomLamp = self.client.get_node("ns=2;s=GVL_OPC.xBottomLamp")
             topLamp.set_value(ua.DataValue(ua.Variant(True, ua.VariantType.Boolean)))
@@ -28,16 +28,20 @@ class PositionService:
             movingValue = self.client.get_node("ns=2;s=GVL_OPC.xBusy")
             valorDaPosicao = self.client.get_node("ns=2;s=GVL_OPC.uiValue")
             valorDaPosicao.set_value(ua.DataValue(ua.Variant(1, ua.VariantType.UInt16)))
-            for posicao in range(1, 4):
+            for posicao in range(1, 3):
                 valorDaPosicao.set_value(ua.DataValue(ua.Variant(posicao, ua.VariantType.UInt16)))
                 print(f"Movendo para a posição {posicao}")
-                if posicao == 3:
-                    print("Parou na posição 3")
-                    time.sleep(3)
+               
+                complete = completeValue.get_value()
+                moving = movingValue.get_value()
+                print(f"complete: {complete}, busy: {moving}")
+                print(f"Movendo para a posição {posicao}")
+                time.sleep(2)
+                    #break
 
-                menssagem = "Robo posicionado"
-
-                return menssagem
+            
+            menssagem = "Robo posicionado"
+            return menssagem
 
         except Exception as e:
             return self.erro
