@@ -10,8 +10,9 @@ import { Form } from "@/components/ui/form";
 import { BASE_URL } from "@/types/api";
 import { Stencil } from "@/types/models";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Alert, AlertColor, Button, Autocomplete, Checkbox, Divider, LinearProgress, CircularProgress, Typography, FormControl, FormControlLabel, Grid, IconButton, InputLabel, MenuItem, Select, SelectChangeEvent, Snackbar, TextField } from "@mui/material";
+import { Alert, AlertColor, Button, Autocomplete, Checkbox, Divider, LinearProgress, CircularProgress, Typography, FormControl, FormControlLabel, Grid, IconButton, InputLabel, MenuItem, Select, SelectChangeEvent, Snackbar, TextField, AlertProps } from "@mui/material";
 import axios from "axios";
+import { set } from "date-fns";
 import { CircleX, Link } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
@@ -51,13 +52,16 @@ export default function StencilAutomaticMedition() {
     const [salvando, setSalvando] = useState(false);
     const [openSnackBar, setOpenSnackBar] = useState(false);
     const [alert, setAlert] = useState<AlertColor>("success");
+    const [title, setTitle] = useState<string>("Success");
     const [message, setMessage] = useState('');
     const navigate = useRouter();
     const [disabledInput, setDisabledInput] = useState(false);
     const [loadingPhotos, setLoadingPhotos] = useState(false);
     const [loadingRobot, setLoadingRobot] = useState(false);
 
-    const [menssagemRobo, setMenssagemRobo] = useState(null)
+    const [menssagemRobo, setMenssagemRobo] = useState("")
+
+    const [positionRobo, setPositionRobo] = useState(false)
 
     const [inputValue, setInputValue] = useState<String>("0");
 
@@ -69,6 +73,8 @@ export default function StencilAutomaticMedition() {
     }
 
     async function handlePosicionarRobo(){
+        setPositionRobo(true)
+        setViewAltert(false)
         try {
             const responseRobo = await axios.get(`http://127.0.0.1:8000/api/position-point/`);
             console.log("Resposta Robo"+responseRobo.data.menssage)
@@ -76,9 +82,30 @@ export default function StencilAutomaticMedition() {
             setMessage(menssagemRobo || "");
             setAlert("success");
             setViewAltert(true);
+            setPositionRobo(false)
             //setOpenSnackBar(true);
-        } catch (error) {
+        } catch (error:any) {
+            if (error.response) {
+                // O servidor respondeu com um status diferente de 2xx
+                if (error.response.status === 500) {
+                    setMessage("Problema na comunicação com o robo. Tente resetar o CLP.");
+                    setAlert("error");
+                    setTitle("Error")
+                } else {
+                    setMessage(`Erro ${error.response.status}: ${error.response.data?.message || "Erro desconhecido"}`);
+                }
+            } else if (error.request) {
+                // A requisição foi feita, mas não houve resposta
+                setMessage("Erro na comunicação com o servidor");
+            } else {
+                // Algo inesperado aconteceu
+                setMessage("Erro inesperado ao buscar os dados");
+            }
             
+            setAlert("error"); // Corrigido para 'error' para indicar falha
+            setViewAltert(true);
+
+            setPositionRobo(false)
         }
     }
 
@@ -103,7 +130,7 @@ export default function StencilAutomaticMedition() {
             } else if (!response || response.data.results.length === 0) {
                 setMessage('Não há stencils cadastrados.');
                 setAlert("warning");
-                setOpenSnackBar(true);
+                //setOpenSnackBar(true);
             }
         } catch (error: any) {
             if (error.response) {
@@ -153,14 +180,17 @@ export default function StencilAutomaticMedition() {
     const takePhotoRaspRequest = async (stencilId: number) => {
         setResposta(undefined);
         setDisabledInput(false);
+        setViewAltert(false)
 
-        if (selectedStencil?.stencil_id === 0 || selectedStencil === null) {
+        if (selectedStencil?.stencil_id === 0   || selectedStencil?.stencil_id === undefined) {
             setMessage("Selecione um stencil para realizar a medição.");
-            setAlert("error");
-            setOpenSnackBar(true);
+            setAlert("warning");
+            setViewAltert(true)
+            //setOpenSnackBar(true);
+            
         } else {
             setLoadingRobot(true);
-            setMenssagemRobo(null)
+            setMenssagemRobo("")
             handleFormStencilId();
             try {
                 const response = await axios.post(`http://127.0.0.1:8000/api/takephotraspy/${selectedStencil?.stencil_id}/`);
@@ -177,7 +207,10 @@ export default function StencilAutomaticMedition() {
                 }
                 handleDisableInput();
             } catch (error) {
-                console.error(error);
+                setMessage("Erro ao realizar a operação. Possível causa, não foi possível se conectar com o robo!");
+                setLoadingRobot(false);
+                setAlert("error");
+                setViewAltert(true)
             }
         }
     };
@@ -244,12 +277,12 @@ export default function StencilAutomaticMedition() {
                 
             {viewAltert && (
                          
-                         <div className="w-[90%] mb-1 ">
-                            <AlertItem severity={alert} message={message} />
+                         <div className="w-[90%] mb-4 ">
+                            <AlertItem  severity={alert} message={message} title={title} />
                          </div>
                         
                        
-                )}
+            )}
                 
                 <Card className="w-[90%] bg-slate-50">
                     <CardHeader>
@@ -489,10 +522,25 @@ export default function StencilAutomaticMedition() {
                 }
 
                 {
-                    (menssagemRobo!=null && String(menssagemRobo)!="") &&(
-                        <div className="mt-4 p rounded-none w-[90%]">
-                                <Typography variant="h6" className="mb-4">Robo posicionado</Typography>
+                    positionRobo && (
+                        <div className="mt-4 p rounded-none w-[90%]" style={{ minHeight: '400px' }}>
+
+                            <Typography variant="h6" className="mb-4">Posicionando o robo. Aguarde se posicionar o robo corretamente, você dev ligar o tenciometro...</Typography>
+                            <LinearProgress color="primary" style={{paddingTop: '5px', paddingBottom: '5px',     borderRadius: '5px' }}/>
+                            
                         </div>
+                    )
+                }
+
+                {
+                    (menssagemRobo!=null && String(menssagemRobo)!="") &&(
+                        
+                         
+                            <div className="w-[90%] mb-1 ">
+                               <AlertItem severity={alert} message={message} />
+                            </div>
+                             
+               
                         
                     )
                 }

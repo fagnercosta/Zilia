@@ -128,22 +128,26 @@ class TensionService:
     def prepare_images1(self):
         imagemOriginal = cv2.imread('images_final/ponto_1.png') 
         #imagemOriginal = imagemOriginal[540:700,800:1210]
-        imagemOriginal = imagemOriginal[540:730,840:1230]
+        imagemOriginal = imagemOriginal[520:720,830:1220]
 
         path_p1 = "images_final/ponto_1_tratada.png"
         cv2.imwrite(path_p1, imagemOriginal)
         img = cv2.imread(path_p1)
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        
         thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
         
         
         nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3,3))
-        th2Open = cv2.dilate(thresh, nucleo, iterations = 2)
+        th2Open = cv2.dilate(thresh, nucleo, iterations = 6)
         #cv2.imwrite(thresh,"images_final/ponto_1_tratada_bin.png")
+
+        th2OpenEq = self.equalizarHistograma(th2Open)
+        cv2.imwrite(f"{self.final_image_dir}/ponto_1_tratada_bin_eq.png", th2OpenEq)
 
         reader = easyocr.Reader(['pt'])
         results = reader.readtext(
-            image=th2Open
+            image=th2OpenEq
             
         )   
 
@@ -182,12 +186,16 @@ class TensionService:
         thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
         
         nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3,3))
-        th2Open = cv2.dilate(thresh, nucleo, iterations = 2)
+        th2Open = cv2.dilate(thresh, nucleo, iterations = 9)
+
+        th2OpenEq = self.equalizarHistograma(th2Open)
+
+        cv2.imwrite(f"{self.final_image_dir}/ponto_2_tratada_bin_eq.png", th2OpenEq)
         
         #cv2.imwrite(thresh,"images_final/ponto_2_tratada_bin.png")
         reader = easyocr.Reader(['pt'])
         results = reader.readtext(
-            image=th2Open
+            image=th2OpenEq
         )   
 
         text=''
@@ -222,14 +230,17 @@ class TensionService:
         thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
         
         nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3,3))
-        th2Open = cv2.dilate(thresh, nucleo, iterations = 2)
+        th2Open = cv2.dilate(thresh, nucleo, iterations = 9)
+
+        th2OpenEq = self.equalizarHistograma(th2Open)
+        cv2.imwrite(f"{self.final_image_dir}/ponto_3_tratada_bin_eq.png", th2OpenEq)
         
         #cv2.imwrite(thresh,"images_final/ponto_3_tratada_bin.png")
        
 
         reader = easyocr.Reader(['pt'])
         results = reader.readtext(
-            image=th2Open
+            image=th2OpenEq
         )   
 
         text=''
@@ -261,17 +272,22 @@ class TensionService:
         
         img = cv2.imread(path_p1)
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
+        imagem = self.equalizarHistograma(gray)
+
+        thresh = cv2.adaptiveThreshold(imagem, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
         nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3,3))
         th2Open = cv2.dilate(thresh, nucleo, iterations = 2)
-        #cv2.imwrite(thresh,"images_final/ponto_3_tratada_bin.png")
+
+        #th2OpenEq = self.equalizarHistograma(th2Open)
+        cv2.imwrite(f"{self.final_image_dir}/ponto_4_tratada_bin_eq.png", imagem)
+        cv2.imwrite(f"{self.final_image_dir}/ponto_4_tratada_binaria.png",th2Open)
 
         
         
 
         reader = easyocr.Reader(['pt'])
         results = reader.readtext(
-            image=img
+            image=imagem
         )   
 
         text=''
@@ -300,13 +316,19 @@ class TensionService:
 
     def binarizar(self, path,point):
         img = cv2.imread(path)
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
-        cv2.imwrite(f"{self.final_image_dir}/ponto_{point}_bin.png", thresh)
-        
+        image = img
+        #gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        #thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
+        cv2.rectangle(img, (800,500), (1270, 760),  (0, 255, 0), 20)
+
+        cv2.imwrite(f"{self.final_image_dir}/ponto_{point}_bin.png", image)
+
+
+    def equalizarHistograma(self, image):
+        return cv2.equalizeHist(image) 
 
     def main(self):
-        try:
+        '''try:
             self.client.connect()
             print("Conectado ao CLP")
 
@@ -374,10 +396,10 @@ class TensionService:
             print(f"Erro: {e}")
         finally:
             self.client.disconnect()
-            print("Conexão com o CLP encerrada.")
+            print("Conexão com o CLP encerrada.") '''
             
             
-        '''final_image_path_p1, final_image_path_p2,final_image_path_p3, final_image_path_p4 = self.getFotos()
+        final_image_path_p1, final_image_path_p2,final_image_path_p3, final_image_path_p4 = self.getFotos()
            
 
         textoP1 = self.prepare_images1()   
@@ -388,6 +410,6 @@ class TensionService:
         final_image_path_p1 , final_image_path_p2, final_image_path_p3, final_image_path_p4 = self.getFotos()
             
 
-        return final_image_path_p1, final_image_path_p2, final_image_path_p3, final_image_path_p4, textoP1, textoP2, textoP3, textoP4'''
+        return final_image_path_p1, final_image_path_p2, final_image_path_p3, final_image_path_p4, textoP1, textoP2, textoP3, textoP4
         
        

@@ -48,17 +48,17 @@ export default function AutomaticMedition() {
     const getStencils = async () => {
         try {
             const response = await axios.get(`${BASE_URL}api/stencil/`)
-            if (response){ 
+            if (response) {
                 setStencils(response.data.results)
-            }else{
+            } else {
                 setViewAltert(true)
                 setMessage("Erro na comunicação com o servidor!")
                 setLoadingRobot(false)
             }
         } catch (error) {
             setViewAltert(true)
-                setMessage("Erro na comunicação com o servidor!")
-                setLoadingRobot(false)
+            setMessage("Erro na comunicação com o servidor!")
+            setLoadingRobot(false)
         }
     }
 
@@ -68,31 +68,39 @@ export default function AutomaticMedition() {
 
 
     const takephotorequest = async () => {
+
+
+
+
         setErroRobot(false)
         setLoadingRobot(true)
+        setViewAltert(false)
+
+
         console.log(stencilSelected)
         try {
 
-            if(selectedStencil?.stencil_id===0 || selectedStencil===null){
+            if (selectedStencil?.stencil_id === 0 || selectedStencil === null) {
                 setMessage("Selecione um stencil para realizar a medição.");
                 setViewAltert(true)
                 setLoadingRobot(false)
-            }else{
+            } else {
                 const response = await axios.post(`http://127.0.0.1:8000/api/takephoto/${selectedStencil?.stencil_id}/`)
                 if (response) {
-                    setLoadingRobot(false)
+                    setLoadingRobot(true)
                     console.log(response.data)
                     setResposta(response.data)
-                    // setStencils(response.data)
-    
+
                 }
             }
-            
+
         } catch (error: any) {
 
-
+            console.log("Api is not running", error)
+            setMessage("Erro na comunicação com o clp/robo!")
             setLoadingRobot(false)
             setErroRobot(true)
+            setViewAltert(true)
         }
     }
 
@@ -118,10 +126,12 @@ export default function AutomaticMedition() {
         <main className="lg:ml-[23rem] p-4">
             <Sidebar logouFunction={handleLogout} />
             <section className="w-full h-screen  flex-col flex items-center justify-center relative">
+                
+
                 {
-                    erroRobot || viewAltert && (
-                        <div className="w-[70%] mb-3 ">
-                            <AlertItem variant="standard" severity={"warning"} message={message} title="Warning"/>
+                    viewAltert && (
+                        <div className="w-[70%] mb-6 ">
+                            <AlertItem variant="standard" severity={"error"} message={message} title="Warning" />
                         </div>
                     )
 
