@@ -14,6 +14,7 @@ import { CircularProgress } from "@mui/material";
 import InovaBottomImage from "@/components/InovaBottomImage";
 import Stopwatch from "@/components/StopWatch";
 import { SelectHistory } from "@/components/Select/SelectHistory";
+import AlertItem from "@/components/AlertItem";
 
 interface RequestRobot {
     id: number
@@ -41,15 +42,23 @@ export default function AutomaticMedition() {
         null
     )
 
+    const [viewAltert, setViewAltert] = useState(false)
+
 
     const getStencils = async () => {
         try {
             const response = await axios.get(`${BASE_URL}api/stencil/`)
-            if (response) {
+            if (response){ 
                 setStencils(response.data.results)
+            }else{
+                setViewAltert(true)
+                setMessage("Erro na comunicação com o servidor!")
+                setLoadingRobot(false)
             }
         } catch (error) {
-
+            setViewAltert(true)
+                setMessage("Erro na comunicação com o servidor!")
+                setLoadingRobot(false)
         }
     }
 
@@ -63,14 +72,22 @@ export default function AutomaticMedition() {
         setLoadingRobot(true)
         console.log(stencilSelected)
         try {
-            const response = await axios.post(`http://127.0.0.1:8000/api/takephoto/${selectedStencil?.stencil_id}/`)
-            if (response) {
-                setLoadingRobot(false)
-                console.log(response.data)
-                setResposta(response.data)
-               // setStencils(response.data)
 
+            if(selectedStencil?.stencil_id===0 || selectedStencil===null){
+                setMessage("Selecione um stencil para realizar a medição.");
+                setViewAltert(true)
+                setLoadingRobot(false)
+            }else{
+                const response = await axios.post(`http://127.0.0.1:8000/api/takephoto/${selectedStencil?.stencil_id}/`)
+                if (response) {
+                    setLoadingRobot(false)
+                    console.log(response.data)
+                    setResposta(response.data)
+                    // setStencils(response.data)
+    
+                }
             }
+            
         } catch (error: any) {
 
 
@@ -100,8 +117,15 @@ export default function AutomaticMedition() {
     return (
         <main className="lg:ml-[23rem] p-4">
             <Sidebar logouFunction={handleLogout} />
-            <section className="w-full h-screen flex items-center justify-center relative">
+            <section className="w-full h-screen  flex-col flex items-center justify-center relative">
+                {
+                    erroRobot || viewAltert && (
+                        <div className="w-[70%] mb-3 ">
+                            <AlertItem variant="standard" severity={"warning"} message={message} title="Warning"/>
+                        </div>
+                    )
 
+                }
                 <Card className="w-[70%] bg-slate-50">
                     <CardHeader>
                         <div className="flex items-center  justify-between w-full">
@@ -123,7 +147,7 @@ export default function AutomaticMedition() {
                                 setSelectedStencil={setSelectedStencil}
                             />
                             <Button
-                                className="w-[25%] bg-blue-400 h-[50px] text-xl font-bold" 
+                                className="w-[25%] bg-blue-400 h-[50px] text-xl font-bold"
                                 onClick={takephotorequest}
                                 disabled={loadingRobot}
                             >
@@ -175,13 +199,7 @@ export default function AutomaticMedition() {
 
                         }
 
-                        {
-                            erroRobot ?
-                                <div>
-                                    <span className="text-1xl font-bold text-red-400" >Erro na comunicação com o CLP. Verifique se o mesmo está em funcionamento</span>
-                                </div>
-                                : <></>
-                        }
+
 
                     </CardContent>
                 </Card>

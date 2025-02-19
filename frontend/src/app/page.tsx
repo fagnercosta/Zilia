@@ -27,6 +27,7 @@ import StencilReport from "@/components/Report/ReportDashboard";
 import InovaImage from "../assets/inova.png"
 import InovaBottomImage from "@/components/InovaBottomImage";
 import { fstat } from "fs";
+import AlertItem from "@/components/AlertItem";
 
 
 
@@ -34,12 +35,15 @@ export default function Home() {
 
   const router = useRouter();
   const [stencilDigited, setStencilDigited] = useState("")
-  const [stencil, setStencil] = useState<Stencil|null>()
+  const [stencil, setStencil] = useState<Stencil | null>()
   const [openSnackBar, setOpenSnackBar] = useState(false)
   const [messageSnack, setMessageSnack] = useState("")
   const [alert, setAlert] = useState<AlertColor>("success")
   const [stencilTensionValues, setStencilTensionValues] = useState<StencilTensionValues[]>()
   const [lastRobotMedition, setLastRobotMedition] = useState<StencilRobotMedition>()
+
+  const [viewAltert, setViewAltert] = useState(false)
+
 
   const handleClick = () => {
     setOpenSnackBar(true);
@@ -72,34 +76,35 @@ export default function Home() {
     </React.Fragment>
   );
 
-  const [graphData, setGraphData] = useState(
-    {
-      P1: [
-        { cycles: 0, tension: 0 },
-        { cycles: 0, tension: 0 },
-        { cycles: 0, tension: 0 },
-        { cycles: 0, tension: 0 },
-        { cycles: 0, tension: 0 },
-        { cycles: 0, tension: 0 },
-      ],
-      P2: [
-        { cycles: 0, tension: 0 },
-        { cycles: 0, tension: 0 },
-        { cycles: 0, tension: 0 },
-        { cycles: 0, tension: 0 },
-        { cycles: 0, tension: 0 },
-        { cycles: 0, tension: 0 },
-      ],
-      P3: [
-        { cycles: 0, tension: 0 },
-        { cycles: 0, tension: 0 },
-      ],
-      P4: [
-        { cycles: 0, tension: 0 },
-        { cycles: 0, tension: 0 },
-      ],
+  const valuesInitial = {
+    P1: [
+      { cycles: 0, tension: 0 },
+      { cycles: 0, tension: 0 },
+      { cycles: 0, tension: 0 },
+      { cycles: 0, tension: 0 },
+      { cycles: 0, tension: 0 },
+      { cycles: 0, tension: 0 },
+    ],
+    P2: [
+      { cycles: 0, tension: 0 },
+      { cycles: 0, tension: 0 },
+      { cycles: 0, tension: 0 },
+      { cycles: 0, tension: 0 },
+      { cycles: 0, tension: 0 },
+      { cycles: 0, tension: 0 },
+    ],
+    P3: [
+      { cycles: 0, tension: 0 },
+      { cycles: 0, tension: 0 },
+    ],
+    P4: [
+      { cycles: 0, tension: 0 },
+      { cycles: 0, tension: 0 },
+    ],
 
-    })
+  }
+
+  const [graphData, setGraphData] = useState(valuesInitial)
 
   useEffect(() => {
     const cookies = cookie.parse(document.cookie);
@@ -148,6 +153,7 @@ export default function Home() {
   }
 
   const handleStencil = async () => {
+    setViewAltert(false)
     if (stencilDigited == "" || stencilDigited == null) {
       setMessageSnack("Forneça um stencil")
       setOpenSnackBar(true)
@@ -155,6 +161,7 @@ export default function Home() {
     } else {
       try {
 
+        setGraphData(valuesInitial)
         setStencil(null);
         const response = await axios.get(`${BASE_URL}/api/stencil/?stencil_id=${stencilDigited.toUpperCase()}`)
 
@@ -179,7 +186,7 @@ export default function Home() {
             setOpenSnackBar(true)
             setAlert("success")
 
-            
+
 
           } else {
             setMessageSnack('Não foram encontrados valores para o Stencil')
@@ -187,19 +194,19 @@ export default function Home() {
             setOpenSnackBar(true)
           }
 
-         
-          const responseLastMedition = await axios.get(`${BASE_URL}api/processedimages/?stencil_id=${response.data.results[0].stencil_id}&timestamp=${new Date().getTime()}`)
-          if (responseLastMedition.status === 200){ 
-              setLastRobotMedition(responseLastMedition.data.results[responseLastMedition.data.results.length - 1])
-          }else{
-                setMessageSnack('Stencil sem medição de arranhões ');
-                setOpenSnackBar(true);
-                setAlert("warning")
-          }
-          
-            
 
-          
+          const responseLastMedition = await axios.get(`${BASE_URL}api/processedimages/?stencil_id=${response.data.results[0].stencil_id}&timestamp=${new Date().getTime()}`)
+          if (responseLastMedition.status === 200) {
+            setLastRobotMedition(responseLastMedition.data.results[responseLastMedition.data.results.length - 1])
+          } else {
+            setMessageSnack('Stencil sem medição de arranhões ');
+            setOpenSnackBar(true);
+            setAlert("warning")
+          }
+
+
+
+
 
         } else {
           setMessageSnack('Stencil não encontrado. Ou o Stencil está sem medições de arranhões');
@@ -209,24 +216,25 @@ export default function Home() {
       } catch (error: any) {
         if (!error.response) {
           // Erro de rede ou servidor inacessível
-          setMessageSnack('Erro de rede. Houve um problema de comunicação com Api.');
+          setMessageSnack('Erro de rede. Houve um problema de comunicação com o servidor.');
           setAlert("error")
-          setOpenSnackBar(true);
+          setViewAltert(true)
+          //setOpenSnackBar(true);
         } else if (error.response.status === 404) {
           // Erro 404 - não encontrado
-          if(stencil!=null){
+          if (stencil != null) {
 
-            if(stencilTensionValues?.length === 0){
+            if (stencilTensionValues?.length === 0) {
               setMessageSnack(`Stencil ${stencil.stencil_part_nbr} está sem medições de  tensão `);
               setOpenSnackBar(true);
               setAlert("warning")
-            }else{
+            } else {
               setMessageSnack(`Stencil ${stencil.stencil_part_nbr} foi encontrado, mas está sem medições de arranhões `);
               setOpenSnackBar(true);
               setAlert("success")
             }
-            
-          }else{
+
+          } else {
             setMessageSnack('Stencil não encontrado');
             setOpenSnackBar(true);
             setAlert("error")
@@ -251,53 +259,53 @@ export default function Home() {
         setAlert("warning")
       } else {
         try {
-  
+
           setStencil(null);
           const response = await axios.get(`${BASE_URL}/api/stencil/?stencil_id=${stencilDigited.toUpperCase()}`)
-  
+
           if (response.status === 200) {
             setStencil(response.data.results[0])
             const responseValues = await axios.get(`${BASE_URL}/api/stencilTensionValues/?stencil_identification=${response.data.results[0].stencil_id}&timestamp=${new Date().getTime()}`)
-  
+
             const stencilValues: StencilTensionValues[] = responseValues.data.results
-  
+
             if (stencilValues.length > 0) {
               const valuesp1 = stencilValues.map((stencil) => { return { cycles: stencil.cicles, tension: stencil.p1 } })
               const valuesp2 = stencilValues.map((stencil) => { return { cycles: stencil.cicles, tension: stencil.p2 } })
               const valuesp3 = stencilValues.map((stencil) => { return { cycles: stencil.cicles, tension: stencil.p3 } })
               const valuesp4 = stencilValues.map((stencil) => { return { cycles: stencil.cicles, tension: stencil.p4 } })
-  
-  
+
+
               setGraphData({ P1: valuesp1, P2: valuesp2, P3: valuesp3, P4: valuesp4 })
-  
+
               // setCicles(stencilValues[stencilValues.length - 1].cicles);
               setStencilTensionValues(stencilValues)
               setMessageSnack("Valores encontrados!")
               setOpenSnackBar(true)
               setAlert("success")
-  
-              
-  
+
+
+
             } else {
               setMessageSnack('Não foram encontrados valores para o Stencil')
               setAlert("warning")
               setOpenSnackBar(true)
             }
-  
-           
+
+
             const responseLastMedition = await axios.get(`${BASE_URL}api/processedimages/?stencil_id=${response.data.results[0].stencil_id}&timestamp=${new Date().getTime()}`)
-            if (responseLastMedition.status === 200){ 
-                setLastRobotMedition(responseLastMedition.data.results[responseLastMedition.data.results.length - 1])
-            }else{
-                  setMessageSnack('Stencil sem medição de arranhões ');
-                  setOpenSnackBar(true);
-                  setAlert("warning")
+            if (responseLastMedition.status === 200) {
+              setLastRobotMedition(responseLastMedition.data.results[responseLastMedition.data.results.length - 1])
+            } else {
+              setMessageSnack('Stencil sem medição de arranhões ');
+              setOpenSnackBar(true);
+              setAlert("warning")
             }
-            
-              
-  
-            
-  
+
+
+
+
+
           } else {
             setMessageSnack('Stencil não encontrado. Ou o Stencil está sem medições de arranhões');
             setOpenSnackBar(true);
@@ -311,24 +319,24 @@ export default function Home() {
             setOpenSnackBar(true);
           } else if (error.response.status === 404) {
             // Erro 404 - não encontrado
-            if(stencil!=null){
-  
-              if(stencilTensionValues?.length === 0){
+            if (stencil != null) {
+
+              if (stencilTensionValues?.length === 0) {
                 setMessageSnack(`Stencil ${stencil.stencil_part_nbr} está sem medições de  tensão `);
                 setOpenSnackBar(true);
                 setAlert("warning")
-              }else{
+              } else {
                 setMessageSnack(`Stencil ${stencil.stencil_part_nbr} foi encontrado, mas está sem medições de arranhões `);
                 setOpenSnackBar(true);
                 setAlert("success")
               }
-              
-            }else{
+
+            } else {
               setMessageSnack('Stencil não encontrado');
               setOpenSnackBar(true);
               setAlert("error")
             }
-  
+
           } else {
             // Outros erros
             setMessageSnack('Ocorreu um erro ao buscar os dados. Por favor, tente novamente.');
@@ -356,8 +364,15 @@ export default function Home() {
     <main className="lg:ml-[23rem] p-4">
       <Sidebar logouFunction={handleLogout} />
       <div className="flex flex-col min-h-screen relative">
+
+        {viewAltert && (
+          <section className="grid grid-cols-1 mb-4">
+            <AlertItem variant="standard" severity={alert} message={messageSnack} title="Error"/>
+          </section>
+        )}
+
         <section className="grid grid-cols-4 gap-4">
-          
+
           {/*Card de pesquisa*/}
           <Card className="bg-slate-50">
             <CardHeader>
@@ -381,7 +396,7 @@ export default function Home() {
                     onChange={(e) => setStencilDigited(e.target.value)}
                     onKeyDown={handleKeyDown}
                     value={stencilDigited}
-                    
+
                   />
                   <HoverCard>
                     <HoverCardTrigger asChild>
@@ -515,7 +530,7 @@ export default function Home() {
               {/* Aqui aparecerá gráfico do limite de vida*/}
               {/* <StencilGraphicLimit/> */}
               {stencil && (
-                <Progress value={66}/>
+                <Progress value={66} />
               )}
             </CardContent>
           </Card>

@@ -1,5 +1,6 @@
 "use client"; // Adicione esta linha no topo do arquivo para habilitar funcionalidades do cliente no Next.js
 
+import AlertItem from "@/components/AlertItem";
 import InovaBottomImage from "@/components/InovaBottomImage";
 import { SelectHistory } from "@/components/Select/SelectHistory";
 import { SelectStencilItem } from "@/components/Select/SelectStencilItem";
@@ -60,6 +61,8 @@ export default function StencilAutomaticMedition() {
 
     const [inputValue, setInputValue] = useState<String>("0");
 
+    const [viewAltert, setViewAltert] = useState(false)
+
     function handleInputChange(text: String) {
         setInputValue(text);
         console.log("Input.." + text)
@@ -72,7 +75,8 @@ export default function StencilAutomaticMedition() {
             setMenssagemRobo(responseRobo.data.menssage)
             setMessage(menssagemRobo || "");
             setAlert("success");
-            setOpenSnackBar(true);
+            setViewAltert(true);
+            //setOpenSnackBar(true);
         } catch (error) {
             
         }
@@ -116,7 +120,8 @@ export default function StencilAutomaticMedition() {
                 setMessage('Ocorreu um erro inesperado.');
             }
             setAlert("error");
-            setOpenSnackBar(true);
+            //setOpenSnackBar(true);
+            setViewAltert(true);
         }
     };
 
@@ -234,7 +239,18 @@ export default function StencilAutomaticMedition() {
     return (
         <main className="lg:ml-[23rem] p-4">
             <Sidebar />
+            
             <div className="w-full min-h-screen mt-10 flex flex-col items-start justify-start relative">
+                
+            {viewAltert && (
+                         
+                         <div className="w-[90%] mb-1 ">
+                            <AlertItem severity={alert} message={message} />
+                         </div>
+                        
+                       
+                )}
+                
                 <Card className="w-[90%] bg-slate-50">
                     <CardHeader>
                         <CardTitle className="text-2xl font-bold">Medição Automática dos valores de tensão</CardTitle>
