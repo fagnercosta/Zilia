@@ -287,7 +287,7 @@ const StencilReport = ({
                     />
                 </View>
                 <View style={stylesBody.containerStencilInfo}>
-                    <CardPerformed textHeader='Last Medition'>
+                    <CardPerformed textHeader='Last Medition '>
                         <View style={stylesLastMedition.container}>
                             <View style={stylesLastMedition.viewImage}>
                                 <Image
@@ -298,7 +298,16 @@ const StencilReport = ({
                                         objectFit: "cover"
                                     }}
                                 />
-                                <View style={[stylesLastMedition.circle, stylesLastMedition.topLeft, { backgroundColor: getRGB(stencil.p4_value) }]}>
+                                
+                                <View style={[stylesLastMedition.circle, stylesLastMedition.bottomRight, { backgroundColor: getRGB(stencil.p3_value) }]} >
+                                <Text style={{
+                                        fontSize: 12,
+
+                                    }}>
+                                        P3: {stencil.p3_value}
+                                    </Text>
+                                </View>
+                                <View style={[stylesLastMedition.circle, stylesLastMedition.topRight, { backgroundColor: getRGB(stencil.p4_value) }]}>
                                     <Text style={{
                                         fontSize: 12,
 
@@ -307,15 +316,8 @@ const StencilReport = ({
                                     </Text>
 
                                 </View>
-                                <View style={[stylesLastMedition.circle, stylesLastMedition.topRight, { backgroundColor: getRGB(stencil.p3_value) }]} >
-                                <Text style={{
-                                        fontSize: 12,
-
-                                    }}>
-                                        P3: {stencil.p3_value}
-                                    </Text>
-                                </View>
-                                <View style={[stylesLastMedition.circle, stylesLastMedition.bottomLeft, { backgroundColor: getRGB(stencil.p2_value) }]} >
+                               
+                                <View style={[stylesLastMedition.circle, stylesLastMedition.topLeft, { backgroundColor: getRGB(stencil.p2_value) }]} >
                                 <Text style={{
                                         fontSize: 12,
 
@@ -323,7 +325,8 @@ const StencilReport = ({
                                         P2: {stencil.p2_value}
                                     </Text>
                                 </View>
-                                <View style={[stylesLastMedition.circle, stylesLastMedition.bottomRight, { backgroundColor: getRGB(stencil.p1_value) }]} >
+
+                                <View style={[stylesLastMedition.circle, stylesLastMedition.bottomLeft, { backgroundColor: getRGB(stencil.p1_value) }]} >
                                 <Text style={{
                                         fontSize: 12,
 
@@ -331,6 +334,7 @@ const StencilReport = ({
                                         P1: {stencil.p1_value}
                                     </Text>
                                 </View>
+                                
                             </View>
                             <View style={stylesLastMedition.containerInfos}>
                                 <View style={stylesLastMedition.containerTexts}>
@@ -393,6 +397,8 @@ const StencilReport = ({
                         tensionValues={tensionValues}
                     />
                 </View>
+
+                <Text style={{ ...styles.tittleReport, marginLeft: 20, marginTop: 30 }}>Medidas de Arranhões</Text>
                 <View style={stylesBody.containerStencilInfo}>
                     <CardPerformed textHeader='Arranhões'>
                         <View style={stylesCountScratchs.container}>

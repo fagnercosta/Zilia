@@ -58,6 +58,7 @@ export default function CadastroUser() {
       setOpenSnackBar(true);
     }
   };
+  
 
   return (
     <main className="lg:ml-72 p-4">

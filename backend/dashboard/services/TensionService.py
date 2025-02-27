@@ -1,5 +1,6 @@
 import os
 import cv2
+import re
 import time
 import numpy as np
 from opcua import Client, ua
@@ -134,7 +135,7 @@ class TensionService:
         cv2.imwrite(path_p1, imagemOriginal)
         img = cv2.imread(path_p1)
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        
+        imagemEqualizada = self.equalizarHistograma(gray)
         thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
         
         
@@ -147,7 +148,7 @@ class TensionService:
 
         reader = easyocr.Reader(['pt'])
         results = reader.readtext(
-            image=th2OpenEq
+            image=imagemOriginal
             
         )   
 
@@ -158,6 +159,8 @@ class TensionService:
             text = result[1]
         text = text.replace('.','')
         text = text.strip()
+        
+        text =   re.sub('[^0-9]', '', text)
         for i, l in enumerate(text):
             if i  <= 1:
                 textoResposta += l
@@ -183,6 +186,7 @@ class TensionService:
         
         img = cv2.imread(path_p1)
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        imagemEqualizada = self.equalizarHistograma(gray)
         thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
         
         nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3,3))
@@ -195,7 +199,7 @@ class TensionService:
         #cv2.imwrite(thresh,"images_final/ponto_2_tratada_bin.png")
         reader = easyocr.Reader(['pt'])
         results = reader.readtext(
-            image=th2OpenEq
+            image=imagemEqualizada
         )   
 
         text=''
@@ -205,6 +209,9 @@ class TensionService:
             text = result[1]
         text = text.replace('.','')
         text = text.strip()
+        
+        text =   re.sub('[^0-9]', '', text)
+
 
         for i, l in enumerate(text):
             if i  <= 1:
@@ -227,6 +234,7 @@ class TensionService:
         cv2.imwrite(path_p1, imagemOriginal)
         img = cv2.imread(path_p1)
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        imagemEqualizada = self.equalizarHistograma(gray)
         thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
         
         nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3,3))
@@ -234,6 +242,7 @@ class TensionService:
 
         th2OpenEq = self.equalizarHistograma(th2Open)
         cv2.imwrite(f"{self.final_image_dir}/ponto_3_tratada_bin_eq.png", th2OpenEq)
+        cv2.imwrite(f"{self.final_image_dir}/ponto_3_tratada_bin_equalizada.png", imagemEqualizada)
         
         #cv2.imwrite(thresh,"images_final/ponto_3_tratada_bin.png")
        
@@ -251,6 +260,8 @@ class TensionService:
 
         text = text.replace('.','')
         text = text.strip()
+        
+        text =   re.sub('[^0-9]', '', text)
         for i, l in enumerate(text):
             if i  <= 1:
                 textoResposta += l
@@ -295,9 +306,11 @@ class TensionService:
         for result in results:
             print(result[1])
             text = result[1]
+        text =   re.sub('[^0-9]', '', text)
         text = text.replace('.','')
         text = text.replace(',','')
         text = text.strip()
+        text =   re.sub('[^0-9]', '', text)
         for i, l in enumerate(text):
             if i  <= 1:
                 textoResposta += l

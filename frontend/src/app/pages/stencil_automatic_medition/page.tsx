@@ -2,6 +2,7 @@
 
 import AlertItem from "@/components/AlertItem";
 import InovaBottomImage from "@/components/InovaBottomImage";
+import ProgressoTension from "@/components/ProgressoTension";
 import { SelectHistory } from "@/components/Select/SelectHistory";
 import { SelectStencilItem } from "@/components/Select/SelectStencilItem";
 import Sidebar from "@/components/Sidebar";
@@ -18,6 +19,9 @@ import { useRouter } from "next/navigation";
 import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+
+
+
 
 interface FormData {
     p1: null;
@@ -67,18 +71,30 @@ export default function StencilAutomaticMedition() {
 
     const [viewAltert, setViewAltert] = useState(false)
 
+    const [lendo, setLendo] = useState(false);
+
+    
+
     function handleInputChange(text: String) {
         setInputValue(text);
         console.log("Input.." + text)
     }
 
     async function handlePosicionarRobo(){
-        setPositionRobo(true)
-        setViewAltert(false)
+        setLendo(false)
+        setResposta(undefined);
+
+        setLoadingRobot(false)
+        setTimeout(() => {
+            setPositionRobo(true)
+            setViewAltert(false)
+        },10)
+        
         try {
             const responseRobo = await axios.get(`http://127.0.0.1:8000/api/position-point/`);
             console.log("Resposta Robo"+responseRobo.data.menssage)
             setMenssagemRobo(responseRobo.data.menssage)
+            let messagemText = `${menssagemRobo}. Agora coloque o CLP no modo manual, abra a porta, ligue o tensiometro, feche a porta e coloque o o CPL no automaático e inicie a medição `
             setMessage(menssagemRobo || "");
             setAlert("success");
             setViewAltert(true);
@@ -88,7 +104,8 @@ export default function StencilAutomaticMedition() {
             if (error.response) {
                 // O servidor respondeu com um status diferente de 2xx
                 if (error.response.status === 500) {
-                    setMessage("Problema na comunicação com o robo. Tente resetar o CLP.");
+                    setMessage("Problema na comunicação com o robo. Sugestão: resetar o CLP.");
+                    //setMessage("Agora coloque o CLP no modo manual, abra a porta, ligue o tensiometro, feche a porta e coloque o o CPL no automaático e inicie a medição ")
                     setAlert("error");
                     setTitle("Error")
                 } else {
@@ -114,7 +131,7 @@ export default function StencilAutomaticMedition() {
         p2: null,
         p3: null,
         p4: null,
-        measurement_datetime: new Date(),
+        measurement_datetime: new Date(new Date().getTime() - 4 * 60 * 60 * 1000),
         is_registration_measurement: false,
         is_approved_status: false,
         cicles: 0,
@@ -160,7 +177,7 @@ export default function StencilAutomaticMedition() {
     const resetForm = () => {
         setFormData(prev => ({
             ...prev,
-            measurement_datetime: new Date(),
+            measurement_datetime: new Date(new Date().getTime() - 4 * 60 * 60 * 1000),
         }));
     };
 
@@ -181,6 +198,12 @@ export default function StencilAutomaticMedition() {
         setResposta(undefined);
         setDisabledInput(false);
         setViewAltert(false)
+        
+
+        
+        setLendo(false);
+        setLoadingRobot(false);
+        
 
         if (selectedStencil?.stencil_id === 0   || selectedStencil?.stencil_id === undefined) {
             setMessage("Selecione um stencil para realizar a medição.");
@@ -189,7 +212,11 @@ export default function StencilAutomaticMedition() {
             //setOpenSnackBar(true);
             
         } else {
-            setLoadingRobot(true);
+            
+            setTimeout(() => {
+                setLendo(true);
+                setLoadingRobot(true);
+            },100)
             setMenssagemRobo("")
             handleFormStencilId();
             try {
@@ -208,6 +235,7 @@ export default function StencilAutomaticMedition() {
                 handleDisableInput();
             } catch (error) {
                 setMessage("Erro ao realizar a operação. Possível causa, não foi possível se conectar com o robo!");
+                setLendo(false)
                 setLoadingRobot(false);
                 setAlert("error");
                 setViewAltert(true)
@@ -512,7 +540,7 @@ export default function StencilAutomaticMedition() {
 
                 {
                     loadingRobot && (
-                        <div className="mt-4 p rounded-none w-[90%]" style={{ minHeight: '400px' }}>
+                        <div className="mt-4 p rounded-none w-[90%]" style={{ minHeight: '30px' }}>
 
                             <Typography variant="h6" className="mb-4">Coletando dados...</Typography>
                             <LinearProgress color="success" style={{paddingTop: '5px', paddingBottom: '5px',     borderRadius: '5px' }}/>
@@ -522,11 +550,20 @@ export default function StencilAutomaticMedition() {
                 }
 
                 {
+                    (loadingRobot || lendo )&&(
+                        <div className="mt-4 p rounded-none w-[90%]" style={{ minHeight: '400px', marginTop:'30px', marginLeft:'10px' }}>
+                                <ProgressoTension/>
+                        </div>
+                        
+                    )
+                }
+
+                {
                     positionRobo && (
                         <div className="mt-4 p rounded-none w-[90%]" style={{ minHeight: '400px' }}>
 
-                            <Typography variant="h6" className="mb-4">Posicionando o robo. Aguarde se posicionar o robo corretamente, você dev ligar o tenciometro...</Typography>
-                            <LinearProgress color="primary" style={{paddingTop: '5px', paddingBottom: '5px',     borderRadius: '5px' }}/>
+                            <Typography variant="h6" className="mb-4">Posicionando o robo. Aguarde, ao posicionar o robo corretamente, você deve ligar o tenciometro...</Typography>
+                            <LinearProgress color="error" style={{paddingTop: '5px', paddingBottom: '5px',     borderRadius: '5px' }}/>
                             
                         </div>
                     )

@@ -95,6 +95,12 @@ export default function Configurations() {
             path: '/',
         });
 
+       
+        
+        localStorage.removeItem("token");
+        localStorage.removeItem("tokenTimestamp");
+            
+
         // Redireciona para a página de login
         router.push('/pages/login');
     }, [router]);

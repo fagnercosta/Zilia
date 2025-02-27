@@ -1,3 +1,4 @@
+
 import { Activity, BadgeCheck, ChevronDown, ChevronUp, ClipboardMinus, FileChartColumn, FileClock, LogOut, PanelBottom, Settings } from "lucide-react"
 import Link from "next/link"
 import Logo from "../../assets/logo.png"
@@ -65,6 +66,9 @@ const Sidebar = ({ logouFunction }: Props) => {
                         </div>
                         <span className="">Histórico de medições</span>
                     </Link>
+
+                    
+
                     <Collapsible
                         open={isOpen}
                         onOpenChange={setIsOpen}
@@ -92,15 +96,7 @@ const Sidebar = ({ logouFunction }: Props) => {
                                     </div>
                                     <span className="w-[60%]">Medição de tensão</span>
                                 </Link>
-                                <Link
-                                    href={"/pages/compilance_report_form"}
-                                    className="flex h-9 w-auto items-center text-muted-foreground text-lg gap-3 hover:opacity-60"
-                                >
-                                    <div className="flex h-9 w-9 shrink-0 items-center justify-center bg-blue-400 text-primary-foreground rounded-full">
-                                        <FileChartColumn className="h-4 w-4" />
-                                    </div>
-                                    <span className="w-[60%]">Formulário de conformidade</span>
-                                </Link>
+                                
 
                                 
                                 {/* <Link

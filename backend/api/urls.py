@@ -16,6 +16,7 @@ from dashboard.views import (
     takephotoraspy,
     positionRoboPoint,
     changeLamp,
+    
     # ConfigurationsViewSet,
     configurations_manager,
     test_services_points,

@@ -15,6 +15,7 @@ import InovaBottomImage from "@/components/InovaBottomImage";
 import Stopwatch from "@/components/StopWatch";
 import { SelectHistory } from "@/components/Select/SelectHistory";
 import AlertItem from "@/components/AlertItem";
+import ProgressoScrath from "@/components/ProgressoScrath";
 
 interface RequestRobot {
     id: number
@@ -37,6 +38,7 @@ export default function AutomaticMedition() {
 
     const [message, setMessage] = useState("Erro na comunicação com o robo")
     const [erroRobot, setErroRobot] = useState(false)
+    const [lendo, setLendo] = useState(false)
 
     const [selectedStencil, setSelectedStencil] = useState<Stencil | null>(
         null
@@ -74,6 +76,7 @@ export default function AutomaticMedition() {
 
         setErroRobot(false)
         setLoadingRobot(true)
+        setLendo(true)
         setViewAltert(false)
 
 
@@ -84,6 +87,7 @@ export default function AutomaticMedition() {
                 setMessage("Selecione um stencil para realizar a medição.");
                 setViewAltert(true)
                 setLoadingRobot(false)
+                setLendo(false)
             } else {
                 const response = await axios.post(`http://127.0.0.1:8000/api/takephoto/${selectedStencil?.stencil_id}/`)
                 if (response) {
@@ -97,7 +101,7 @@ export default function AutomaticMedition() {
         } catch (error: any) {
 
             console.log("Api is not running", error)
-            setMessage("Erro na comunicação com o clp/robo!")
+            setMessage("Erro na comunicação com o clp/robo!.Sugestão: \n Resetar o clp.")   
             setLoadingRobot(false)
             setErroRobot(true)
             setViewAltert(true)
@@ -113,6 +117,9 @@ export default function AutomaticMedition() {
             path: '/',
         });
 
+        localStorage.removeItem("token");
+        localStorage.removeItem("tokenTimestamp");
+
         // Redireciona para a página de login
         router.push('/pages/login');
     }, [router]);
@@ -126,7 +133,7 @@ export default function AutomaticMedition() {
         <main className="lg:ml-[23rem] p-4">
             <Sidebar logouFunction={handleLogout} />
             <section className="w-full h-screen  flex-col flex items-center justify-center relative">
-                
+
 
                 {
                     viewAltert && (
@@ -165,6 +172,8 @@ export default function AutomaticMedition() {
                             </Button>
                         </header>
                         <br />
+
+
                         {
                             loadingRobot
                                 ?
@@ -211,8 +220,20 @@ export default function AutomaticMedition() {
 
 
 
+
+
                     </CardContent>
+
                 </Card>
+
+                {
+                    (loadingRobot || lendo && !erroRobot) && (
+                        <div className="mt-4 p rounded-none w-[90%]" style={{ minHeight: '400px', marginTop: '30px', marginLeft: '10px' }}>
+                            <ProgressoScrath />
+                        </div>
+
+                    )
+                }
             </section>
         </main>
     )

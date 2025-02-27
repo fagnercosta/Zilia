@@ -46,7 +46,7 @@ from django.shortcuts import get_object_or_404
 
 from dashboard.services.OpencvService import OpencvService
 from dashboard.services.ReaderPointersService import ReaderPointerService
-from dashboard.services.TensionService import TensionService
+from backend.dashboard.services.TensionServiceOLD import TensionService
 
 from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
