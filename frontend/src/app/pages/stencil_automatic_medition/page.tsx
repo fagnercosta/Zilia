@@ -279,10 +279,10 @@ export default function StencilAutomaticMedition() {
                     setTimeout(() => {
                         setSalvando(false);
                     }, 3000);
-                    setMessage("Cadastro realizado com sucesso");
+                    setMessage("Medição de tensão cadastrada com sucesso!");
                     setAlert("success");
                     setOpenSnackBar(true);
-                    navigate.push("/pages/list_stencil_medition");
+                    navigate.push("/pages/stencil_automatic_medition");
                 }
             } catch (error) {
                 console.log(error);
