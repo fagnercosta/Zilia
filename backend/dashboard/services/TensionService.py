@@ -129,7 +129,7 @@ class TensionService:
     def prepare_images1(self):
         imagemOriginal = cv2.imread('images_final/ponto_1.png') 
         #imagemOriginal = imagemOriginal[540:700,800:1210]
-        imagemOriginal = imagemOriginal[520:720,830:1220]
+        imagemOriginal = imagemOriginal[510:720,820:1220]
 
         path_p1 = "images_final/ponto_1_tratada.png"
         cv2.imwrite(path_p1, imagemOriginal)
@@ -146,9 +146,10 @@ class TensionService:
         th2OpenEq = self.equalizarHistograma(th2Open)
         cv2.imwrite(f"{self.final_image_dir}/ponto_1_tratada_bin_eq.png", th2OpenEq)
 
-        reader = easyocr.Reader(['pt'])
+        reader = easyocr.Reader(['pt'],gpu=True)
         results = reader.readtext(
-            image=imagemOriginal
+            image=imagemOriginal,
+            allowlist='0123456789'
             
         )   
 
@@ -197,9 +198,11 @@ class TensionService:
         cv2.imwrite(f"{self.final_image_dir}/ponto_2_tratada_bin_eq.png", th2OpenEq)
         
         #cv2.imwrite(thresh,"images_final/ponto_2_tratada_bin.png")
-        reader = easyocr.Reader(['pt'])
+        reader = easyocr.Reader(['pt'],gpu=True)
         results = reader.readtext(
-            image=imagemEqualizada
+            image=imagemOriginal,
+            allowlist='0123456789'
+            #slope_ths=0.1
         )   
 
         text=''
@@ -228,7 +231,7 @@ class TensionService:
     
     def prepare_images3(self):
         imagemOriginal = cv2.imread('images_final/ponto_3.png') 
-        imagemOriginal = imagemOriginal[520:720,800:1210]
+        imagemOriginal = imagemOriginal[510:720,800:1210]
 
         path_p1 = "images_final/ponto_3_tratada.png"
         cv2.imwrite(path_p1, imagemOriginal)
@@ -247,9 +250,9 @@ class TensionService:
         #cv2.imwrite(thresh,"images_final/ponto_3_tratada_bin.png")
        
 
-        reader = easyocr.Reader(['pt'])
+        reader = easyocr.Reader(['pt'],gpu=True)
         results = reader.readtext(
-            image=th2OpenEq
+            image=imagemOriginal, allowlist='0123456789'
         )   
 
         text=''
@@ -296,9 +299,9 @@ class TensionService:
         
         
 
-        reader = easyocr.Reader(['pt'])
+        reader = easyocr.Reader(['pt'],gpu=True)
         results = reader.readtext(
-            image=imagem
+            image=imagemOriginal, allowlist='0123456789'
         )   
 
         text=''
@@ -363,27 +366,31 @@ class TensionService:
                 moving = movingValue.get_value()
                 print(f"complete: {complete}, busy: {moving}")
                 time.sleep(2)
-
+                    
                 if posicao == 3:
+                    time.sleep(2)
                     print("Tirando foto 01")
                     self.take_photo_1()
-                    time.sleep(1)
+                    #time.sleep(2)
+
                    #
                             
                             
                 if posicao == 8:  
                     print("Tirando foto 02")
+                    time.sleep(2)
                     self.take_photo_2()
-                    time.sleep(1)
+                    time.sleep(2)
                             
                 if posicao == 13:
                         print("Tirando foto 03")
+                        time.sleep(4)
                         self.take_photo_3()
-                        time.sleep(1)
+                        time.sleep(2)
                             
 
                 if posicao == 18:
-                        #time.sleep(1)
+                        time.sleep(4)
                         print("Tirando foto 04")
                         self.take_photo_4()
                         time.sleep(2)

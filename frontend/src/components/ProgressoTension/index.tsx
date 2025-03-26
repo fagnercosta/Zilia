@@ -30,7 +30,7 @@ export default function ProgressoTension() {
           return prevActiveStep+1; // Mantém no último passo
         }
       });
-    }, 10000); // Intervalo de 10 segundos
+    }, 29000); // Intervalo de 10 segundos
 
     return () => clearInterval(interval); // Limpa o intervalo quando o componente é desmontado
   }, []);

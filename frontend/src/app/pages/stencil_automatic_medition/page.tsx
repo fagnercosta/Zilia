@@ -1,4 +1,4 @@
-"use client"; // Adicione esta linha no topo do arquivo para habilitar funcionalidades do cliente no Next.js
+"use client";
 
 import AlertItem from "@/components/AlertItem";
 import InovaBottomImage from "@/components/InovaBottomImage";
@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import { BASE_URL } from "@/types/api";
 import { Stencil } from "@/types/models";
+import { ConfigurationsModel } from "@/types/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Alert, AlertColor, Button, Autocomplete, Checkbox, Divider, LinearProgress, CircularProgress, Typography, FormControl, FormControlLabel, Grid, IconButton, InputLabel, MenuItem, Select, SelectChangeEvent, Snackbar, TextField, AlertProps } from "@mui/material";
 import axios from "axios";
@@ -20,16 +21,14 @@ import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-
-
-
 interface FormData {
-    p1: null;
-    p2: null;
-    p3: null;
-    p4: null;
+    p1: number | string | null;
+    p2: number | string | null;
+    p3: number | string | null;
+    p4: number | string | null;
     measurement_datetime: Date | null;
     is_registration_measurement: boolean;
+    is_pending_measurement: boolean;
     is_approved_status: boolean;
     cicles: number;
     stencil_id: number;
@@ -62,67 +61,122 @@ export default function StencilAutomaticMedition() {
     const [disabledInput, setDisabledInput] = useState(false);
     const [loadingPhotos, setLoadingPhotos] = useState(false);
     const [loadingRobot, setLoadingRobot] = useState(false);
-
-    const [menssagemRobo, setMenssagemRobo] = useState("")
-
-    const [positionRobo, setPositionRobo] = useState(false)
-
+    const [menssagemRobo, setMenssagemRobo] = useState("");
+    const [positionRobo, setPositionRobo] = useState(false);
     const [inputValue, setInputValue] = useState<String>("0");
-
-    const [viewAltert, setViewAltert] = useState(false)
-
+    const [viewAltert, setViewAltert] = useState(false);
     const [lendo, setLendo] = useState(false);
 
-    
+    const [limits, setLimits] = useState({
+            minLimitTension: 0,
+            maxLimitTension: 0,
+            scratchesValue: 0
+        })
+
+    const checkApprovalStatus = (p1: number | string | null, p2: number | string | null, p3: number | string | null, p4: number | string | null) => {
+        const p1Num = p1 !== null ? Number(p1) : null;
+        const p2Num = p2 !== null ? Number(p2) : null;
+        const p3Num = p3 !== null ? Number(p3) : null;
+        const p4Num = p4 !== null ? Number(p4) : null;
+        
+        let retorno= true;
+        if (p1Num !== null && p1Num < limits.minLimitTension){
+            retorno = false;
+        }
+
+        if (p2Num !== null && p2Num < limits.minLimitTension){
+            retorno = false;
+        }
+
+        if (p3Num !== null && p3Num < limits.minLimitTension){
+            retorno = false;
+        }
+
+        if (p4Num !== null && p4Num < limits.minLimitTension){
+            retorno = false;
+        }
+
+        return retorno;
+            
+    };
+
+    const checkApprovalStatusAll = (p1: number | string | null, p2: number | string | null, p3: number | string | null, p4: number | string | null) => {
+        const p1Num = p1 !== null ? Number(p1) : null;
+        const p2Num = p2 !== null ? Number(p2) : null;
+        const p3Num = p3 !== null ? Number(p3) : null;
+        const p4Num = p4 !== null ? Number(p4) : null;
+        
+        let retorno= false;
+        if (p1Num !== null && p1Num < limits.minLimitTension){
+            retorno = true;
+        }
+
+        if (p2Num !== null && p2Num < limits.minLimitTension){
+            retorno = true;
+        }
+
+        if (p3Num !== null && p3Num < limits.minLimitTension){
+            retorno = true;
+        }
+
+        if (p4Num !== null && p4Num < limits.minLimitTension){
+            retorno = true;
+        }
+
+        return retorno;
+            
+    };
 
     function handleInputChange(text: String) {
         setInputValue(text);
-        console.log("Input.." + text)
+        console.log("Input.." + text);
     }
 
-    async function handlePosicionarRobo(){
-        setLendo(false)
+    async function handlePosicionarRobo() {
+        setLendo(false);
         setResposta(undefined);
-
-        setLoadingRobot(false)
+        setLoadingRobot(false);
+        
         setTimeout(() => {
-            setPositionRobo(true)
-            setViewAltert(false)
-        },10)
+            setPositionRobo(true);
+            setViewAltert(false);
+        }, 10);
         
         try {
-            const responseRobo = await axios.get(`http://127.0.0.1:8000/api/position-point/`);
-            console.log("Resposta Robo"+responseRobo.data.menssage)
-            setMenssagemRobo(responseRobo.data.menssage)
-            let messagemText = `${menssagemRobo}. Agora coloque o CLP no modo manual, abra a porta, ligue o tensiometro, feche a porta e coloque o o CPL no automaático e inicie a medição `
-            setMessage(menssagemRobo || "");
+            let responseRobo = await axios.get(`http://127.0.0.1:8000/api/position-point/`);
+            responseRobo = await axios.get(`http://127.0.0.1:8000/api/position-point/`);
+            console.log("Resposta Robo"+responseRobo.data.menssage);
+            setMenssagemRobo(responseRobo.data.menssage);
+            let messagemText = `${menssagemRobo}. Agora coloque o CLP no modo manual, abra a porta, ligue o tensiometro, feche a porta e coloque o o CPL no automaático e inicie a medição `;
+            
+            if (menssagemRobo.length < 5) {
+                setMenssagemRobo("Robo posicionado");
+            }
+
+            messagemText = `Robo posicionado. Agora coloque o CLP no modo manual, abra a porta, ligue o tensiometro, feche a porta e coloque o o CPL no automaático e inicie a medição `;
+
+            setMessage(messagemText || "");
             setAlert("success");
             setViewAltert(true);
-            setPositionRobo(false)
-            //setOpenSnackBar(true);
-        } catch (error:any) {
+            setPositionRobo(false);
+        } catch (error: any) {
             if (error.response) {
-                // O servidor respondeu com um status diferente de 2xx
                 if (error.response.status === 500) {
                     setMessage("Problema na comunicação com o robo. Sugestão: resetar o CLP.");
-                    //setMessage("Agora coloque o CLP no modo manual, abra a porta, ligue o tensiometro, feche a porta e coloque o o CPL no automaático e inicie a medição ")
                     setAlert("error");
-                    setTitle("Error")
+                    setTitle("Error");
                 } else {
                     setMessage(`Erro ${error.response.status}: ${error.response.data?.message || "Erro desconhecido"}`);
                 }
             } else if (error.request) {
-                // A requisição foi feita, mas não houve resposta
                 setMessage("Erro na comunicação com o servidor");
             } else {
-                // Algo inesperado aconteceu
                 setMessage("Erro inesperado ao buscar os dados");
             }
             
-            setAlert("error"); // Corrigido para 'error' para indicar falha
+            setAlert("error");
             setViewAltert(true);
-
-            setPositionRobo(false)
+            setPositionRobo(false);
         }
     }
 
@@ -133,6 +187,7 @@ export default function StencilAutomaticMedition() {
         p4: null,
         measurement_datetime: new Date(new Date().getTime() - 4 * 60 * 60 * 1000),
         is_registration_measurement: false,
+        is_pending_measurement: false,
         is_approved_status: false,
         cicles: 0,
         stencil_id: selectedStencil ? selectedStencil.stencil_id : 0,
@@ -147,7 +202,6 @@ export default function StencilAutomaticMedition() {
             } else if (!response || response.data.results.length === 0) {
                 setMessage('Não há stencils cadastrados.');
                 setAlert("warning");
-                //setOpenSnackBar(true);
             }
         } catch (error: any) {
             if (error.response) {
@@ -164,10 +218,25 @@ export default function StencilAutomaticMedition() {
                 setMessage('Ocorreu um erro inesperado.');
             }
             setAlert("error");
-            //setOpenSnackBar(true);
             setViewAltert(true);
         }
     };
+
+    const getParams = async () => {
+        const response = await axios.get(`${BASE_URL}api/parameters-tension/`)
+        if (response.data.results.length > 0) {
+            const firstResult = response.data.results[0];
+
+            const dados = {
+                    minLimitTension: firstResult.min_value,
+                    maxLimitTension: firstResult.max_value,
+                    scratchesValue: firstResult.scratch_value,
+            };
+
+            setLimits(dados);
+        }
+                
+    }
 
     useEffect(() => {
         getStencils();
@@ -197,48 +266,65 @@ export default function StencilAutomaticMedition() {
     const takePhotoRaspRequest = async (stencilId: number) => {
         setResposta(undefined);
         setDisabledInput(false);
-        setViewAltert(false)
-        
-
-        
+        setViewAltert(false);
         setLendo(false);
         setLoadingRobot(false);
-        
 
-        if (selectedStencil?.stencil_id === 0   || selectedStencil?.stencil_id === undefined) {
+        if (selectedStencil?.stencil_id === 0 || selectedStencil?.stencil_id === undefined) {
             setMessage("Selecione um stencil para realizar a medição.");
             setAlert("warning");
-            setViewAltert(true)
-            //setOpenSnackBar(true);
-            
+            setViewAltert(true);
         } else {
-            
             setTimeout(() => {
                 setLendo(true);
                 setLoadingRobot(true);
-            },100)
-            setMenssagemRobo("")
+            }, 100);
+            setMenssagemRobo("");
             handleFormStencilId();
+            
             try {
                 const response = await axios.post(`http://127.0.0.1:8000/api/takephotraspy/${selectedStencil?.stencil_id}/`);
                 if (response) {
                     setLoadingRobot(false);
                     setResposta(response.data);
-                    setFormData((prevFormData) => ({
-                        ...prevFormData,
-                        p1: response.data.textoP1,
-                        p2: response.data.textoP2,
-                        p3: response.data.textoP3,
-                        p4: response.data.textoP4,
-                    }));
+                    
+                    setFormData((prevFormData) => {
+                        const newFormData = {
+                            ...prevFormData,
+                            p1: response.data.textoP1,
+                            p2: response.data.textoP2,
+                            p3: response.data.textoP3,
+                            p4: response.data.textoP4,
+                        };
+                        
+                        const shouldApprove = checkApprovalStatus(
+                            newFormData.p1,
+                            newFormData.p2,
+                            newFormData.p3,
+                            newFormData.p4
+                        );
+
+                        const shouldApproveAll = checkApprovalStatusAll(
+                            newFormData.p1,
+                            newFormData.p2,
+                            newFormData.p3,
+                            newFormData.p4
+                        )
+                        
+                        return {
+                            ...newFormData,
+                            is_approved_status: shouldApprove,
+                            is_pending_measurement: shouldApproveAll
+                        };
+                    });
                 }
                 handleDisableInput();
             } catch (error) {
                 setMessage("Erro ao realizar a operação. Possível causa, não foi possível se conectar com o robo!");
-                setLendo(false)
+                setLendo(false);
                 setLoadingRobot(false);
                 setAlert("error");
-                setViewAltert(true)
+                setViewAltert(true);
             }
         }
     };
@@ -252,10 +338,24 @@ export default function StencilAutomaticMedition() {
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         const { name, value, type, checked } = event.target;
-        setFormData(prevData => ({
-            ...prevData,
+        
+        const newFormData = {
+            ...formData,
             [name]: type === 'checkbox' ? checked : value,
-        }));
+        };
+        
+        // Verifica se algum ponto é menor que 30 e atualiza o is_approved_status
+        const shouldApprove = checkApprovalStatus(
+            newFormData.p1,
+            newFormData.p2,
+            newFormData.p3,
+            newFormData.p4
+        );
+        
+        setFormData({
+            ...newFormData,
+            is_approved_status: shouldApprove || newFormData.is_approved_status
+        });
     };
 
     const handleChangeAutocomplete = (event: React.SyntheticEvent, value: Stencil | null) => {
@@ -290,7 +390,7 @@ export default function StencilAutomaticMedition() {
                 setAlert("error");
                 setOpenSnackBar(true);
             }  
-        }else{
+        } else {
             setMessage("O campo ciclos não pode estar ser igual a zero");
             setAlert("warning");
             setOpenSnackBar(true);
@@ -303,14 +403,11 @@ export default function StencilAutomaticMedition() {
             
             <div className="w-full min-h-screen mt-10 flex flex-col items-start justify-start relative">
                 
-            {viewAltert && (
-                         
-                         <div className="w-[90%] mb-4 ">
-                            <AlertItem  severity={alert} message={message} title={title} />
-                         </div>
-                        
-                       
-            )}
+                {viewAltert && (             
+                    <div className="w-[90%] mb-4 ">
+                        <AlertItem severity={alert} message={message} title={title} />
+                    </div>
+                )}
                 
                 <Card className="w-[90%] bg-slate-50">
                     <CardHeader>
@@ -320,46 +417,15 @@ export default function StencilAutomaticMedition() {
                         <form onSubmit={handleSubmit}>
                             <Grid item xs={12} sm={12} md={12}>
                                 <FormControl fullWidth>
-
                                     <SelectStencilItem
                                         stencils={stencils}
                                         selectedStencil={selectedStencil}
                                         setSelectedStencil={setSelectedStencil}
                                     />
-                                    {/**<Autocomplete
-                                            id="stencil-autocomplete"
-                                            options={stencils}
-                                            inputValue={String(inputValue)} // Controla o input manualmente
-                                            onInputChange={(event, text) => handleInputChange(text) } // Atualiza o inputValue sempre que o usuário digitar
-                                            
-                                            getOptionLabel={(option) => String(option.stencil_part_nbr)}
-                                            value={selectedStencil}
-                                            onChange={handleChangeAutocomplete}
-                                            
-                                            filterOptions={(options, state) => {
-                                                if (state.inputValue.length === 0){
-                                                    console.log("AQUI 01");
-                                                    return options;
-                                                }else
-                                                    console.log("AQUI 02");
-                                                    //setStencils(options.filter((option) => String(option.stencil_part_nbr).toLowerCase().startsWith(state.inputValue.toLowerCase())));
-                                                    return options.filter((option) => String(option.stencil_part_nbr).toLowerCase().startsWith(state.inputValue.toLowerCase()));
-                                            }}
-                                            renderInput={(params) => (
-                                                <TextField
-                                                    {...params}
-                                                    label="Stencils"
-                                                    size="small"
-                                                    required
-                                                />
-                                            )}
-                                        /> **/}
-
                                 </FormControl>
                             </Grid>
 
                             <Grid container spacing={2}>
-                                {/* Campos P1, P2, P3, P4 */}
                                 <Grid item xs={12} sm={12} md={3}>
                                     <TextField
                                         fullWidth
@@ -420,9 +486,6 @@ export default function StencilAutomaticMedition() {
                                     <Divider />
                                 </Grid>
 
-                                {/* Autocomplete para Stencils */}
-
-                                {/* Outros campos do formulário */}
                                 <Grid item xs={12} sm={12} md={6}>
                                     <TextField
                                         fullWidth
@@ -461,7 +524,19 @@ export default function StencilAutomaticMedition() {
                                     />
                                 </Grid>
 
-                                {/* Botões de ação */}
+                                <Grid item xs={12} sm={12} md={6}>
+                                    <FormControlLabel
+                                        control={
+                                            <Checkbox
+                                                name="is_approved_status"
+                                                checked={formData.is_pending_measurement}
+                                                onChange={handleChange}
+                                            />
+                                        }
+                                        label="Pendente ?"
+                                    />
+                                </Grid>
+
                                 <Grid item xs={12} sm={12} md={12} style={{ display: "flex", flexDirection: 'row', justifyContent: 'space-between', marginTop: '20px' }}>
                                     {!salvando && (
                                         <Button type="submit" disabled={stencilList?.length === 0 || !resposta} variant="contained" color="primary">Cadastrar</Button>
@@ -476,18 +551,15 @@ export default function StencilAutomaticMedition() {
                                     )}
                                     {!loadingRobot && (
                                         <div>
-                                            <a style={{ cursor: 'pointer', padding: '10px', backgroundColor: 'rgb(100 100 250)', color: 'white', borderRadius: '5px', marginRight:'10px' }} onClick={() => handlePosicionarRobo()}> Posicionar Robô</a>
                                             <a style={{ cursor: 'pointer', padding: '10px', backgroundColor: 'rgb(96 165 250)', color: 'white', borderRadius: '5px' }} onClick={() => takePhotoRaspRequest(stencilSelected)}> Iniciar coleta de dados</a>
                                         </div>
                                     )}
-                                    
                                 </Grid>
                             </Grid>
                         </form>
                     </CardContent>
                 </Card>
 
-                {/* Exibição das imagens coletadas */}
                 {resposta && (
                     <Card className="mt-4 p rounded-none w-[90%] bg-slate-50" style={{ minHeight: '400px' }}>
                         <CardHeader>
@@ -538,51 +610,26 @@ export default function StencilAutomaticMedition() {
                     </Card>
                 )}
 
-                {
-                    loadingRobot && (
-                        <div className="mt-4 p rounded-none w-[90%]" style={{ minHeight: '30px' }}>
+                {loadingRobot && (
+                    <div className="mt-4 p rounded-none w-[90%]" style={{ minHeight: '30px' }}>
+                        <Typography variant="h6" className="mb-4">Coletando dados...</Typography>
+                        <LinearProgress color="success" style={{paddingTop: '5px', paddingBottom: '5px', borderRadius: '5px' }}/>
+                    </div>
+                )}
 
-                            <Typography variant="h6" className="mb-4">Coletando dados...</Typography>
-                            <LinearProgress color="success" style={{paddingTop: '5px', paddingBottom: '5px',     borderRadius: '5px' }}/>
-                            
-                        </div>
-                    )
-                }
+                {(loadingRobot || lendo) && (
+                    <div className="mt-4 p rounded-none w-[90%]" style={{ minHeight: '400px', marginTop:'30px', marginLeft:'10px' }}>
+                        <ProgressoTension/>
+                    </div>
+                )}
 
-                {
-                    (loadingRobot || lendo )&&(
-                        <div className="mt-4 p rounded-none w-[90%]" style={{ minHeight: '400px', marginTop:'30px', marginLeft:'10px' }}>
-                                <ProgressoTension/>
-                        </div>
-                        
-                    )
-                }
+                {positionRobo && (
+                    <div className="mt-4 p rounded-none w-[90%]" style={{ minHeight: '400px' }}>
+                        <Typography variant="h6" className="mb-4">Posicionando o robo. Aguarde, ao posicionar o robo corretamente, você deve ligar o tenciometro...</Typography>
+                        <LinearProgress color="error" style={{paddingTop: '5px', paddingBottom: '5px', borderRadius: '5px' }}/>
+                    </div>
+                )}
 
-                {
-                    positionRobo && (
-                        <div className="mt-4 p rounded-none w-[90%]" style={{ minHeight: '400px' }}>
-
-                            <Typography variant="h6" className="mb-4">Posicionando o robo. Aguarde, ao posicionar o robo corretamente, você deve ligar o tenciometro...</Typography>
-                            <LinearProgress color="error" style={{paddingTop: '5px', paddingBottom: '5px',     borderRadius: '5px' }}/>
-                            
-                        </div>
-                    )
-                }
-
-                {
-                    (menssagemRobo!=null && String(menssagemRobo)!="") &&(
-                        
-                         
-                            <div className="w-[90%] mb-1 ">
-                               <AlertItem severity={alert} message={message} />
-                            </div>
-                             
-               
-                        
-                    )
-                }
-
-                {/* Snackbar para feedback */}
                 <Snackbar
                     open={openSnackBar}
                     autoHideDuration={4000}

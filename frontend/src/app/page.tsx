@@ -41,6 +41,7 @@ export default function Home() {
   const [alert, setAlert] = useState<AlertColor>("success")
   const [stencilTensionValues, setStencilTensionValues] = useState<StencilTensionValues[]>()
   const [lastRobotMedition, setLastRobotMedition] = useState<StencilRobotMedition>()
+  const [medicaoAranhao, setMedicaoAranhao] = useState<StencilRobotMedition[]>();
 
   const [viewAltert, setViewAltert] = useState(false)
 
@@ -196,8 +197,13 @@ export default function Home() {
 
 
           const responseLastMedition = await axios.get(`${BASE_URL}api/processedimages/?stencil_id=${response.data.results[0].stencil_id}&timestamp=${new Date().getTime()}`)
+
+          
           if (responseLastMedition.status === 200) {
+            setMedicaoAranhao(responseLastMedition.data.results)
+            console.log("LAST"+responseLastMedition.data.results)
             setLastRobotMedition(responseLastMedition.data.results[responseLastMedition.data.results.length - 1])
+            console.log("ALL"+responseLastMedition.data.results)
           } else {
             setMessageSnack('Stencil sem medição de arranhões ');
             setOpenSnackBar(true);
@@ -594,6 +600,7 @@ export default function Home() {
                             stencil={stencil}
                             tensionValues={stencilTensionValues}
                             lastRobotMedition={lastRobotMedition}
+                            arranhoesList = {medicaoAranhao }
                           />
                         }
                         fileName={`Relatorio_Stencil_${stencil?.stencil_id}.pdf`}

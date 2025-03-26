@@ -12,6 +12,18 @@ export function formatDateTime(date: string) {
     }
 }
 
+export function formatDateTimeToHour(date: string) {
+    try {
+        const hora = date.substring(11,13)
+        const minutos = date.substring(14, 16)
+        
+
+        return `${hora}:${minutos}`
+    } catch (error) {
+        
+    }
+}
+
 export function getRGBFromDate(targetDate: Date) {
     const currentDate = new Date();
     

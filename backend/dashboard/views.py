@@ -4,7 +4,7 @@ from dashboard.models import (
     Stencil,  
     StencilTensionValues,
     StencilType,
-    ProcessedImage,
+    ProcessedImage,ParameterTension
     
 )
 
@@ -34,7 +34,7 @@ from dashboard.serializers import (
     UserSerializer,
     ProcessedImageSerializer,
     ConfigurationsSerializer,
-    LoginSerializer
+    LoginSerializer, ParameterTensionSerializer
 )
 from django.contrib.auth.models import Group, User
 from rest_framework import permissions, viewsets
@@ -449,3 +449,7 @@ class LoginView(APIView):
             'user_id': user.id,
             'email': user.email
         }, status=status.HTTP_200_OK)
+
+class ParameterTensionView(viewsets.ModelViewSet):
+    queryset = ParameterTension.objects.all().order_by('-created_at')  # Ordena do mais recente para o mais antigo
+    serializer_class = ParameterTensionSerializer

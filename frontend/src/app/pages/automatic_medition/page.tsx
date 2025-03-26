@@ -14,8 +14,6 @@ import { CircularProgress } from "@mui/material";
 import InovaBottomImage from "@/components/InovaBottomImage";
 import Stopwatch from "@/components/StopWatch";
 import { SelectHistory } from "@/components/Select/SelectHistory";
-import AlertItem from "@/components/AlertItem";
-import ProgressoScrath from "@/components/ProgressoScrath";
 
 interface RequestRobot {
     id: number
@@ -38,13 +36,10 @@ export default function AutomaticMedition() {
 
     const [message, setMessage] = useState("Erro na comunicação com o robo")
     const [erroRobot, setErroRobot] = useState(false)
-    const [lendo, setLendo] = useState(false)
 
     const [selectedStencil, setSelectedStencil] = useState<Stencil | null>(
         null
     )
-
-    const [viewAltert, setViewAltert] = useState(false)
 
 
     const getStencils = async () => {
@@ -52,15 +47,9 @@ export default function AutomaticMedition() {
             const response = await axios.get(`${BASE_URL}api/stencil/`)
             if (response) {
                 setStencils(response.data.results)
-            } else {
-                setViewAltert(true)
-                setMessage("Erro na comunicação com o servidor!")
-                setLoadingRobot(false)
             }
         } catch (error) {
-            setViewAltert(true)
-            setMessage("Erro na comunicação com o servidor!")
-            setLoadingRobot(false)
+
         }
     }
 
@@ -70,41 +59,23 @@ export default function AutomaticMedition() {
 
 
     const takephotorequest = async () => {
-
-
-
-
         setErroRobot(false)
         setLoadingRobot(true)
-        setLendo(true)
-        setViewAltert(false)
-
-
         console.log(stencilSelected)
         try {
-
-            if (selectedStencil?.stencil_id === 0 || selectedStencil === null) {
-                setMessage("Selecione um stencil para realizar a medição.");
-                setViewAltert(true)
+            const response = await axios.post(`http://127.0.0.1:8000/api/takephoto/${selectedStencil?.stencil_id}/`)
+            if (response) {
                 setLoadingRobot(false)
-                setLendo(false)
-            } else {
-                const response = await axios.post(`http://127.0.0.1:8000/api/takephoto/${selectedStencil?.stencil_id}/`)
-                if (response) {
-                    setLoadingRobot(true)
-                    console.log(response.data)
-                    setResposta(response.data)
+                console.log(response.data)
+                setResposta(response.data)
+               // setStencils(response.data)
 
-                }
             }
-
         } catch (error: any) {
 
-            console.log("Api is not running", error)
-            setMessage("Erro na comunicação com o clp/robo!.Sugestão: \n Resetar o clp.")   
+
             setLoadingRobot(false)
             setErroRobot(true)
-            setViewAltert(true)
         }
     }
 
@@ -116,9 +87,6 @@ export default function AutomaticMedition() {
             maxAge: -1, // Expira imediatamente
             path: '/',
         });
-
-        localStorage.removeItem("token");
-        localStorage.removeItem("tokenTimestamp");
 
         // Redireciona para a página de login
         router.push('/pages/login');
@@ -132,17 +100,8 @@ export default function AutomaticMedition() {
     return (
         <main className="lg:ml-[23rem] p-4">
             <Sidebar logouFunction={handleLogout} />
-            <section className="w-full h-screen  flex-col flex items-center justify-center relative">
+            <section className="w-full h-screen flex items-center justify-center relative">
 
-
-                {
-                    viewAltert && (
-                        <div className="w-[70%] mb-6 ">
-                            <AlertItem variant="standard" severity={"error"} message={message} title="Warning" />
-                        </div>
-                    )
-
-                }
                 <Card className="w-[70%] bg-slate-50">
                     <CardHeader>
                         <div className="flex items-center  justify-between w-full">
@@ -164,7 +123,7 @@ export default function AutomaticMedition() {
                                 setSelectedStencil={setSelectedStencil}
                             />
                             <Button
-                                className="w-[25%] bg-blue-400 h-[50px] text-xl font-bold"
+                                className="w-[25%] bg-blue-400 h-[50px] text-xl font-bold" 
                                 onClick={takephotorequest}
                                 disabled={loadingRobot}
                             >
@@ -172,14 +131,12 @@ export default function AutomaticMedition() {
                             </Button>
                         </header>
                         <br />
-
-
                         {
                             loadingRobot
                                 ?
                                 <div className="flex w-full items-start justify-center">
                                     <div className="flex w-full items-center justify-between">
-                                        <span className="text-2xl font-bold text-blue-300" >Procesamendo. Tempo  estimado...</span>
+                                        <span className="text-2xl font-bold text-blue-300" >Processando medição de aranhões. Tempo  estimado...</span>
 
                                         <div className="
                                             flex 
@@ -218,22 +175,16 @@ export default function AutomaticMedition() {
 
                         }
 
-
-
-
+                        {
+                            erroRobot ?
+                                <div>
+                                    <span className="text-1xl font-bold text-red-400" >Erro na comunicação com o CLP. Verifique se o mesmo está em funcionamento</span>
+                                </div>
+                                : <></>
+                        }
 
                     </CardContent>
-
                 </Card>
-
-                {
-                    (loadingRobot || lendo && !erroRobot) && (
-                        <div className="mt-4 p rounded-none w-[90%]" style={{ minHeight: '400px', marginTop: '30px', marginLeft: '10px' }}>
-                            <ProgressoScrath />
-                        </div>
-
-                    )
-                }
             </section>
         </main>
     )

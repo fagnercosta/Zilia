@@ -64,7 +64,7 @@ export default function CadastroUser() {
     <main className="lg:ml-72 p-4">
       <Sidebar />
       <div className="w-full h-[80vh] flex flex-col items-center justify-center">
-        <Card className="w-[90%] bg-slate-50">
+        <Card className="w-[70%] bg-slate-50">
           <CardHeader>
             <CardTitle className="text-2xl font-bold">Cadastro de Usuários</CardTitle>
           </CardHeader>
@@ -76,7 +76,7 @@ export default function CadastroUser() {
                     name="first_name"
                     control={control}
                     render={({ field }) => (
-                      <TextField {...field} fullWidth label="Primeiro Nome" error={!!errors.first_name} helperText={errors.first_name?.message} />
+                      <TextField size="small"{...field} fullWidth label="Primeiro Nome" error={!!errors.first_name} helperText={errors.first_name?.message} />
                     )}
                   />
                 </Grid>
@@ -85,7 +85,7 @@ export default function CadastroUser() {
                     name="last_name"
                     control={control}
                     render={({ field }) => (
-                      <TextField {...field} fullWidth label="Último Nome" error={!!errors.last_name} helperText={errors.last_name?.message} />
+                      <TextField size="small"{...field} fullWidth label="Último Nome" error={!!errors.last_name} helperText={errors.last_name?.message} />
                     )}
                   />
                 </Grid>
@@ -94,7 +94,7 @@ export default function CadastroUser() {
                     name="email"
                     control={control}
                     render={({ field }) => (
-                      <TextField {...field} fullWidth label="E-mail" type="email" error={!!errors.email} helperText={errors.email?.message} />
+                      <TextField  size="small" {...field} fullWidth label="E-mail" type="email" error={!!errors.email} helperText={errors.email?.message} />
                     )}
                   />
                 </Grid>
@@ -103,7 +103,7 @@ export default function CadastroUser() {
                     name="password"
                     control={control}
                     render={({ field }) => (
-                      <TextField {...field} fullWidth label="Senha" type="password" error={!!errors.password} helperText={errors.password?.message} />
+                      <TextField size="small" {...field} fullWidth label="Senha" type="password" error={!!errors.password} helperText={errors.password?.message} />
                     )}
                   />
                 </Grid>
@@ -127,11 +127,18 @@ export default function CadastroUser() {
                   />
                   Administrador
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item xs={6} sm={12} md={6} style={{ display: "flex", gap: "10px" }}>
                   <Button type="submit" variant="contained" color="primary">
                     Cadastrar
                   </Button>
+
+                  <a 
+                    onClick={() => navigate.push("/")}
+                    style={{cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "red", color: "white", padding: "10px", paddingLeft:'30px', paddingRight:'30px', borderRadius: "5px"}}>
+                    CANCELAR
+                  </a>
                 </Grid>
+               
               </Grid>
             </form>
           </CardContent>

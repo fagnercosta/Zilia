@@ -9,6 +9,7 @@ if not exist "node_modules" (
 
 :: Inicia o servidor de desenvolvimento Next.js
 echo Iniciando o servidor Next.js...
+echo Nãpo feche esse terminal...
 start /min npm run start
 
 :: Fecha o terminal após iniciar o servidor

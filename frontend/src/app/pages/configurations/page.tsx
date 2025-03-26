@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import Sidebar from "@/components/Sidebar";
 import React, { use, useCallback, useEffect, useState } from "react";
@@ -13,9 +13,9 @@ import axios from "axios";
 import { BASE_URL } from "@/types/api";
 import { getRGBFromDate } from "@/functions/functions";
 import InovaBottomImage from "@/components/InovaBottomImage";
-import { InputOTPDemoSmart } from "@/components/Input/InputOTPDemo";
+import { TextField } from "@mui/material";
 import SnackBarControl from "@/components/SnackBarControl";
-import { AlertColor } from "@mui/material";
+import { AlertColor, Divider } from "@mui/material";
 import { ConfigurationsModel, SnackControl } from "@/types/utils";
 import { boolean } from "zod";
 
@@ -34,24 +34,25 @@ export default function Configurations() {
     })
 
     const [limits, setLimits] = useState<ConfigurationsModel>({
-        limitTension: "",
+        minLimitTension: "",
         maxLimitTension: "",
-        scratches: ""
+        scratchesValue: ""
     })
 
 
-    const changeMaxScratches = (e: string) => {
-        setLimits({ ...limits, scratches: e })
+    const changeMaxScratches = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setLimits({ ...limits, scratchesValue: e.target.value })
     }
 
-    const changeMaxLimitTension = (e: string) => {
-        setLimits({ ...limits, maxLimitTension: e })
-
+    const changeMaxLimitTension = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setLimits({ ...limits, maxLimitTension: e.target.value })
+        console.log(limits.maxLimitTension)
     }
 
-    const changeLimitTension = (e: string) => {
-        setLimits({ ...limits, limitTension: e })
+    const changeLimitTension = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setLimits({ ...limits, minLimitTension: e.target.value })
     }
+
     const [sincronizando, setSincronizando] = useState<boolean>(false)
     const [mensagemSicronizacao, setMensagemSincronizacao] = useState<String>("");
     const [messageInfo, setMessageInfo] = useState<String>("");
@@ -62,11 +63,20 @@ export default function Configurations() {
 
     const verifyData = async () => {
         try {
-            const response = await axios.get(`${BASE_URL}api/configurations/`)
-            if (response.data.length > 0) {
-                setLengthResponse(response.data)
-                setDate(new Date(response.data[0].date_to_review))
-                console.log(response.data.length)
+            const response = await axios.get(`${BASE_URL}api/parameters-tension/`)
+            if (response.data.results.length > 0) {
+                const firstResult = response.data.results[0];
+
+                const dados = {
+                    minLimitTension: firstResult.min_value.toString(),
+                    maxLimitTension: firstResult.max_value.toString(),
+                    scratchesValue: firstResult.scratch_value.toString(),
+                };
+
+                setLimits(dados);
+                setDate(new Date()); // Ajuste a data conforme necessário
+
+                console.log("Dados carregados:", dados);
             } else {
                 setDate(new Date())
             }
@@ -78,6 +88,22 @@ export default function Configurations() {
                     message: "Erro, problema com a api."
                 })
             }
+            console.log(error)
+        }
+    }
+
+    const handleSaveParams = async () => {
+        try {
+            const data = {
+                min_value: Number(limits.minLimitTension),
+                max_value: Number(limits.maxLimitTension),
+                scratch_value: Number(limits.scratchesValue)
+            }
+            const response = await axios.post(`${BASE_URL}api/parameters-tension/`, data)
+            if (response) {
+                console.log(response)
+            }
+        } catch (error) {
             console.log(error)
         }
     }
@@ -95,11 +121,8 @@ export default function Configurations() {
             path: '/',
         });
 
-       
-        
         localStorage.removeItem("token");
         localStorage.removeItem("tokenTimestamp");
-            
 
         // Redireciona para a página de login
         router.push('/pages/login');
@@ -116,7 +139,6 @@ export default function Configurations() {
         } catch (error) {
             console.log(error)
         }
-
     }
 
     var rota = ""
@@ -140,7 +162,6 @@ export default function Configurations() {
         } catch (erro) {
             setMensagemSincronizacao("Erro.." + erro + rota)
         }
-
     }
 
     const formatDate = (date: Date): string => {
@@ -151,8 +172,6 @@ export default function Configurations() {
         return `${year}-${month}-${day}`;
     };
 
-
-
     const handleDateDB = async (e: any) => {
         const dataNova = new Date(e);
         const formattedDate = formatDate(dataNova);
@@ -161,7 +180,6 @@ export default function Configurations() {
 
         try {
             if (lengthResponse.length > 0) {
-
                 const data = {
                     id: lengthResponse[lengthResponse.length - 1].id,
                     date_to_review: formattedDate
@@ -171,7 +189,6 @@ export default function Configurations() {
                     setDate(new Date(response.data.date_to_review))
                     console.log(response.data.date_to_review)
                 }
-
             } else {
                 const data = {
                     date_to_review: formattedDate
@@ -184,7 +201,6 @@ export default function Configurations() {
         } catch (error) {
             console.log(error)
         }
-
     }
 
     const handleClose = (event: React.SyntheticEvent | Event, reason?: string) => {
@@ -210,13 +226,10 @@ export default function Configurations() {
         </React.Fragment>
     );
 
-
-
     return (
         <main className="lg:ml-[23rem] p-4">
             <Sidebar logouFunction={handleLogout} />
             <div className="w-full h-screen flex items-start justify-center relative">
-               
                 <div className="w-full h-screen flex items-center  flex-col">
                     <Card className="w-[60%] bg-slate-50">
                         <CardHeader>
@@ -232,7 +245,6 @@ export default function Configurations() {
                                         backgroundColor: getRGBFromDate(date || new Date()),
                                         borderRadius: 99
                                     }}>
-
                                     </div>
                                     <DatePickerDemo
                                         date={date}
@@ -256,27 +268,39 @@ export default function Configurations() {
                                         Iniciar Sincronização
                                     </Button>
                                 </div>
+                                <div className="w-full ">
+                                    <Divider />
+                                </div>
                                 <div className="w-full flex items-center justify-start">
                                     <span className="mr-auto font-bold text-[18px]">Lâmpadas da máquina:</span>
                                     <Switch
                                         onCheckedChange={(e) => handleLamp(e)}
                                         color="green"
-
-
                                     />
                                 </div>
+
+                                <div className="w-full ">
+                                    <Divider />
+                                </div>
+
                                 <div className="w-full flex items-center justify-start">
                                     <span className="mr-auto font-bold text-[18px]">Limite de tensão:</span>
                                     <div className="flex items-center gap-4">
                                         <span className="font-bold text-[18px]">Min:</span>
-                                        <InputOTPDemoSmart
-                                            onChangeValue={changeLimitTension}
-                                            value={limits.limitTension}
+                                        <TextField
+                                            onChange={changeLimitTension}
+                                            value={limits.minLimitTension}
+                                            size="small"
+                                            type="number"
+                                            sx={{ width: 80 }}
                                         />
                                         <span className="font-bold text-[18px]">Máx:</span>
-                                        <InputOTPDemoSmart
-                                            onChangeValue={changeMaxLimitTension}
+                                        <TextField
+                                            onChange={changeMaxLimitTension}
                                             value={limits.maxLimitTension}
+                                            size="small"
+                                            type="number"
+                                            sx={{ width: 80 }}
                                         />
                                     </div>
                                 </div>
@@ -284,14 +308,27 @@ export default function Configurations() {
                                     <span className="mr-auto font-bold text-[18px]">Limite de arranhões:</span>
                                     <div className="flex items-center gap-4">
                                         <span className="font-bold text-[18px]">Máx:</span>
-                                        <InputOTPDemoSmart
-                                            onChangeValue={changeMaxScratches}
-                                            value={limits.scratches}
-                                            isScratches
+                                        <TextField
+                                            onChange={changeMaxScratches}
+                                            value={limits.scratchesValue}
+                                            size="small"
+                                            type="number"
+                                            sx={{ width: 80 }}
                                         />
                                     </div>
                                 </div>
 
+                                <div className="w-full flex items-center justify-between">
+                                    <div></div>
+                                    <div>
+                                        <Button
+                                            className="bg-blue-400"
+                                            onClick={() => handleSaveParams()}
+                                        >
+                                            Salvar Parametros
+                                        </Button>
+                                    </div>
+                                </div>
                             </div>
                         </CardContent>
                     </Card>
@@ -303,35 +340,18 @@ export default function Configurations() {
                     />
 
                     <div className="w-[60%] mt-10">
-                        {
-                            sincronizando
-
-                                ?
-                                <div className="flex flex-col items-center w-[100%]">
-                                    <CircularProgress color="primary" size={30} />
-                                    <Label className="mt-3 text-green-900 size-10 w-full text-center">
-                                        {mensagemSicronizacao}
-                                    </Label>
-                                </div>
-
-
-
-                                : <></>
-
+                        {sincronizando ?
+                            <div className="flex flex-col items-center w-[100%]">
+                                <CircularProgress color="primary" size={30} />
+                                <Label className="mt-3 text-green-900 size-10 w-full text-center">
+                                    {mensagemSicronizacao}
+                                </Label>
+                            </div>
+                            : <></>
                         }
-
-
-
                     </div>
-
-
-
-
                 </div>
             </div>
-
         </main>
-
-
     )
 }

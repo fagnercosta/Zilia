@@ -5,7 +5,7 @@ from dashboard.models import (
     StencilTensionValues,
     StencilType,
     ProcessedImage,
-    Configurations,CustomUser
+    Configurations,CustomUser, ParameterTension
 )
 from django.contrib.auth.models import Group, User
 from rest_framework import serializers
@@ -37,6 +37,12 @@ class GroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
         fields = ["url", "name"]
+
+
+class ParameterTensionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ParameterTension
+        fields = "__all__"
 
 
 class StencilSerializer(serializers.ModelSerializer):

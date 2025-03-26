@@ -17,11 +17,13 @@ import Table from './Table';
 import { Stencil, StencilRobotMedition, StencilTensionValues } from '@/types/models';
 import Logo from "../../assets/logo.png"
 import StencilImage from "../../assets/Stencil.jpeg"
+import TableScratch from './TableScratch';
 
 interface Props {
     stencil: Stencil,
-    tensionValues: StencilTensionValues[] | undefined
-    lastRobotMedition: StencilRobotMedition | undefined
+    tensionValues: StencilTensionValues[] | undefined,
+    arranhoesList: StencilRobotMedition[] |undefined,
+    lastRobotMedition: StencilRobotMedition | undefined,
 }
 
 const styles = StyleSheet.create({
@@ -237,7 +239,8 @@ const stylesCountScratchs = StyleSheet.create({
 const StencilReport = ({
     stencil,
     tensionValues,
-    lastRobotMedition
+    lastRobotMedition,
+    arranhoesList
 
 }: Props) => {
     // const StencilReport = () => {
@@ -261,7 +264,7 @@ const StencilReport = ({
                 <View style={stylesBody.containerItemsInfo}>
                     <CardInfos
                         textHeader='Identification'
-                        attribute={stencil.stencil_id}
+                        attribute={stencil.stencil_part_nbr}
                     />
                     <CardInfos
                         textHeader="Status"
@@ -399,8 +402,14 @@ const StencilReport = ({
                 </View>
 
                 <Text style={{ ...styles.tittleReport, marginLeft: 20, marginTop: 30 }}>Medidas de Arranhões</Text>
+
+                <View style={stylesListTensionPoints.container}>
+                    < TableScratch
+                        arranhoesList={arranhoesList}
+                    />
+                </View>
                 <View style={stylesBody.containerStencilInfo}>
-                    <CardPerformed textHeader='Arranhões'>
+                    <CardPerformed textHeader='Última Medição de Arranhão'>
                         <View style={stylesCountScratchs.container}>
                             <View style={stylesCountScratchs.containerImages}>
                                 {

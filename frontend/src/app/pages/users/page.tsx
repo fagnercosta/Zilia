@@ -13,9 +13,11 @@ import { Button } from "@/components/ui/button";
 import { CirclePlus, CircleX, Search } from "lucide-react";
 import { formatDateTime } from "@/functions/functions";
 import Link from "next/link";
+
 const columns = [
     { label: 'Primeiro Nome', minWidth: 50 },
     { label: 'E-mail', minWidth: 50 },
+    { label: 'Ações', minWidth: 50 },  // Nova coluna para ações
 ];
 
 export default function Users() {
@@ -73,6 +75,11 @@ export default function Users() {
         setPage(0);
     };
 
+    const handleEdit = (userId: number) => {
+        // Redirecionar para a página de edição do usuário
+        router.push(`/pages/cadastro_user/edit/${userId}`);
+    };
+
     const action = (
         <React.Fragment>
             <Button color="secondary" size="sm" onClick={handleClose}>
@@ -115,7 +122,7 @@ export default function Users() {
                             <TableBody>
                                 {loadingValues ? (
                                     <TableRow>
-                                        <TableCell>
+                                        <TableCell colSpan={columns.length}>
                                             <Grid item xs={12} md={12} lg={12}>
                                                 <div style={{ width: 400 }}>
                                                     <Typography variant="h6" color="#121212">Carregando...</Typography>
@@ -129,6 +136,17 @@ export default function Users() {
                                         <TableRow key={index}>
                                             <TableCell>{item.first_name}</TableCell>
                                             <TableCell>{item.email}</TableCell>
+                                            <TableCell>
+                                                <Button 
+
+                                                    disabled={true}
+                                                    variant="outline" 
+                                                    size="sm" 
+                                                    onClick={() => handleEdit(item.id)}  // Função de edição
+                                                >
+                                                    Editar
+                                                </Button>
+                                            </TableCell>
                                         </TableRow>
                                     ))
                                 )}

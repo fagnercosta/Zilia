@@ -2,6 +2,7 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 from django.db import models
 from datetime import date
 import uuid
+from datetime import datetime
 
 
 # TODO: Total number of cycles will not be saved in DB.
@@ -72,6 +73,14 @@ class StencilType(models.Model):
         return self.npi
 
 
+class ParameterTension(models.Model):
+    
+    min_value= models.FloatField(null= True, default=0) 
+    max_value = models.FloatField(null= True, default=0)
+    scratch_value = models.FloatField(null= True, default=0)
+    created_at = models.DateTimeField(auto_now_add=True)  # Opção 1 (recomendada)  # Sem auto_now_add
+    def __str__(self) -> str:
+        return self.parameter
 
 class StencilTensionValues(models.Model):
     p1 = models.FloatField()
@@ -82,6 +91,7 @@ class StencilTensionValues(models.Model):
     measurement_datetime = models.DateTimeField()
     is_registration_measurement = models.BooleanField()
     is_approved_status = models.BooleanField()
+    is_pending_measurement = models.BooleanField(default=False)
     cicles = models.FloatField(null=True)
     stencil_id = models.ForeignKey(
         "Stencil",

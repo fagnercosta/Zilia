@@ -7,7 +7,7 @@ export interface SnackControl{
 }
 
 export interface ConfigurationsModel{
+    minLimitTension: string
     maxLimitTension: string
-    limitTension: string
-    scratches: string
+    scratchesValue: string
 }
