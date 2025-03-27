@@ -1,6 +1,8 @@
 import { Stencil } from "@/types/models"
 
 export function formatDateTime(date: string) {
+
+    console.log("HORA"+date)
     try {
         const year = date.substring(0, 4)
         const mounth = date.substring(5, 7)

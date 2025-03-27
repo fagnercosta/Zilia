@@ -67,6 +67,9 @@ export default function StencilAutomaticMedition() {
     const [viewAltert, setViewAltert] = useState(false);
     const [lendo, setLendo] = useState(false);
 
+    const [active_status, setActiceStatus] = useState(true);
+    const [active_pending, setActivePending] = useState(true);
+
     const [limits, setLimits] = useState({
             minLimitTension: 0,
             maxLimitTension: 0,
@@ -78,6 +81,8 @@ export default function StencilAutomaticMedition() {
         const p2Num = p2 !== null ? Number(p2) : null;
         const p3Num = p3 !== null ? Number(p3) : null;
         const p4Num = p4 !== null ? Number(p4) : null;
+
+        console.log("LIMITES:", limits)
         
         let retorno= true;
         if (p1Num !== null && p1Num < limits.minLimitTension){
@@ -96,6 +101,9 @@ export default function StencilAutomaticMedition() {
             retorno = false;
         }
 
+        if(retorno){
+            setActiceStatus(false);
+        }
         return retorno;
             
     };
@@ -121,6 +129,10 @@ export default function StencilAutomaticMedition() {
 
         if (p4Num !== null && p4Num < limits.minLimitTension){
             retorno = true;
+        }
+
+        if(retorno){
+            setActivePending(false)
         }
 
         return retorno;
@@ -232,7 +244,7 @@ export default function StencilAutomaticMedition() {
                     maxLimitTension: firstResult.max_value,
                     scratchesValue: firstResult.scratch_value,
             };
-
+            console.log("DADOS:>",dados)
             setLimits(dados);
         }
                 
@@ -240,6 +252,7 @@ export default function StencilAutomaticMedition() {
 
     useEffect(() => {
         getStencils();
+        getParams()
         resetForm();
     }, []);
 
@@ -518,9 +531,10 @@ export default function StencilAutomaticMedition() {
                                                 name="is_approved_status"
                                                 checked={formData.is_approved_status}
                                                 onChange={handleChange}
+                                                disabled={active_status}
                                             />
                                         }
-                                        label="A medição está aprovada?"
+                                        label="A medição Aprovada"
                                     />
                                 </Grid>
 
@@ -531,9 +545,10 @@ export default function StencilAutomaticMedition() {
                                                 name="is_approved_status"
                                                 checked={formData.is_pending_measurement}
                                                 onChange={handleChange}
+                                                disabled={active_pending}
                                             />
                                         }
-                                        label="Pendente ?"
+                                        label="Pendente"
                                     />
                                 </Grid>
 

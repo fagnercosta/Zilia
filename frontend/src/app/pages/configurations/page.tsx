@@ -21,6 +21,7 @@ import { boolean } from "zod";
 
 import { CircularProgress, Snackbar, Alert, IconButton } from "@mui/material";
 import { CircleX } from "lucide-react";
+import AlertItem from "@/components/AlertItem";
 
 export default function Configurations() {
 
@@ -32,6 +33,8 @@ export default function Configurations() {
         message: "",
         openSnackBar: false
     })
+
+    const [salvoParams, setSalvoParms] = useState(false)
 
     const [limits, setLimits] = useState<ConfigurationsModel>({
         minLimitTension: "",
@@ -93,6 +96,7 @@ export default function Configurations() {
     }
 
     const handleSaveParams = async () => {
+        setSalvoParms(false)
         try {
             const data = {
                 min_value: Number(limits.minLimitTension),
@@ -102,6 +106,7 @@ export default function Configurations() {
             const response = await axios.post(`${BASE_URL}api/parameters-tension/`, data)
             if (response) {
                 console.log(response)
+                setSalvoParms(true)
             }
         } catch (error) {
             console.log(error)
@@ -347,6 +352,10 @@ export default function Configurations() {
                                     {mensagemSicronizacao}
                                 </Label>
                             </div>
+                            : <></>
+                        }
+                        {salvoParams ?
+                            <AlertItem message={"Parametros Salvos Com Sucesso!"} title={"success"} />
                             : <></>
                         }
                     </div>
