@@ -8,7 +8,8 @@ import { Stencil } from "@/types/models";
 import { Alert, AlertColor, Button, Checkbox, Divider, FormControlLabel, Grid, Snackbar, TextField, Autocomplete } from "@mui/material";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import React, { ChangeEvent, FormEvent, useEffect, useState, useCallback } from "react";
+import cookie from "cookie";
 
 interface FormData {
     p1: number | null;
@@ -29,6 +30,18 @@ export default function StencilMedition() {
     const [alert, setAlert] = useState<AlertColor>("success");
     const [message, setMessage] = useState('');
     const navigate = useRouter();
+
+    // Função de logout integrada ao Sidebar
+    const handleLogout = useCallback(() => {
+        document.cookie = cookie.serialize("authToken", "", {
+            httpOnly: false,
+            secure: process.env.NODE_ENV !== "development",
+            maxAge: -1,
+            path: "/",
+        });
+        localStorage.removeItem("token");
+        navigate.push("/login");
+    }, [navigate]);
 
     useEffect(() => {
         const getStencils = async () => {
@@ -97,7 +110,7 @@ export default function StencilMedition() {
 
     return (
         <main className="lg:ml-[23rem] p-4">
-            <Sidebar />
+            <Sidebar logouFunction={handleLogout} />
             <div className="w-full min-h-screen mt-10 flex flex-col items-start justify-start relative">
                 <Card className="w-[90%] bg-slate-50">
                     <CardHeader>
@@ -106,7 +119,6 @@ export default function StencilMedition() {
                     <CardContent>
                         <form onSubmit={handleSubmit}>
                             <Grid container spacing={2}>
-                                {/* Campos de entrada */}
                                 {["p1", "p2", "p3", "p4"].map((field) => (
                                     <Grid item xs={12} sm={12} md={3} key={field}>
                                         <TextField
@@ -122,7 +134,6 @@ export default function StencilMedition() {
                                     </Grid>
                                 ))}
                                 <Grid item xs={12} sm={12} md={12}><Divider /></Grid>
-                                {/* Autocomplete para Stencils */}
                                 <Grid item xs={12} sm={12} md={6}>
                                     <Autocomplete
                                         id="stencil-autocomplete"
@@ -140,7 +151,6 @@ export default function StencilMedition() {
                                         )}
                                     />
                                 </Grid>
-                                {/* Outros campos */}
                                 <Grid item xs={12} sm={12} md={6}>
                                     <TextField
                                         fullWidth
