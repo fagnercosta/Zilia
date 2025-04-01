@@ -290,7 +290,7 @@ const StencilReport = ({
                     />
                 </View>
                 <View style={stylesBody.containerStencilInfo}>
-                    <CardPerformed textHeader='Last Medition '>
+                    <CardPerformed textHeader='Last Medition '  dataTime={tensionValues && tensionValues.length > 0 ? String(tensionValues[0]?.measurement_datetime ? formatDateTime(tensionValues[0]?.measurement_datetime) : "") : ""}>
                         <View style={stylesLastMedition.container}>
                             <View style={stylesLastMedition.viewImage}>
                                 <Image
@@ -409,7 +409,7 @@ const StencilReport = ({
                     />
                 </View>
                 <View style={stylesBody.containerStencilInfo}>
-                    <CardPerformed textHeader='Última Medição de Arranhão'>
+                    <CardPerformed textHeader='Última Medição de Arranhão' dataTime={String(lastRobotMedition?.timestamp ? formatDateTime(lastRobotMedition.timestamp) : "")} >
                         <View style={stylesCountScratchs.container}>
                             <View style={stylesCountScratchs.containerImages}>
                                 {

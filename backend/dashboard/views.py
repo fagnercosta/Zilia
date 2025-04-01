@@ -411,6 +411,32 @@ class StencilTensionValuesViewSet(viewsets.ModelViewSet):
             except Stencil.DoesNotExist:
                 pass  
 
+class LatestStencilTensionView(APIView):
+    def get(self, request, stencil_id):
+        try:
+            # Busca o registro mais recente para o stencil_id fornecido
+            latest_tension = StencilTensionValues.objects.filter(
+                stencil_id=stencil_id
+            ).latest('measurement_datetime')
+            
+            data = {
+                'id': latest_tension.id,              
+                'cicles': latest_tension.cicles,
+                'stencil_id': latest_tension.stencil_id_id
+            }
+            
+            return Response(data, status=status.HTTP_200_OK)
+            
+        except StencilTensionValues.DoesNotExist:
+            return Response(
+                {'error': 'Nenhum registro encontrado para este stencil.'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        except Exception as e:
+            return Response(
+                {'error': str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 User = get_user_model()
 

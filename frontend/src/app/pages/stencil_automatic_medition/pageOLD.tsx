@@ -66,7 +66,6 @@ export default function StencilAutomaticMedition() {
     const [inputValue, setInputValue] = useState<String>("0");
     const [viewAltert, setViewAltert] = useState(false);
     const [lendo, setLendo] = useState(false);
-    const [carregadoCiclos, setCarregadoCiclos] = useState(false);
 
     const [active_status, setActiceStatus] = useState(true);
     const [active_pending, setActivePending] = useState(true);
@@ -251,26 +250,6 @@ export default function StencilAutomaticMedition() {
                 
     }
 
-    const resetFormExceptDate = () => {
-        setFormData(prev => ({
-          p1: "",
-          p2: "",
-          p3: "",
-          p4: "",
-          measurement_datetime: prev.measurement_datetime, // Mantém a data atual
-          is_registration_measurement: false,
-          is_pending_measurement: false,
-          is_approved_status: false,
-          cicles: 0,
-          stencil_id: selectedStencil ? selectedStencil.stencil_id : 0,
-        }));
-        
-        setResposta(undefined);
-        setDisabledInput(false);
-        setActiceStatus(true);
-        setActivePending(true);
-      };
-
     useEffect(() => {
         getStencils();
         getParams()
@@ -321,7 +300,6 @@ export default function StencilAutomaticMedition() {
                 if (response) {
                     setLoadingRobot(false);
                     setResposta(response.data);
-                    fetchLatestMeasurement(selectedStencil?.stencil_id);
                     
                     setFormData((prevFormData) => {
                         const newFormData = {
@@ -355,7 +333,7 @@ export default function StencilAutomaticMedition() {
                 }
                 handleDisableInput();
             } catch (error) {
-                setMessage("Erro ao realizar a operação. Não foi possível se conectar com o robo. Tente Novamente");
+                setMessage("Erro ao realizar a operação. Possível causa, não foi possível se conectar com o robo!");
                 setLendo(false);
                 setLoadingRobot(false);
                 setAlert("error");
@@ -393,42 +371,6 @@ export default function StencilAutomaticMedition() {
         });
     };
 
-    const fetchLatestMeasurement = async (stencilId: number) => {
-        console.log(`Buscando ciclos para stencil ${stencilId}`);
-        setCarregadoCiclos(true)
-        
-        try {
-            const url = `${BASE_URL}/stencil-tension/latest/${stencilId}/`;
-            console.log(`URL da requisição: ${url}`);
-            
-            const response = await axios.get(url);
-            console.log("Resposta da API:", response.data);
-            
-            const lastCicles = response.data?.cicles || 0;
-            console.log(`Últimos ciclos: ${lastCicles}, Novo valor: ${lastCicles + 1}`);
-            
-            setFormData(prev => ({
-                ...prev,
-                cicles: lastCicles + 1
-            
-            }));
-        } catch (error) {
-           
-            console.error("Erro detalhado:", error);
-            setFormData(prev => ({
-                ...prev,
-                cicles: 1,
-               
-            }));
-        } finally {
-
-            setTimeout(() => {
-                setCarregadoCiclos(false);
-            },2000)
-            //setCarregadoCiclos(false); //
-        }
-    };
-
     const handleChangeAutocomplete = (event: React.SyntheticEvent, value: Stencil | null) => {
         setSelectedStencil(value);
         if (value) {
@@ -442,8 +384,6 @@ export default function StencilAutomaticMedition() {
 
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-
-        
         if (formData.cicles !== 0) {
             setSalvando(true);
             try {
@@ -455,9 +395,7 @@ export default function StencilAutomaticMedition() {
                     setMessage("Medição de tensão cadastrada com sucesso!");
                     setAlert("success");
                     setOpenSnackBar(true);
-                    resetFormExceptDate();
-                    
-                    //navigate.push("/pages/stencil_automatic_medition");
+                    navigate.push("/pages/stencil_automatic_medition");
                 }
             } catch (error) {
                 console.log(error);
@@ -571,16 +509,7 @@ export default function StencilAutomaticMedition() {
                                         name="cicles"
                                         value={formData.cicles}
                                         onChange={handleChange}
-                                        disabled={true}
-                                        
                                     />
-                                    {carregadoCiclos &&(
-                                        <div> 
-                                            <Typography variant="h6">Carregando ciclos...</Typography>
-                                            <LinearProgress color="info" />
-                                        </div>
-                                    )}
-                                    
                                 </Grid>
                                 <Grid item xs={12} sm={12} md={6}>
                                     <TextField
@@ -624,8 +553,8 @@ export default function StencilAutomaticMedition() {
                                 </Grid>
 
                                 <Grid item xs={12} sm={12} md={12} style={{ display: "flex", flexDirection: 'row', justifyContent: 'space-between', marginTop: '20px' }}>
-                                    {!salvando &&  (
-                                        <Button type="submit" disabled={stencilList?.length === 0 || !resposta || carregadoCiclos } variant="contained" color="primary">Cadastrar</Button>
+                                    {!salvando && (
+                                        <Button type="submit" disabled={stencilList?.length === 0 || !resposta} variant="contained" color="primary">Cadastrar</Button>
                                     )}
                                     {salvando && (
                                         <div>
@@ -647,7 +576,6 @@ export default function StencilAutomaticMedition() {
                 </Card>
 
                 {resposta && (
-                    
                     <Card className="mt-4 p rounded-none w-[90%] bg-slate-50" style={{ minHeight: '400px' }}>
                         <CardHeader>
                             <CardTitle className="text-2xl font-bold">Imagens coletadas</CardTitle>

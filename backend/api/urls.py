@@ -22,7 +22,7 @@ from dashboard.views import (
     UserCreateSerializer,
     UserCreateView,
     UserDetailView,
-    UserListView, ParameterTensionView
+    UserListView, ParameterTensionView, LatestStencilTensionView
 )
 
 from dashboard.views import (
@@ -64,6 +64,7 @@ urlpatterns = [
     path('api/configurations/', configurations_manager ),
     path('api/testpoints/', pointsResult, name="testservicepoints"),
 
-    path('api/position-point/',positionRoboPoint, name="position-point")
+    path('api/position-point/',positionRoboPoint, name="position-point"),
+    path('stencil-tension/latest/<int:stencil_id>/', LatestStencilTensionView.as_view(), name='latest-stencil-tension'),
     
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

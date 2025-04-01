@@ -344,7 +344,7 @@ class TensionService:
         return cv2.equalizeHist(image) 
 
     def main(self):
-        try:
+        '''try:
             self.client.connect()
             print("Conectado ao CLP")
 
@@ -415,10 +415,10 @@ class TensionService:
             print(f"Erro: {e}")
         finally:
             self.client.disconnect()
-            print("Conexão com o CLP encerrada.") 
+            print("Conexão com o CLP encerrada.") '''
             
             
-        '''final_image_path_p1, final_image_path_p2,final_image_path_p3, final_image_path_p4 = self.getFotos()
+        final_image_path_p1, final_image_path_p2,final_image_path_p3, final_image_path_p4 = self.getFotos()
            
 
         textoP1 = self.prepare_images1()   
@@ -429,6 +429,6 @@ class TensionService:
         final_image_path_p1 , final_image_path_p2, final_image_path_p3, final_image_path_p4 = self.getFotos()
             
 
-        return final_image_path_p1, final_image_path_p2, final_image_path_p3, final_image_path_p4, textoP1, textoP2, textoP3, textoP4'''
+        return final_image_path_p1, final_image_path_p2, final_image_path_p3, final_image_path_p4, textoP1, textoP2, textoP3, textoP4
         
        

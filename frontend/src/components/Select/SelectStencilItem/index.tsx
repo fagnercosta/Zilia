@@ -57,6 +57,7 @@ interface Props {
     setSelectedStencil: any
     
     
+    
 }
 
 export function SelectStencilItem({ stencils, setSelectedStencil, selectedStencil}: Props) {

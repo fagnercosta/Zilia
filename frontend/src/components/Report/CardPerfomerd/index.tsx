@@ -3,13 +3,14 @@ import { Page, Text, View, Document, StyleSheet, Image } from '@react-pdf/render
 
 
 interface Props {
-    textHeader: string
+    textHeader: string,
+    dataTime : string,
     children: React.ReactNode
 }
 
 const CardPerformed = ({
     textHeader,
-    children
+    children, dataTime
 }: Props) => {
 
     const styles = StyleSheet.create({
@@ -64,7 +65,7 @@ const CardPerformed = ({
         <View style={styles.container}>
             <View style={styles.header}>
                 <Text style={styles.textHeader}>{textHeader}</Text>
-                <Text style={styles.textHeader}>12/02/2024</Text>
+                <Text style={styles.textHeader}>{dataTime}</Text>
             </View>
             <View style={styles.body}>
                 {children}
