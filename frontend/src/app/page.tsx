@@ -128,7 +128,7 @@ export default function Home() {
     localStorage.removeItem("tokenTimestamp");
 
     // Redireciona para a página de login
-    router.push('/pages/login');
+    router.push('/login');
   }, [router]);
 
   const handlePage = (pagePath: string) => {

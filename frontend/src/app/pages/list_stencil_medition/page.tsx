@@ -67,7 +67,7 @@ export default function ListStencilMedition() {
             maxAge: -1,
             path: "/"
         });
-        router.push("/pages/login");
+        router.push("/login");
     }, [router]);
 
     const getStencils = async () => {
