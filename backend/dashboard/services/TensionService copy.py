@@ -8,55 +8,9 @@ from pypylon import pylon
 import paramiko
 import pytesseract
 
-
-
 import easyocr
+pytesseract.pytesseract.tesseract_cmd = r'C:\Tesseract-OCR\tesseract.exe'
 
-class ExtractTextInImage:
-    def __init__(self, image_path=None):
-        self.image_path = image_path  # Pode ser None se você passar diretamente a imagem
-    
-    def extract_text(self, image=None):
-        """Extrai texto de uma imagem (pode ser um array NumPy ou um caminho de arquivo)."""
-        if image is None:
-            if self.image_path is None:
-                raise ValueError("Nenhuma imagem ou caminho de imagem fornecido.")
-            image = cv2.imread(self.image_path)
-            if image is None:
-                raise ValueError("Não foi possível carregar a imagem.")
-            
-
-        
-        # Pré-processamento
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        gray = cv2.GaussianBlur(gray, (5, 5), 0)
-        thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
-        
-        nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3,3))
-        thresh = cv2.dilate(thresh, nucleo, iterations = 7)
-        # OCR com EasyOCR
-        reader = easyocr.Reader(["en"], gpu=True)
-        resultado = reader.readtext(self.resize_image(thresh), detail=0, allowlist='0123456789')
-        
-        return resultado[0];
-
-    def normalize_text(self, resultado):
-        # Processa o resultado (igual ao seu código atual)
-        text = ''.join(resultado)  # Junta os resultados do OCR
-        text = re.sub('[^0-9]', '', text)
-        
-        resposta = ''
-        for i, l in enumerate(text):
-            if i <= 1:
-                resposta += l
-            elif i == 2:
-                resposta += "." + l
-
-        return resposta
-    
-    def resize_image(self, image):
-        novo_tamanho = (image.shape[1] * 2, image.shape[0] * 2)  # OpenCV usa (largura, altura)
-        return cv2.resize(image, novo_tamanho, interpolation=cv2.INTER_NEAREST)
 class TensionService:
     def __init__(self, stencil_id):
         self.stencil_id = stencil_id
@@ -174,21 +128,59 @@ class TensionService:
     
     def prepare_images1(self):
         imagemOriginal = cv2.imread('images_final/ponto_1.png') 
-        imagemOriginal = imagemOriginal[515:720, 820:1220]
+        #imagemOriginal = imagemOriginal[540:700,800:1210]
+        imagemOriginal = imagemOriginal[515:720,820:1220]
         
-        # Salva a imagem recortada (opcional)
+        print(f"TAMANAHO DA IMAGEM:{imagemOriginal.shape}")
+        
+       
+
         path_p1 = "images_final/ponto_1_tratada.png"
         cv2.imwrite(path_p1, imagemOriginal)
+        img = cv2.imread(path_p1)
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        imagemEqualizada = self.equalizarHistograma(gray)
+        thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
         
-        # Usa ExtractTextInImage para extrair o texto
-        extrator = ExtractTextInImage(imagemOriginal)
-        resultado = extrator.extract_text(image=imagemOriginal)     
-        textoResposta = extrator.normalize_text(resultado)
         
+        nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3,3))
+        th2Open = cv2.dilate(thresh, nucleo, iterations = 7)
+        th2Open = cv2.erode(th2Open,nucleo,iterations=5)
+        #cv2.imwrite(thresh,"images_final/ponto_1_tratada_bin.png")
+
+        th2OpenEq = self.equalizarHistograma(th2Open)
+        cv2.imwrite(f"{self.final_image_dir}/ponto_1_tratada_bin_eq.png", th2OpenEq)
+
+        reader = easyocr.Reader(['pt'],gpu=True)
+        results = reader.readtext(
+            image=th2OpenEq,
+            allowlist='0123456789',
+            slope_ths=0.1
+                 
+        )   
+
+        text=''
+        textoResposta = ''
+        for result in results:
+            print(result[1])
+            text = result[1]
+        text = text.replace('.','')
+        text = text.strip()
+        
+        text =   re.sub('[^0-9]', '', text)
+        for i, l in enumerate(text):
+            if i  <= 1:
+                textoResposta += l
+            else:
+                if i==2:
+                    textoResposta += "."+l
+
         print("RESPOSTA p1", textoResposta)
-        self.binarizar("images_final/ponto_1.png", 1)
+
+        self.binarizar("images_final/ponto_1.png",1)
+            
         
-        return textoResposta
+        return  textoResposta
 
     
 
@@ -196,21 +188,52 @@ class TensionService:
         imagemOriginal = cv2.imread('images_final/ponto_2.png') 
         imagemOriginal = imagemOriginal[520:720,800:1210]
 
-        
-
         path_p1 = "images_final/ponto_2_tratada.png"
         cv2.imwrite(path_p1, imagemOriginal)
         
-        # Usa ExtractTextInImage para extrair o texto
-        extrator = ExtractTextInImage(imagemOriginal)
-        resultado = extrator.extract_text(image=imagemOriginal)
+        img = cv2.imread(path_p1)
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        imagemEqualizada = self.equalizarHistograma(gray)
+        thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
         
-        textoResposta = extrator.normalize_text(resultado)
+        nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3,3))
+        th2Open = cv2.dilate(thresh, nucleo, iterations = 9)
+
+        th2OpenEq = self.equalizarHistograma(th2Open)
+
+        cv2.imwrite(f"{self.final_image_dir}/ponto_2_tratada_bin_eq.png", th2OpenEq)
         
-        print("RESPOSTA p1", textoResposta)
-        self.binarizar("images_final/ponto_2.png", 2)
+        #cv2.imwrite(thresh,"images_final/ponto_2_tratada_bin.png")
+        reader = easyocr.Reader(['pt'],gpu=True)
+        results = reader.readtext(
+            image=imagemOriginal,
+            allowlist='0123456789',
         
-        return textoResposta
+           
+        )   
+
+        text=''
+        textoResposta = ''
+        for result in results:
+            print(result[1])
+            text = result[1]
+        text = text.replace('.','')
+        text = text.strip()
+        
+        text =   re.sub('[^0-9]', '', text)
+
+
+        for i, l in enumerate(text):
+            if i  <= 1:
+                textoResposta += l
+            else:
+               if i==2:
+                    textoResposta += "."+l
+
+        print("RESPOSTA P2", textoResposta)
+        self.binarizar("images_final/ponto_2.png",2) 
+        
+        return  textoResposta
         
     
     def prepare_images3(self):
@@ -219,16 +242,47 @@ class TensionService:
 
         path_p1 = "images_final/ponto_3_tratada.png"
         cv2.imwrite(path_p1, imagemOriginal)
-        # Usa ExtractTextInImage para extrair o texto
-        extrator = ExtractTextInImage(imagemOriginal)
-        resultado = extrator.extract_text(image=imagemOriginal)
+        img = cv2.imread(path_p1)
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        imagemEqualizada = self.equalizarHistograma(gray)
+        thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
         
-        textoResposta = extrator.normalize_text(resultado)
+        nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3,3))
+        th2Open = cv2.dilate(thresh, nucleo, iterations = 9)
+
+        th2OpenEq = self.equalizarHistograma(th2Open)
+        cv2.imwrite(f"{self.final_image_dir}/ponto_3_tratada_bin_eq.png", th2OpenEq)
+        cv2.imwrite(f"{self.final_image_dir}/ponto_3_tratada_bin_equalizada.png", imagemEqualizada)
         
+        #cv2.imwrite(thresh,"images_final/ponto_3_tratada_bin.png")
+       
+
+        reader = easyocr.Reader(['pt'],gpu=True)
+        results = reader.readtext(
+            image=imagemOriginal, allowlist='0123456789'
+        )   
+
+        text=''
+        textoResposta = ''
+        for result in results:
+            print(result[1])
+            text = result[1]
+
+        text = text.replace('.','')
+        text = text.strip()
+        
+        text =   re.sub('[^0-9]', '', text)
+        for i, l in enumerate(text):
+            if i  <= 1:
+                textoResposta += l
+            else:
+                if i==2:
+                    textoResposta += "."+l
+
         print("RESPOSTA P3", textoResposta)
-        self.binarizar("images_final/ponto_3.png", 3)
+        self.binarizar("images_final/ponto_3.png",3)   
         
-        return textoResposta
+        return  textoResposta
     
     def prepare_images4(self):
         imagemOriginal = cv2.imread('images_final/ponto_4.png') 
@@ -237,16 +291,47 @@ class TensionService:
         path_p1 = "images_final/ponto_4_tratada.png"
         cv2.imwrite(path_p1, imagemOriginal)
         
-        # Usa ExtractTextInImage para extrair o texto
-        extrator = ExtractTextInImage(imagemOriginal)
-        resultado = extrator.extract_text(image=imagemOriginal)
+        img = cv2.imread(path_p1)
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        imagem = self.equalizarHistograma(gray)
+
+        thresh = cv2.adaptiveThreshold(imagem, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
+        nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3,3))
+        th2Open = cv2.dilate(thresh, nucleo, iterations = 2)
+
+        #th2OpenEq = self.equalizarHistograma(th2Open)
+        cv2.imwrite(f"{self.final_image_dir}/ponto_4_tratada_bin_eq.png", imagem)
+        cv2.imwrite(f"{self.final_image_dir}/ponto_4_tratada_binaria.png",th2Open)
+
         
-        textoResposta = extrator.normalize_text(resultado)
         
-        print("RESPOSTA P3", textoResposta)
-        self.binarizar("images_final/ponto_4.png", 4)
-        
-        return textoResposta
+
+        reader = easyocr.Reader(['pt'],gpu=True)
+        results = reader.readtext(
+            image=imagemOriginal, allowlist='0123456789'
+        )   
+
+        text=''
+        textoResposta = ''
+        for result in results:
+            print(result[1])
+            text = result[1]
+        text =   re.sub('[^0-9]', '', text)
+        text = text.replace('.','')
+        text = text.replace(',','')
+        text = text.strip()
+        text =   re.sub('[^0-9]', '', text)
+        for i, l in enumerate(text):
+            if i  <= 1:
+                textoResposta += l
+            else:
+                if i==2:
+                    textoResposta += "."+l
+
+        print("RESPOSTA P4", textoResposta)
+            
+        self.binarizar("images_final/ponto_4.png",4)
+        return  textoResposta
     
 
     def recortarImagem(self, img,x,y,w,h):
