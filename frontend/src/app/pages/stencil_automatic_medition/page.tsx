@@ -298,6 +298,7 @@ export default function StencilAutomaticMedition() {
     };
 
     const takePhotoRaspRequest = async (stencilId: number) => {
+        resetFormExceptDate();
         setResposta(undefined);
         setDisabledInput(false);
         setViewAltert(false);
@@ -629,7 +630,7 @@ export default function StencilAutomaticMedition() {
                                     )}
                                     {salvando && (
                                         <div>
-                                            <CircularProgress color="primary" style={{ width: '4%', paddingRight: '2px' }} />
+                                            <LinearProgress color="primary" style={{ width: '100%', paddingRight: '2px' }} />
                                             <Typography variant="h6" marginBottom='10px' color="textSecondary" align="center" gutterBottom>
                                                 Salvando dados....
                                             </Typography>
