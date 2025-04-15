@@ -15,7 +15,7 @@ import datetime
 from dashboard.serializers import StencilSerializer
 
 
-FILE_PATH = os.path.join("/",settings.BASE_DIR,"dashboard", "services", "data-prod.txt")
+FILE_PATH = os.path.join("/",settings.BASE_DIR,"dashboard", "services", "data.txt")
 URL_API_LOCAL = url = "http://localhost:8000/api/stencil/"
 
 
@@ -43,11 +43,10 @@ class WiptrackSincronizeService:
     def __init__(self):
         self.arquivo = FILE_PATH
         self.url = URL_WIPTRACK
-        self.contador = 0
+        self.contador = 1
 
     def sincronizeData(self):
         print("AQUI START WIPTRACK")
-        #self.download(self.url)
         self.sinckDataByTextFile(self.arquivo)
         #self.sinckDataByApiRest(self.url)
 
@@ -81,20 +80,6 @@ class WiptrackSincronizeService:
             print(f"Erro: O arquivo {arquivoData} não foi encontrado.")
         except json.JSONDecodeError as e:
             print(f"Erro ao fazer o parsing do JSON: {e}")
-            
-    def download(self, url):
-        
-         
-        response = requests.request("POST", url, headers=headers, data=payload)
-        print(response.text)
-            
-        try:
-                with open(FILE_PATH, 'w',encoding='utf-8') as arquivo:
-                    # Escrever o conteúdo da resposta no arquivo
-                    arquivo.write(response.text)
-                print('Arquivo salvo com sucesso!')
-        except Exception as e:
-                print(f'Erro ao salvar o arquivo: {e}')
         
     def sinckDataByApiRest(self, url):
         response = requests.request("POST", url, headers=headers, data=payload)
@@ -127,7 +112,10 @@ class WiptrackSincronizeService:
     def sendDataApi(self, stencil):
 
         try:
-           
+            #print(f"-------------------- > {stencil} \n")
+            
+            
+            
             headers = {
                 "Content-Type": "application/json",  # Se você estiver enviando dados em formato JSON
             }
@@ -136,8 +124,7 @@ class WiptrackSincronizeService:
             try:
                 
                 response = requests.post(URL_API_LOCAL, json=json.loads(stencil), headers=headers)
-                response.raise_for_status() 
-                self.contador = self.contador + 1 # Levanta um erro para códigos de status 4xx ou 5xx
+                response.raise_for_status()  # Levanta um erro para códigos de status 4xx ou 5xx
                 print('Response status code:', response.status_code)
                 print('Response text:', response.text)
             except requests.exceptions.RequestException as e:
@@ -167,13 +154,17 @@ class WiptrackSincronizeService:
         
         payload3 = f"<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\r\n    <soap:Body>\r\n        <AddStencil xmlns=\"ZiliaStencil\">\r\n   <action>{4}</action>\r\n    <stencil>\r\n   <SiteID>{siteId}</SiteID>\r\n                <StencilPartNbr>{stencil_part_nbr}</StencilPartNbr>\r\n                <VendorPartNbr>{vendor_part_nbr}</VendorPartNbr>\r\n                <Vendor>{vendor_local}</Vendor>\r\n      </stencil>\r\n    </AddStencil>\r\n  </soap:Body>\r\n</soap:Envelope>"
 
-        
+        #print("=======================================")
+        #print(f"{site_id}\n{stencil_part_nbr}\n{vendor_part_nbr}\n{vendor}")
+        #print("=======================================")
 
         headers = {
           'Content-Type': 'text/xml'
         }
 
-       
+        #response = requests.request("POST", URL_WIPTRACK, headers=headers, data=payload_local)
+        
+        
         
         
         try:
@@ -185,7 +176,8 @@ class WiptrackSincronizeService:
                 response_json = re.search(r'\[.*\]', f'\{response.text}', re.DOTALL)
                 response_json = re.search(r'\{.*\}', f'\{response.text}', re.DOTALL)
                 json_str = response_json.group(0)
-                 
+                
+                
                 
                 data = json.loads(json_str)
                 object_status = data.get("ObjectStatus")
@@ -278,14 +270,12 @@ class WiptrackSincronizeService:
                 
                 dataStencil =json.dumps(new_data, indent=4)
                  
-                if stencil_ativo:
+                if stencil_ativo and  not stencil_status =="SCRAP":
                     self.sendDataApi(dataStencil)
 
                 time.sleep(3)
         except Exception as e:
-                    
                     print(f"Registro com erro...", e)
-                    
         
 
     # Função para converter datas no formato "/Date(...)"
@@ -334,14 +324,7 @@ class WiptrackSincronizeService:
         
     def main(self):
         print("AQUI")
-        try:
-            self.sincronizeData()
-            return self.contador
-        except Exception as e:
-            print(e)
-            return 0
-
-        
+        self.sincronizeData()
 
 #wiptrackObjetc = WiptrackSincronizeService()
 #wiptrackObjetc.main()
