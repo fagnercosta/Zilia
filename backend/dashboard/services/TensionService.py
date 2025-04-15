@@ -11,63 +11,9 @@ import pytesseract
 
 
 import easyocr
+from dashboard.text_reconize.TextExtract import ExtractTextInImage # Importe ResolverDigists
 
-class ExtractTextInImage:
-    def __init__(self, image_path=None,point=0):
-        self.image_path = image_path  # Pode ser None se você passar diretamente a imagem
-        self.point = point
-        
-    
-    def extract_text(self, image=None):
-        """Extrai texto de uma imagem (pode ser um array NumPy ou um caminho de arquivo)."""
-        if image is None:
-            if self.image_path is None:
-                raise ValueError("Nenhuma imagem ou caminho de imagem fornecido.")
-            image = cv2.imread(self.image_path)
-            if image is None:
-                raise ValueError("Não foi possível carregar a imagem.")
-            
 
-        
-        # Pré-processamento
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        gray = cv2.GaussianBlur(gray, (5, 5), 0)
-        thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
-        
-        nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3,3))
-        
-        if self.point ==1 or self.point ==3:
-             thresh = cv2.dilate(thresh, nucleo, iterations = 10)
-             thresh = cv2.erode(thresh,nucleo,iterations=3)
-             
-        else:
-            thresh = cv2.dilate(thresh, nucleo, iterations = 6)
-        cv2.imwrite(f"Processada-{self.point}.png", thresh)
-        # OCR com EasyOCR
-        reader = easyocr.Reader(["pt"], gpu=True)
-        resultado = reader.readtext(self.resize_image(thresh), detail=0, allowlist='0123456789')
-        
-        
-        
-        return resultado[0];
-
-    def normalize_text(self, resultado):
-        # Processa o resultado (igual ao seu código atual)
-        text = ''.join(resultado)  # Junta os resultados do OCR
-        text = re.sub('[^0-9]', '', text)
-        
-        resposta = ''
-        for i, l in enumerate(text):
-            if i <= 1:
-                resposta += l
-            elif i == 2:
-                resposta += "." + l
-
-        return resposta
-    
-    def resize_image(self, image):
-        novo_tamanho = (image.shape[1] * 2, image.shape[0] * 2)  # OpenCV usa (largura, altura)
-        return cv2.resize(image, novo_tamanho, interpolation=cv2.INTER_NEAREST)
 class TensionService:
     def __init__(self, stencil_id):
         self.stencil_id = stencil_id

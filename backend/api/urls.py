@@ -22,7 +22,7 @@ from dashboard.views import (
     UserCreateSerializer,
     UserCreateView,
     UserDetailView,
-    UserListView, ParameterTensionView, LatestStencilTensionView
+    UserListView, ParameterTensionView, LatestStencilTensionView,sincronizedStencilData
 )
 
 from dashboard.views import (
@@ -56,7 +56,7 @@ urlpatterns = [
     
     path("api/takephoto/<int:stencil_id_request>/",takephoto, name='takephoto'),
     path("api/takephotraspy/<int:stencil_id_request>/",takephotoraspy, name='takephotoraspy'),
-   
+    path("api/sinck_data_stencil/",sincronizedStencilData, name='sinck_data_stencil'),
     path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
    
     path('api/changeLamp/<str:status>/', changeLamp, name='change_lamp'),

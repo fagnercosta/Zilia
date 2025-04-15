@@ -77,13 +77,27 @@ def updateStencil(request):
 
 @api_view(['GET'])
 def sincronizedStencilData(request):
-    sincronized_comand  = wiptrackSincronizeService.WiptrackSincronizeService();
-    sincronized_comand.main()
+   try:
+        sincronized_comand  = wiptrackSincronizeService.WiptrackSincronizeService();
+        contador =sincronized_comand.main()
 
-    return Response({
-        "message":"ola"
-    })
-    
+        if(contador == 0):
+                return Response({
+                    "erro":"Erro ao sincrozinar",
+                    "contador":contador
+            },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        else:
+            
+            return Response({
+                    "message":"Processo Realizado",
+                    "contador":contador
+            },status=status.HTTP_200_OK)    
+   except Exception as e:
+        return Response({
+                    "erro":"Erro ao sincrozinar",
+                    "contador":contador
+            },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+       
 
 
 

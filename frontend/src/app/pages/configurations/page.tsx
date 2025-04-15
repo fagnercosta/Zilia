@@ -25,6 +25,11 @@ import AlertItem from "@/components/AlertItem";
 
 export default function Configurations() {
 
+    const [alert, setAlert] = useState<AlertColor>("success");
+    const [title, setTitle] = useState<string>("Success");
+    const [message, setMessage] = useState('');
+    const [viewAltert, setViewAltert] = useState(false);
+
     const router = useRouter()
     const [date, setDate] = useState<Date>()
     const [lengthResponse, setLengthResponse] = useState<any[]>([])
@@ -148,6 +153,7 @@ export default function Configurations() {
 
     var rota = ""
     const handleSincrozizeDataWiptrack = async () => {
+        setViewAltert(false)
         try {
             setSincronizando(true);
             setMensagemSincronizacao("Processando a sincronização!")
@@ -156,16 +162,30 @@ export default function Configurations() {
             rota = `${BASE_URL}sinck_data_stencil/`;
             const response = await axios.get(`${BASE_URL}api/sinck_data_stencil/`)
 
-            setTimeout(() => {
-                setSincronizando(false)
-                setMensagemSincronizacao("")
-                setMessageInfo("Sincronização realizada!");
-                setOpenSnackBar(true)
-                setDisableButtonSinc(false)
-            }, 2000)
+            if (response.status === 500) {
+                console.error("Erro ao sincronizar"); // console.error é melhor para erros
+                setSincronizando(false);
+                setDisableButtonSinc(false); // Corrigido o nome se necessário
+                setAlert("error"); // Adicionado para consistência
+                setViewAltert(true); // Corrigido o nome se necessário
+                setMessage("Erro durante a sincronização. Erro 500");
+            } else {
+                console.log("Sucesso ao sincronizar");
+                setSincronizando(false);
+                setDisableButtonSinc(false); // Corrigido o nome se necessário
+                setAlert("success");
+                setViewAltert(true); // Corrigido o nome se necessário
+                setMessage("Sincronização realizada com sucesso.");
+            }
+
+            
 
         } catch (erro) {
-            setMensagemSincronizacao("Erro.." + erro + rota)
+            setSincronizando(false)
+            setDisableButtonSinc(false)
+            setAlert("error");
+            setViewAltert(true)
+            setMessage("Erro ao sincronizar. Tente novamente.");
         }
     }
 
@@ -235,8 +255,14 @@ export default function Configurations() {
         <main className="lg:ml-[23rem] p-4">
             <Sidebar logouFunction={handleLogout} />
             <div className="w-full h-screen flex items-start justify-center relative">
-                <div className="w-full h-screen flex items-center  flex-col">
-                    <Card className="w-[60%] bg-slate-50">
+                
+                <div className=" h-screen flex items-center  flex-col w-[60%]">
+                                {viewAltert && (             
+                                    <div className="w-[100%] mb-4 ">
+                                        <AlertItem severity={alert} message={message} title={title} />
+                                    </div>
+                                )}
+                    <Card className="w-[100%] bg-slate-50">
                         <CardHeader>
                             <CardTitle className="text-2xl text-blue-400">Configurações</CardTitle>
                         </CardHeader>
