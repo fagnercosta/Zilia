@@ -8,10 +8,12 @@ from dashboard.views import (
 
     GroupViewSet, 
     StencilTensionValuesViewSet,
+    StencilTensionLastValuesViewSet,
     StencilTypeViewSet,
     StencilViewSet,
    
     ProcessedImageViewSet,
+    ProcessedLastImageViewSet,
     takephoto,
     takephotoraspy,
     positionRoboPoint,
@@ -39,8 +41,10 @@ router = routers.DefaultRouter()
 router.register(r"groups", GroupViewSet)
 router.register(r"stencil", StencilViewSet)
 router.register(r"stencilType", StencilTypeViewSet)
-router.register(r"stencilTensionValues", StencilTensionValuesViewSet)
+router.register(r"stencilTensionValues", StencilTensionValuesViewSet, basename="stenciltensionvalues")
+router.register(r"stencilTensionLastValues", StencilTensionLastValuesViewSet, basename="stenciltensionlastvalues")
 router.register(r'processedimages', ProcessedImageViewSet, basename='processedimage')
+router.register(r'processedlastimages', ProcessedLastImageViewSet, basename='processedlastimage')
 router.register(r'parameters-tension', ParameterTensionView, basename='parameters-tension')
 
 

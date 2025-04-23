@@ -167,6 +167,27 @@ class ProcessedImageViewSet(viewsets.ModelViewSet):
                 raise Http404("Nenhum stencil encontrado com essa identificação.")
         return queryset
 
+class ProcessedLastImageViewSet(viewsets.ModelViewSet):
+    queryset = ProcessedImage.objects.all().order_by('-timestamp')
+    serializer_class = ProcessedImageSerializer
+
+    def get_queryset(self):
+        stencil_id = self.request.query_params.get('stencil_id', None)
+        
+        if stencil_id:
+            # Filtra pelo stencil_id e pega apenas o registro mais recente
+            latest_image = ProcessedImage.objects.filter(
+                stencil_id=stencil_id
+            ).order_by('-timestamp').first()  # Pega o mais recente
+            
+            if not latest_image:
+                raise Http404("Nenhuma imagem encontrada para este stencil.")
+            
+            return [latest_image]  # Retorna dentro de uma lista
+            
+        # Se não houver stencil_id, retorna todos ordenados do mais recente
+        return ProcessedImage.objects.all().order_by('-timestamp')
+
 @api_view(['GET'])
 def test_services_points(request):
     resposta = ReaderPointerService.point3
@@ -390,6 +411,26 @@ class StencilTypeViewSet(viewsets.ModelViewSet):
     serializer_class = StencilTypeSerializer
     # permission_classes = [permissions.IsAuthenticated]
 
+
+class StencilTensionLastValuesViewSet(viewsets.ModelViewSet):
+    queryset = StencilTensionValues.objects.all()
+    serializer_class = StencilTensionValuesSerializer
+
+    def get_queryset(self):
+        id = self.request.query_params.get('stencil_identification', None)
+        
+        if id:
+            # Pega o registro mais recente (ordenado por -measurement_datetime) e coloca em uma lista
+            latest_record = StencilTensionValues.objects.filter(
+                stencil_id_id=id
+            ).order_by('-measurement_datetime').first()
+            
+            if latest_record:
+                return [latest_record]  # Retorna dentro de uma lista para não quebrar o front
+            return StencilTensionValues.objects.none()  # Retorna queryset vazio se não existir
+        
+        # Se não houver filtro, retorna todos ordenados do mais recente para o mais antigo
+        return StencilTensionValues.objects.all().order_by('-created_at')
 
 class StencilTensionValuesViewSet(viewsets.ModelViewSet):
     queryset = StencilTensionValues.objects.all()

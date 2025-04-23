@@ -41,6 +41,7 @@ export default function Home() {
   const [alert, setAlert] = useState<AlertColor>("success")
   const [stencilTensionValues, setStencilTensionValues] = useState<StencilTensionValues[]>()
   const [lastRobotMedition, setLastRobotMedition] = useState<StencilRobotMedition>()
+  const [lastStencilValues, setLastStencilValues] = useState<StencilTensionValues[]>()
   const [medicaoAranhao, setMedicaoAranhao] = useState<StencilRobotMedition[]>();
 
   const [viewAltert, setViewAltert] = useState(false)
@@ -169,8 +170,9 @@ export default function Home() {
         if (response.status === 200) {
           setStencil(response.data.results[0])
           const responseValues = await axios.get(`${BASE_URL}/api/stencilTensionValues/?stencil_identification=${response.data.results[0].stencil_id}&timestamp=${new Date().getTime()}`)
-
+          const responseLastStencilValues = await axios.get(`${BASE_URL}/api/stencilTensionLastValues/?stencil_identification=${response.data.results[0].stencil_id}`)
           const stencilValues: StencilTensionValues[] = responseValues.data.results
+          const lastStencilValues: StencilTensionValues[] = responseLastStencilValues.data.results
 
           if (stencilValues.length > 0) {
             const valuesp1 = stencilValues.map((stencil) => { return { cycles: stencil.cicles, tension: stencil.p1 } })
@@ -183,6 +185,7 @@ export default function Home() {
 
             // setCicles(stencilValues[stencilValues.length - 1].cicles);
             setStencilTensionValues(stencilValues)
+            setLastStencilValues(lastStencilValues)
             setMessageSnack("Valores encontrados!")
             setOpenSnackBar(true)
             setAlert("success")
@@ -197,10 +200,11 @@ export default function Home() {
 
 
           const responseLastMedition = await axios.get(`${BASE_URL}api/processedimages/?stencil_id=${response.data.results[0].stencil_id}&timestamp=${new Date().getTime()}`)
-
+          const responseLastMeditionImage = await axios.get(`${BASE_URL}api/processedlastimages/?stencil_id=${response.data.results[0].stencil_id}`)
+          
           
           if (responseLastMedition.status === 200) {
-            setMedicaoAranhao(responseLastMedition.data.results)
+            setMedicaoAranhao(responseLastMeditionImage.data.results)
             console.log("LAST"+responseLastMedition.data.results)
             setLastRobotMedition(responseLastMedition.data.results[responseLastMedition.data.results.length - 1])
             console.log("ALL"+responseLastMedition.data.results)
@@ -598,7 +602,7 @@ export default function Home() {
                         document={
                           <StencilReport
                             stencil={stencil}
-                            tensionValues={stencilTensionValues}
+                            tensionValues={lastStencilValues}
                             lastRobotMedition={lastRobotMedition}
                             arranhoesList = {medicaoAranhao }
                           />

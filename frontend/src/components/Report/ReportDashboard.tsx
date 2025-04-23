@@ -409,7 +409,7 @@ const StencilReport = ({
                     />
                 </View>
 
-                <Text style={{ ...styles.tittleReport, marginLeft: 20, marginTop: 30 }}>Medidas de Arranhões</Text>
+                <Text style={{ ...styles.tittleReport, marginLeft: 20, marginTop: 180 }}>Medidas de Arranhões</Text>
 
                 <View style={stylesListTensionPoints.container}>
                     < TableScratch
