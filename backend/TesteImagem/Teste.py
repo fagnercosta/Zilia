@@ -2,18 +2,18 @@ import cv2
 import easyocr
 
 # Carregar a imagem
-imagem = cv2.imread("2.png")
+imagem = cv2.imread("13.jpg")
 
 # Converter para escala de cinza
-gray = cv2.cvtColor(imagem, cv2.COLOR_BGR2GRAY)
+#gray = cv2.cvtColor(imagem, cv2.COLOR_BGR2GRAY)
 
 # Aplicar Filtro Gaussiano para reduzir ruído
-gray = cv2.GaussianBlur(gray, (5, 5), 0)
+#gray = cv2.GaussianBlur(gray, (5, 5), 0)
 
 # Aplicar Binarização (Thresholding) para destacar os números
-thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
+#thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
 nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3,3))
-thresh = cv2.dilate(thresh, nucleo, iterations = 4)
+thresh = cv2.dilate(imagem, nucleo, iterations = 6)
 
 print(f"Size {thresh.shape}")
 novo_tamanho = (thresh.shape[1] * 2, thresh.shape[0] * 2)  # OpenCV usa (largura, altura)
