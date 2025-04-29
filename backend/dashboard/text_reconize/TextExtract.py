@@ -2,6 +2,8 @@ import cv2
 import easyocr
 import re
 
+import numpy as np
+
 class ResolveDigists:
 
     SEVEN_TEXT = '7'
@@ -109,7 +111,53 @@ class ResolveDigists:
             corrected_result.append(text)
 
         return corrected_result
-    
+
+
+class ImageEnhancer:
+    def __init__(self):
+        # Inicializa quaisquer parâmetros globais, se necessário
+        self.kernel_sharpen = np.array([[0, -1, 0], [-1, 5, -1], [0, -1, 0]])
+        self.kernel_dilate = np.ones((2, 2), np.uint8)
+
+    def enhance_image(self, image_path):
+        print(f"Processando imagem em {image_path}...")
+        """
+        Processa a imagem para melhorar a legibilidade para OCR.
+        
+        Args:
+            image_path (str): Caminho para a imagem de entrada.
+            
+        Returns:
+            numpy.ndarray: Imagem processada, ou None se houver erro.
+        """
+        # Carrega a imagem
+        image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+
+        if image is None:
+            print(f"Erro: Não foi possível carregar a imagem em {image_path}. Verifique o caminho ou a integridade do arquivo.")
+            return None
+
+        # Passo 1: Aumentar o contraste usando equalização de histograma
+        equalized = cv2.equalizeHist(image)
+
+        # Passo 2: Aumentar a nitidez da imagem
+        sharpened = cv2.filter2D(equalized, -1, self.kernel_sharpen)
+
+        # Passo 3: Reduzir ruído com um leve desfoque
+        denoised = cv2.GaussianBlur(sharpened, (7, 7), 0)
+
+        # Passo 4: Aplicar limiarização adaptativa
+        thresh = cv2.adaptiveThreshold(
+            denoised, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5
+        )
+
+        # Passo 5: Aplicar dilatação para engrossar os dígitos
+        dilated = cv2.dilate(thresh, self.kernel_dilate, iterations=1)
+
+        cv2.imwrite("ponto_1_tratada-TESTEFAGNER.png", dilated)
+
+        return dilated
+
 class ExtractTextInImage:
     def __init__(self, image_path=None,point=0):
         self.image_path = image_path  # Pode ser None se você passar diretamente a imagem
@@ -128,7 +176,7 @@ class ExtractTextInImage:
 
         
         # Pré-processamento
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        '''gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         gray = cv2.GaussianBlur(gray, (5, 5), 0)
         thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
         
@@ -139,7 +187,11 @@ class ExtractTextInImage:
              thresh = cv2.erode(thresh,nucleo,iterations=10)
              
         else:
-            thresh = cv2.dilate(thresh, nucleo, iterations = 6)
+            thresh = cv2.dilate(thresh, nucleo, iterations = 6)'''
+        
+        tratramento = ImageEnhancer()
+        thresh = tratramento.enhance_image(self.image_path)
+        
         cv2.imwrite(f"Processada-{self.point}.png", thresh)
         # OCR com EasyOCR
         reader = easyocr.Reader(["pt"], gpu=True)
@@ -147,12 +199,12 @@ class ExtractTextInImage:
         
         # Pós-processamento
         print(f"Resultados do OCR:{resultado}")
-        if '7' in resultado[0] or '1' in resultado[0]:
+        '''if '7' in resultado[0] or '1' in resultado[0]:
             print("Resolvendo confusão entre 1 e 7...")
             resolve = ResolveDigists(image, self.point)
             resultado = resolve.resolve_digits()
 
-            return resultado
+            return resultado'''
         
         
         
@@ -175,3 +227,4 @@ class ExtractTextInImage:
     def resize_image(self, image):
         novo_tamanho = (image.shape[1] * 2, image.shape[0] * 2)  # OpenCV usa (largura, altura)
         return cv2.resize(image, novo_tamanho, interpolation=cv2.INTER_NEAREST)
+    

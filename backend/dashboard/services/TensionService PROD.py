@@ -135,12 +135,12 @@ class TensionService:
         imagemOriginal = imagemOriginal[515:720, 820:1220]
         
         # Salva a imagem recortada (opcional)
-        path = "images_final/ponto_1_tratada.png"
-        cv2.imwrite(path, imagemOriginal)
+        path_p1 = "images_final/ponto_1_tratada.png"
+        cv2.imwrite(path_p1, imagemOriginal)
         
         # Usa ExtractTextInImage para extrair o texto
-        extrator = ExtractTextInImage(path,1)
-        resultado = extrator.extract_text(image=path)     
+        extrator = ExtractTextInImage(imagemOriginal,1)
+        resultado = extrator.extract_text(image=imagemOriginal)     
         textoResposta = extrator.normalize_text(resultado)
         
         print("RESPOSTA p1", textoResposta)
@@ -156,12 +156,12 @@ class TensionService:
 
         
 
-        path = "images_final/ponto_2_tratada.png"
-        cv2.imwrite(path, imagemOriginal)
+        path_p1 = "images_final/ponto_2_tratada.png"
+        cv2.imwrite(path_p1, imagemOriginal)
         
         # Usa ExtractTextInImage para extrair o texto
-        extrator = ExtractTextInImage(path,2)
-        resultado = extrator.extract_text(image=path)
+        extrator = ExtractTextInImage(imagemOriginal,2)
+        resultado = extrator.extract_text(image=imagemOriginal)
         
         textoResposta = extrator.normalize_text(resultado)
         
@@ -175,11 +175,11 @@ class TensionService:
         imagemOriginal = cv2.imread('images_final/ponto_3.png') 
         imagemOriginal = imagemOriginal[510:720,800:1210]
 
-        path = "images_final/ponto_3_tratada.png"
-        cv2.imwrite(path, imagemOriginal)
+        path_p1 = "images_final/ponto_3_tratada.png"
+        cv2.imwrite(path_p1, imagemOriginal)
         # Usa ExtractTextInImage para extrair o texto
-        extrator = ExtractTextInImage(path,3)
-        resultado = extrator.extract_text(image=path)
+        extrator = ExtractTextInImage(imagemOriginal,3)
+        resultado = extrator.extract_text(image=imagemOriginal)
         
         textoResposta = extrator.normalize_text(resultado)
         
@@ -192,12 +192,12 @@ class TensionService:
         imagemOriginal = cv2.imread('images_final/ponto_4.png') 
         imagemOriginal = imagemOriginal[520:720,800:1210]
 
-        path = "images_final/ponto_4_tratada.png"
-        cv2.imwrite(path, imagemOriginal)
+        path_p1 = "images_final/ponto_4_tratada.png"
+        cv2.imwrite(path_p1, imagemOriginal)
         
         # Usa ExtractTextInImage para extrair o texto
-        extrator = ExtractTextInImage(path,4)
-        resultado = extrator.extract_text(image=path)
+        extrator = ExtractTextInImage(imagemOriginal,4)
+        resultado = extrator.extract_text(image=imagemOriginal)
         
         textoResposta = extrator.normalize_text(resultado)
         

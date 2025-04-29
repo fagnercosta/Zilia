@@ -2,7 +2,7 @@ import cv2
 import easyocr
 
 # Carregar a imagem
-imagem = cv2.imread("13.jpg")
+imagem = cv2.imread("12.jpg")
 
 # Converter para escala de cinza
 #gray = cv2.cvtColor(imagem, cv2.COLOR_BGR2GRAY)
