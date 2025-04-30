@@ -257,7 +257,7 @@ export default function StencilAutomaticMedition() {
           p2: "",
           p3: "",
           p4: "",
-          measurement_datetime: prev.measurement_datetime, // Mantém a data atual
+          measurement_datetime: new Date(new Date().getTime() - 4 * 60 * 60 * 1000), // Mantém a data atual
           is_registration_measurement: false,
           is_pending_measurement: false,
           is_approved_status: false,

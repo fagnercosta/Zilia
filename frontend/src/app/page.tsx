@@ -568,6 +568,17 @@ export default function Home() {
                     </Button>
 
                   </HoverCardTrigger>
+                  <HoverCardContent>
+                    <div className="flex items-start space-x-4 flex-col gap-3">
+                      <h3 className="font-bold ">Medir Tensão</h3>
+                      Esta função levará para uma aba específica para realizar medidas manuais, fornecendo informações e preenchendo-as conforme o necessário no sistema.
+                    </div>
+                  </HoverCardContent>
+                  
+                </HoverCard>
+
+                <HoverCard>
+                  
                   <HoverCardTrigger asChild>
                     <Button className="bg-blue-400 text-white w-[25%] hover:opacity-60" onClick={() => handlePage("/pages/stencil_automatic_medition")}>
                       Tensão Automática
@@ -577,10 +588,12 @@ export default function Home() {
                   <HoverCardContent>
                     <div className="flex items-start space-x-4 flex-col gap-3">
                       <h3 className="font-bold ">Medir Tensão</h3>
-                      Esta função levará para uma aba específica para realizar medidas manuais, fornecendo informações e preenchendo-as conforme o necessário no sistema.
+                      Esta função levará para uma aba específica para realizar medidas automáticas, obtidas pela execução do robô.
                     </div>
                   </HoverCardContent>
                 </HoverCard>
+
+
                 <HoverCard>
                   <HoverCardTrigger asChild>
                     <Button className="bg-blue-400 text-white w-[25%] hover:opacity-60" onClick={() => handlePage("/pages/automatic_medition")}>
@@ -614,13 +627,16 @@ export default function Home() {
                           loading ? 'Gerando Relatório...' : 'Gerar relatório'
                         }
                       </PDFDownloadLink>
+                      
                     </HoverCardTrigger>
+
                     <HoverCardContent>
                       <div className="flex items-start space-x-4 flex-col gap-3">
                         <h3 className="font-bold ">Geração de relatório de conformidade</h3>
                         Esta função gera um relatório referente a conformidade do stencil pesquisado e demais medidas realizadas.
                       </div>
                     </HoverCardContent>
+                    
                   </HoverCard>
                 )}
 
