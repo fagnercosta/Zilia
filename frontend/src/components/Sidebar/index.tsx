@@ -37,7 +37,7 @@ const Sidebar = ({ logouFunction }: Props) => {
     }
 
     return (
-        <div className="flex w-full flex-col bg-muted/40">
+        <div className="flex w-full flex-col bg-muted/40 ">
             <aside className="fixed inset-y-0 left-0 z-10 hidden w-[22rem] border-r bg-slate-50 sm:flex flex-col">
                 <header className="w-full h-auto gap-3 bg-blue-400 p-4 flex flex-col items-center justify-evenly">
                     <Image

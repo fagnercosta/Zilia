@@ -560,27 +560,13 @@ export default function Home() {
             </CardHeader>
             <CardContent>
               {/* Aqui aparecerá os botoes*/}
-              <div className=" flex w-full justify-between gap-1 flex-wrap text-wrap ">
-                <HoverCard>
-                  <HoverCardTrigger asChild>
-                    <Button className="bg-blue-400 text-white w-[25%] hover:opacity-60" onClick={() => handlePage("/pages/stencil_medition")}>
-                      Tensão Manual
-                    </Button>
-
-                  </HoverCardTrigger>
-                  <HoverCardContent>
-                    <div className="flex items-start space-x-4 flex-col gap-3">
-                      <h3 className="font-bold ">Medir Tensão</h3>
-                      Esta função levará para uma aba específica para realizar medidas manuais, fornecendo informações e preenchendo-as conforme o necessário no sistema.
-                    </div>
-                  </HoverCardContent>
-                  
-                </HoverCard>
+              <div className=" flex w-full justify-between gap-2 flex-wrap text-wrap ">
+               
 
                 <HoverCard>
                   
                   <HoverCardTrigger asChild>
-                    <Button className="bg-blue-400 text-white w-[25%] hover:opacity-60" onClick={() => handlePage("/pages/stencil_automatic_medition")}>
+                    <Button className="bg-blue-400 p-5 text-white w-[30%] hover:opacity-60" onClick={() => handlePage("/pages/stencil_automatic_medition")}>
                       Tensão Automática
                     </Button>
 
@@ -596,7 +582,7 @@ export default function Home() {
 
                 <HoverCard>
                   <HoverCardTrigger asChild>
-                    <Button className="bg-blue-400 text-white w-[25%] hover:opacity-60" onClick={() => handlePage("/pages/automatic_medition")}>
+                    <Button className="bg-blue-400 p-5 text-white w-[30%] hover:opacity-60" onClick={() => handlePage("/pages/automatic_medition")}>
                       Medir Aranhões
                     </Button>
                   </HoverCardTrigger>
@@ -608,7 +594,7 @@ export default function Home() {
                   </HoverCardContent>
                 </HoverCard>
 
-                {stencil && (
+                {stencil ? 
                   <HoverCard>
                     <HoverCardTrigger asChild>
                       <PDFDownloadLink
@@ -621,7 +607,7 @@ export default function Home() {
                           />
                         }
                         fileName={`Relatorio_Stencil_${stencil?.stencil_id}.pdf`}
-                        className="bg-orange-300 text-white w-[25%] hover:opacity-60 p-1.5 rounded"
+                        className="bg-orange-400  text-white w-[25%] hover:opacity-60 p-1.5 rounded"
                       >
                         {({ blob, url, loading, error }) =>
                           loading ? 'Gerando Relatório...' : 'Gerar relatório'
@@ -638,7 +624,8 @@ export default function Home() {
                     </HoverCardContent>
                     
                   </HoverCard>
-                )}
+                  :<div className="w-[30%]"> 01 </div>
+                }
 
               </div>
             </CardContent>

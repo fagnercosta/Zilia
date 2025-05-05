@@ -140,10 +140,10 @@ class TensionService:
         
         # Usa ExtractTextInImage para extrair o texto
         extrator = ExtractTextInImage(path,1)
-        resultado = extrator.extract_text(image=path)     
+        resultado = extrator.extract_text(image=path, image_path_original=imagemOriginal)     
         textoResposta = extrator.normalize_text(resultado)
         
-        print("RESPOSTA p1", textoResposta)
+        print("RESPOSTA PONT0 01", textoResposta)
         self.binarizar("images_final/ponto_1.png", 1)
         
         return textoResposta
@@ -161,11 +161,11 @@ class TensionService:
         
         # Usa ExtractTextInImage para extrair o texto
         extrator = ExtractTextInImage(path,2)
-        resultado = extrator.extract_text(image=path)
+        resultado = extrator.extract_text(image=path, image_path_original=imagemOriginal)
         
         textoResposta = extrator.normalize_text(resultado)
         
-        print("RESPOSTA p1", textoResposta)
+        print("RESPOSTA PONTO 02", textoResposta)
         self.binarizar("images_final/ponto_2.png", 2)
         
         return textoResposta
@@ -179,29 +179,29 @@ class TensionService:
         cv2.imwrite(path, imagemOriginal)
         # Usa ExtractTextInImage para extrair o texto
         extrator = ExtractTextInImage(path,3)
-        resultado = extrator.extract_text(image=path)
+        resultado = extrator.extract_text(image=path,image_path_original=imagemOriginal)
         
         textoResposta = extrator.normalize_text(resultado)
         
-        print("RESPOSTA P3", textoResposta)
+        print("RESPOSTA PONTO 03", textoResposta)
         self.binarizar("images_final/ponto_3.png", 3)
         
         return textoResposta
     
     def prepare_images4(self):
         imagemOriginal = cv2.imread('images_final/ponto_4.png') 
-        imagemOriginal = imagemOriginal[520:720,800:1210]
+        imagemOriginal = imagemOriginal[530:720,820:1210]
 
         path = "images_final/ponto_4_tratada.png"
         cv2.imwrite(path, imagemOriginal)
         
         # Usa ExtractTextInImage para extrair o texto
         extrator = ExtractTextInImage(path,4)
-        resultado = extrator.extract_text(image=path)
+        resultado = extrator.extract_text(image=path, image_path_original=imagemOriginal)
         
         textoResposta = extrator.normalize_text(resultado)
         
-        print("RESPOSTA P3", textoResposta)
+        print("RESPOSTA PONTO 04", textoResposta)
         self.binarizar("images_final/ponto_4.png", 4)
         
         return textoResposta
