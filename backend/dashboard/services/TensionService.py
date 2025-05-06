@@ -20,7 +20,7 @@ class TensionService:
         self.final_image_dir = 'images_final'
         self.clp_url = "opc.tcp://192.168.1.1:4840"
         self.client = Client(self.clp_url)
-        self.robo = True
+        self.robo = False
 
         # Defina o endereço IP da Raspberry Pi, usuário e senha
         self.raspberry_ip = '192.168.1.98'
@@ -193,6 +193,7 @@ class TensionService:
         imagemOriginal = imagemOriginal[530:720,820:1210]
 
         path = "images_final/ponto_4_tratada.png"
+
         cv2.imwrite(path, imagemOriginal)
         
         # Usa ExtractTextInImage para extrair o texto

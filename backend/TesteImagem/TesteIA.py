@@ -59,7 +59,7 @@ for (bbox, text, prob) in resultado:
         white_ratio = white_pixels / total_pixels if total_pixels > 0 else 0
         print(f"White ratio na região superior (para 1/7): {white_ratio}")
 
-        if white_ratio < 0.3:
+        if white_ratio < 0.15:
             print(f"Corrigindo: {text} para 1")
             text = '1'
         else:
