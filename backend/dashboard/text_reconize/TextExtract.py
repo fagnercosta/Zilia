@@ -25,7 +25,7 @@ class ResolveDigists:
         gray = cv2.cvtColor(self.image_path, cv2.COLOR_BGR2GRAY)
         thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
         nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
-        thresh = cv2.dilate(thresh, nucleo, iterations=2)
+        thresh = cv2.dilate(thresh, nucleo, iterations=4)
 
         # Redimensionar a imagem para melhorar a detecção (aumentar 2x)
         novo_tamanho = (thresh.shape[1] * 2, thresh.shape[0] * 2)
