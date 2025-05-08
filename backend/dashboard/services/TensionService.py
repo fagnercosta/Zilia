@@ -132,7 +132,7 @@ class TensionService:
     
     def prepare_images1(self):
         imagemOriginal = cv2.imread('images_final/ponto_1.png') 
-        imagemOriginal = imagemOriginal[515:720, 820:1220]
+        imagemOriginal = imagemOriginal[525:720, 820:1220]
         
         # Salva a imagem recortada (opcional)
         path = "images_final/ponto_1_tratada.png"
@@ -173,7 +173,12 @@ class TensionService:
     
     def prepare_images3(self):
         imagemOriginal = cv2.imread('images_final/ponto_3.png') 
-        imagemOriginal = imagemOriginal[510:720,800:1210]
+
+        
+
+        #imagemOriginal = imagemOriginal[510:720,800:1210]
+        #imagemOriginal = imagemOriginal[510:720,800:1210]
+        imagemOriginal = imagemOriginal[540:770,840:1260]
 
         path = "images_final/ponto_3_tratada.png"
         cv2.imwrite(path, imagemOriginal)
@@ -190,7 +195,7 @@ class TensionService:
     
     def prepare_images4(self):
         imagemOriginal = cv2.imread('images_final/ponto_4.png') 
-        imagemOriginal = imagemOriginal[530:720,820:1210]
+        imagemOriginal = imagemOriginal[500:750,840:1280]
 
         path = "images_final/ponto_4_tratada.png"
 
@@ -214,11 +219,11 @@ class TensionService:
     def binarizar(self, path,point):
         img = cv2.imread(path)
         image = img
-        #gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        #thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
-        cv2.rectangle(img, (800,500), (1270, 760),  (0, 255, 0), 20)
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
+        thresh =cv2.rectangle(thresh, (800,500), (1270, 760),  (0, 255, 0), 20)
 
-        cv2.imwrite(f"{self.final_image_dir}/ponto_{point}_bin.png", image)
+        cv2.imwrite(f"{self.final_image_dir}/ponto_{point}_bin.png", thresh)
 
 
     def equalizarHistograma(self, image):

@@ -75,6 +75,7 @@ class ResolveDigists:
         # Pós-processamento para corrigir confusão entre "1" e "7" para cada dígito
         corrected_result = []
         for idx, (bbox, text, prob) in enumerate(resultados):
+            print(f"\nTEXTO RECEBIDO NA POSIÇÃO {idx + 1}: {text}")
             position = idx + 1  # 1º, 2º ou 3º dígito
             print(f"\nProcessando dígito na posição {position}: {text}, Confiança: {prob}")
 
@@ -105,30 +106,6 @@ class ResolveDigists:
                 else:
                     print(f"Confirmando na posição {position}: {text} como 7")
                     text = '7'
-
-            # Corrigir confusão entre "0" e "8" para este dígito
-            # Corrigir confusão entre "0" e "8" para este dígito
-            if text == '0' or text == '8':
-                print(f"Verificando dígito na posição {position}...")
-                # Focar exatamente no segmento do meio, ajustando a região
-                middle_height = int((y_max - y_min) / 3)
-                middle_region = digit_region[int(y_min + middle_height):int(y_min + 2 * middle_height), :]
-                white_pixels = cv2.countNonZero(middle_region)
-                total_pixels = middle_region.shape[0] * middle_region.shape[1]
-                middle_white_ratio = white_pixels / total_pixels if total_pixels > 0 else 0
-                print(f"Middle white ratio (para 0/8, posição {position}): {middle_white_ratio}")
-
-                # Ajustar o limiar com base na imagem (teste valores entre 0.1 e 0.3)
-                if middle_white_ratio < 0.35:  # Reduzir de 0.2 para 0.15 como teste
-                    print(f"Corrigindo na posição {position}: {text} para 0")
-                    text = '0'
-                else:
-                    print(f"Corrigindo na posição {position}: {text} para 8")
-                    text = '8'
-
-                # Salvar a região para depuração
-                #cv2.imwrite(f'middle_region_pos_{position}.png', middle_region)
-                    
             
 
             corrected_result.append(text)
@@ -167,13 +144,14 @@ class ImageEnhancer:
 
         # Passo 1: Aumentar o contraste usando equalização de histograma
         equalized = cv2.equalizeHist(image)
+        equalized = cv2.equalizeHist(equalized)
 
         # Passo 2: Aumentar a nitidez da imagem
         sharpened = cv2.filter2D(equalized, -1, self.kernel_sharpen)
 
         # Passo 3: Reduzir ruído com um leve desfoque
-        denoised = cv2.GaussianBlur(sharpened, (7, 7), 0)
-
+        denoised = cv2.GaussianBlur(sharpened, (7, 7), 9)
+        cv2.imwrite(f"DENOISE{point}.png", denoised)
         # Passo 4: Aplicar limiarização adaptativa
         thresh = cv2.adaptiveThreshold(
             denoised, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5
@@ -184,17 +162,17 @@ class ImageEnhancer:
         # Passo 5: Aplicar dilatação para engrossar os dígitos
         thresh = cv2.erode(thresh, self.kernel_dilate, iterations=7)
         dilated = cv2.dilate(thresh, self.kernel_dilate, iterations=18)
-        dilated = cv2.erode(dilated, self.kernel_dilate, iterations=3)
-        
-
-
-        novo_tamanho = (dilated.shape[1] * 30, dilated.shape[0] * 50) 
-        dilated_resize = cv2.resize(dilated, novo_tamanho, interpolation=cv2.INTER_NEAREST)
+        dilated = cv2.erode(dilated, self.kernel_dilate, iterations=11)
 
         
-        cv2.imwrite(f"ponto_{point}_tratada-TESTEFAGNER.png", dilated_resize)
 
-        return dilated_resize
+        novo_tamanho = (dilated.shape[1] * 2, dilated.shape[0] * 2) 
+        dilated_resize = cv2.resize(dilated, novo_tamanho, interpolation=cv2.INTER_CUBIC)
+
+        
+        cv2.imwrite(image_path, dilated_resize)
+
+        return dilated
     
     def resize_image(self, image):
         novo_tamanho = (image.shape[1] * 2, image.shape[0] * 2)  # OpenCV usa (largura, altura)
@@ -242,22 +220,18 @@ class ExtractTextInImage:
         cv2.imwrite(f"Processada-{self.point}.png", thresh)
         # OCR com EasyOCR
         reader = easyocr.Reader(["pt"], gpu=True)
-        resultado = reader.readtext(self.image_path, detail=0, allowlist='0123456789')
         
+        resultado = reader.readtext(self.image_path, detail=0, allowlist='0123456789')
+        print("RESULTADO: ",resultado[0])
         # Pós-processamento
-        print(f"Resultados do OCR - {self.point}:{resultado}")
+        
         if '7' in resultado[0] or '1' in resultado[0]:
             print("Resolvendo confusão entre 1 e 7...")
             resolve = ResolveDigists(image_path_original, self.point)
             resultado = resolve.resolve_digits()
 
             return resultado
-        if ('0' in resultado[0]) and not '00' in resultado[0]:
-            print("Resolvendo confusão entre 0 e 78...")
-            resolve = ResolveDigists(image_path_original, self.point)
-            resultado = resolve.resolve_digits()
-
-            return resultado
+       
         
         
         

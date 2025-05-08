@@ -72,10 +72,10 @@ export default function StencilAutomaticMedition() {
     const [active_pending, setActivePending] = useState(true);
 
     const [limits, setLimits] = useState({
-            minLimitTension: 0,
-            maxLimitTension: 0,
-            scratchesValue: 0
-        })
+        minLimitTension: 0,
+        maxLimitTension: 0,
+        scratchesValue: 0
+    })
 
     const checkApprovalStatus = (p1: number | string | null, p2: number | string | null, p3: number | string | null, p4: number | string | null) => {
         const p1Num = p1 !== null ? Number(p1) : null;
@@ -84,29 +84,29 @@ export default function StencilAutomaticMedition() {
         const p4Num = p4 !== null ? Number(p4) : null;
 
         console.log("LIMITES:", limits)
-        
-        let retorno= true;
-        if (p1Num !== null && p1Num < limits.minLimitTension){
+
+        let retorno = true;
+        if (p1Num !== null && p1Num < limits.minLimitTension) {
             retorno = false;
         }
 
-        if (p2Num !== null && p2Num < limits.minLimitTension){
+        if (p2Num !== null && p2Num < limits.minLimitTension) {
             retorno = false;
         }
 
-        if (p3Num !== null && p3Num < limits.minLimitTension){
+        if (p3Num !== null && p3Num < limits.minLimitTension) {
             retorno = false;
         }
 
-        if (p4Num !== null && p4Num < limits.minLimitTension){
+        if (p4Num !== null && p4Num < limits.minLimitTension) {
             retorno = false;
         }
 
-        if(retorno){
+        if (retorno) {
             setActiceStatus(false);
         }
         return retorno;
-            
+
     };
 
     const checkApprovalStatusAll = (p1: number | string | null, p2: number | string | null, p3: number | string | null, p4: number | string | null) => {
@@ -114,30 +114,30 @@ export default function StencilAutomaticMedition() {
         const p2Num = p2 !== null ? Number(p2) : null;
         const p3Num = p3 !== null ? Number(p3) : null;
         const p4Num = p4 !== null ? Number(p4) : null;
-        
-        let retorno= false;
-        if (p1Num !== null && p1Num < limits.minLimitTension){
+
+        let retorno = false;
+        if (p1Num !== null && p1Num < limits.minLimitTension) {
             retorno = true;
         }
 
-        if (p2Num !== null && p2Num < limits.minLimitTension){
+        if (p2Num !== null && p2Num < limits.minLimitTension) {
             retorno = true;
         }
 
-        if (p3Num !== null && p3Num < limits.minLimitTension){
+        if (p3Num !== null && p3Num < limits.minLimitTension) {
             retorno = true;
         }
 
-        if (p4Num !== null && p4Num < limits.minLimitTension){
+        if (p4Num !== null && p4Num < limits.minLimitTension) {
             retorno = true;
         }
 
-        if(retorno){
+        if (retorno) {
             setActivePending(false)
         }
 
         return retorno;
-            
+
     };
 
     function handleInputChange(text: String) {
@@ -149,19 +149,19 @@ export default function StencilAutomaticMedition() {
         setLendo(false);
         setResposta(undefined);
         setLoadingRobot(false);
-        
+
         setTimeout(() => {
             setPositionRobo(true);
             setViewAltert(false);
         }, 10);
-        
+
         try {
             let responseRobo = await axios.get(`http://127.0.0.1:8000/api/position-point/`);
             responseRobo = await axios.get(`http://127.0.0.1:8000/api/position-point/`);
-            console.log("Resposta Robo"+responseRobo.data.menssage);
+            console.log("Resposta Robo" + responseRobo.data.menssage);
             setMenssagemRobo(responseRobo.data.menssage);
             let messagemText = `${menssagemRobo}. Agora coloque o CLP no modo manual, abra a porta, ligue o tensiometro, feche a porta e coloque o o CPL no automaático e inicie a medição `;
-            
+
             if (menssagemRobo.length < 5) {
                 setMenssagemRobo("Robo posicionado");
             }
@@ -186,7 +186,7 @@ export default function StencilAutomaticMedition() {
             } else {
                 setMessage("Erro inesperado ao buscar os dados");
             }
-            
+
             setAlert("error");
             setViewAltert(true);
             setPositionRobo(false);
@@ -241,35 +241,35 @@ export default function StencilAutomaticMedition() {
             const firstResult = response.data.results[0];
 
             const dados = {
-                    minLimitTension: firstResult.min_value,
-                    maxLimitTension: firstResult.max_value,
-                    scratchesValue: firstResult.scratch_value,
+                minLimitTension: firstResult.min_value,
+                maxLimitTension: firstResult.max_value,
+                scratchesValue: firstResult.scratch_value,
             };
-            console.log("DADOS:>",dados)
+            console.log("DADOS:>", dados)
             setLimits(dados);
         }
-                
+
     }
 
     const resetFormExceptDate = () => {
         setFormData(prev => ({
-          p1: "",
-          p2: "",
-          p3: "",
-          p4: "",
-          measurement_datetime: new Date(new Date().getTime() - 4 * 60 * 60 * 1000), // Mantém a data atual
-          is_registration_measurement: false,
-          is_pending_measurement: false,
-          is_approved_status: false,
-          cicles: 0,
-          stencil_id: selectedStencil ? selectedStencil.stencil_id : 0,
+            p1: "",
+            p2: "",
+            p3: "",
+            p4: "",
+            measurement_datetime: new Date(new Date().getTime() - 4 * 60 * 60 * 1000), // Mantém a data atual
+            is_registration_measurement: false,
+            is_pending_measurement: false,
+            is_approved_status: false,
+            cicles: 0,
+            stencil_id: selectedStencil ? selectedStencil.stencil_id : 0,
         }));
-        
+
         setResposta(undefined);
         setDisabledInput(false);
         setActiceStatus(true);
         setActivePending(true);
-      };
+    };
 
     useEffect(() => {
         getStencils();
@@ -316,14 +316,14 @@ export default function StencilAutomaticMedition() {
             }, 100);
             setMenssagemRobo("");
             handleFormStencilId();
-            
+
             try {
                 const response = await axios.post(`http://127.0.0.1:8000/api/takephotraspy/${selectedStencil?.stencil_id}/`);
                 if (response) {
                     setLoadingRobot(false);
                     setResposta(response.data);
                     fetchLatestMeasurement(selectedStencil?.stencil_id);
-                    
+
                     setFormData((prevFormData) => {
                         const newFormData = {
                             ...prevFormData,
@@ -332,7 +332,7 @@ export default function StencilAutomaticMedition() {
                             p3: response.data.textoP3,
                             p4: response.data.textoP4,
                         };
-                        
+
                         const shouldApprove = checkApprovalStatus(
                             newFormData.p1,
                             newFormData.p2,
@@ -346,7 +346,7 @@ export default function StencilAutomaticMedition() {
                             newFormData.p3,
                             newFormData.p4
                         )
-                        
+
                         return {
                             ...newFormData,
                             is_approved_status: shouldApprove,
@@ -374,12 +374,12 @@ export default function StencilAutomaticMedition() {
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         const { name, value, type, checked } = event.target;
-        
+
         const newFormData = {
             ...formData,
             [name]: type === 'checkbox' ? checked : value,
         };
-        
+
         // Verifica se algum ponto é menor que 30 e atualiza o is_approved_status
         const shouldApprove = checkApprovalStatus(
             newFormData.p1,
@@ -387,7 +387,7 @@ export default function StencilAutomaticMedition() {
             newFormData.p3,
             newFormData.p4
         );
-        
+
         setFormData({
             ...newFormData,
             is_approved_status: shouldApprove || newFormData.is_approved_status
@@ -397,35 +397,35 @@ export default function StencilAutomaticMedition() {
     const fetchLatestMeasurement = async (stencilId: number) => {
         console.log(`Buscando ciclos para stencil ${stencilId}`);
         setCarregadoCiclos(true)
-        
+
         try {
             const url = `${BASE_URL}/stencil-tension/latest/${stencilId}/`;
             console.log(`URL da requisição: ${url}`);
-            
+
             const response = await axios.get(url);
             console.log("Resposta da API:", response.data);
-            
+
             const lastCicles = response.data?.cicles || 0;
             console.log(`Últimos ciclos: ${lastCicles}, Novo valor: ${lastCicles + 1}`);
-            
+
             setFormData(prev => ({
                 ...prev,
                 cicles: lastCicles + 1
-            
+
             }));
         } catch (error) {
-           
+
             console.error("Erro detalhado:", error);
             setFormData(prev => ({
                 ...prev,
                 cicles: 1,
-               
+
             }));
         } finally {
 
             setTimeout(() => {
                 setCarregadoCiclos(false);
-            },2000)
+            }, 2000)
             //setCarregadoCiclos(false); //
         }
     };
@@ -444,7 +444,7 @@ export default function StencilAutomaticMedition() {
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        
+
         if (formData.cicles !== 0) {
             setSalvando(true);
             try {
@@ -457,7 +457,7 @@ export default function StencilAutomaticMedition() {
                     setAlert("success");
                     setOpenSnackBar(true);
                     resetFormExceptDate();
-                    
+
                     //navigate.push("/pages/stencil_automatic_medition");
                 }
             } catch (error) {
@@ -465,7 +465,7 @@ export default function StencilAutomaticMedition() {
                 setMessage("Erro ao realizar a operação.");
                 setAlert("error");
                 setOpenSnackBar(true);
-            }  
+            }
         } else {
             setMessage("O campo ciclos não pode estar ser igual a zero");
             setAlert("warning");
@@ -476,16 +476,16 @@ export default function StencilAutomaticMedition() {
     return (
         <main className="lg:ml-[23rem] p-4">
             <Sidebar />
-            
-            <div className="w-full min-h-screen mt-10 flex flex-col items-start justify-start relative">
-                
-                {viewAltert && (             
-                    <div className="w-[90%] mb-4 ">
+
+            <div className="w-full  mt-10 flex flex-col items-start justify-start">
+
+                {viewAltert && (
+                    <div className="w-[100%] mb-4 ">
                         <AlertItem severity={alert} message={message} title={title} />
                     </div>
                 )}
-                
-                <Card className="w-[90%] bg-slate-50">
+
+                <Card className="w-[100%] m-0 bg-slate-50">
                     <CardHeader>
                         <CardTitle className="text-2xl font-bold">Medição Automática dos valores de tensão</CardTitle>
                     </CardHeader>
@@ -573,15 +573,15 @@ export default function StencilAutomaticMedition() {
                                         value={formData.cicles}
                                         onChange={handleChange}
                                         disabled={true}
-                                        
+
                                     />
-                                    {carregadoCiclos &&(
-                                        <div> 
+                                    {carregadoCiclos && (
+                                        <div>
                                             <Typography variant="h6">Carregando ciclos...</Typography>
                                             <LinearProgress color="info" />
                                         </div>
                                     )}
-                                    
+
                                 </Grid>
                                 <Grid item xs={12} sm={12} md={6}>
                                     <TextField
@@ -625,8 +625,8 @@ export default function StencilAutomaticMedition() {
                                 </Grid>
 
                                 <Grid item xs={12} sm={12} md={12} style={{ display: "flex", flexDirection: 'row', justifyContent: 'space-between', marginTop: '20px' }}>
-                                    {!salvando &&  (
-                                        <Button type="submit" disabled={stencilList?.length === 0 || !resposta || carregadoCiclos } variant="contained" color="primary">Cadastrar</Button>
+                                    {!salvando && (
+                                        <Button type="submit" disabled={stencilList?.length === 0 || !resposta || carregadoCiclos} variant="contained" color="primary">Cadastrar</Button>
                                     )}
                                     {salvando && (
                                         <div>
@@ -648,73 +648,63 @@ export default function StencilAutomaticMedition() {
                 </Card>
 
                 {resposta && (
-                    
-                    <Card className="mt-4 p rounded-none w-[90%] bg-slate-50" style={{ minHeight: '400px' }}>
+
+                    <Card className="mt-4 p rounded-none w-[100%] bg-slate-50" style={{ minHeight: '300px' }}>
                         <CardHeader>
                             <CardTitle className="text-2xl font-bold">Imagens coletadas</CardTitle>
+                            <Divider />
                         </CardHeader>
                         <Grid container spacing={2} className="p-4" style={{ minHeight: '100%' }}>
-                            <Grid item xs={12} sm={12} md={3}>
-                                <Card className="p rounded-none w-[90%] bg-slate-50">
-                                    <CardHeader>
-                                        <CardTitle>Ponto 1</CardTitle>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <img src={`http://localhost:8000/${resposta.p1}?timestamp=${new Date().getTime()}`} width="100%" height="100%" />
-                                    </CardContent>
-                                </Card>
+                            <Grid item xs={12} sm={6} md={3}>
+                                <div>
+                                    <p className="font-bold mb-2">Ponto 01</p>
+
+                                    <img className="rounded-lg" src={`http://localhost:8000/${resposta.p1}?timestamp=${new Date().getTime()}`} width="100%" height="100%" />
+
+                                </div>
                             </Grid>
                             <Grid item xs={12} sm={12} md={3}>
-                                <Card className="p rounded-none w-[90%] bg-slate-50">
-                                    <CardHeader>
-                                        <CardTitle>Ponto 2</CardTitle>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <img src={`http://localhost:8000/${resposta.p2}?timestamp=${new Date().getTime()}/`} width="100%" height="100%" />
-                                    </CardContent>
-                                </Card>
+                                <div >
+                                    <p className="font-bold mb-2" >Ponto 2</p>
+                                    <img className="rounded-lg" src={`http://localhost:8000/${resposta.p2}?timestamp=${new Date().getTime()}/`} width="100%" height="100%" />
+
+                                </div>
                             </Grid>
                             <Grid item xs={12} sm={12} md={3}>
-                                <Card className="p rounded-none w-[90%] bg-slate-50">
-                                    <CardHeader>
-                                        <CardTitle>Ponto 3</CardTitle>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <img src={`http://localhost:8000/${resposta.p3}?timestamp=${new Date().getTime()}/`} width="100%" height="100%" />
-                                    </CardContent>
-                                </Card>
+                                <div>
+                                <p className="font-bold mb-2" >Ponto 3</p>
+                                    <img className="rounded-lg" src={`http://localhost:8000/${resposta.p3}?timestamp=${new Date().getTime()}/`} width="100%" height="100%" />
+
+                                </div>
                             </Grid>
                             <Grid item xs={12} sm={12} md={3}>
-                                <Card className="rounded-none w-[90%] h-[100%] flex flex-col items-center justify-center">
-                                    <CardHeader>
-                                        <CardTitle>Ponto 4</CardTitle>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <img src={`http://localhost:8000/${resposta.p4}?timestamp=${new Date().getTime()}/`} width="100%" height="100%" />
-                                    </CardContent>
-                                </Card>
+                                <div>
+                                <p className="font-bold mb-2" >Ponto 4</p>
+                                    <img className="rounded-lg" src={`http://localhost:8000/${resposta.p4}?timestamp=${new Date().getTime()}/`} width="100%" height="100%" />
+
+                                </div>
                             </Grid>
                         </Grid>
                     </Card>
                 )}
 
                 {loadingRobot && (
-                    <div className="mt-4 p rounded-none w-[90%]" style={{ minHeight: '30px' }}>
+                    <div className="mt-4 p rounded-none w-[98%]" style={{ minHeight: '30px' }}>
                         <Typography variant="h6" className="mb-4">Coletando dados...</Typography>
-                        <LinearProgress color="success" style={{paddingTop: '5px', paddingBottom: '5px', borderRadius: '5px' }}/>
+                        <LinearProgress color="success" style={{ paddingTop: '5px', paddingBottom: '5px', borderRadius: '5px' }} />
                     </div>
                 )}
 
-                {(loadingRobot || lendo) && (
-                    <div className="mt-4 p rounded-none w-[90%]" style={{ minHeight: '400px', marginTop:'30px', marginLeft:'10px' }}>
-                        <ProgressoTension/>
+                {(loadingRobot || lendo) && resposta==undefined && (
+                    <div className="mt-4 p rounded-none w-[98%]" style={{ minHeight: '400px', marginTop: '30px', marginLeft: '10px' }}>
+                        <ProgressoTension />
                     </div>
                 )}
 
                 {positionRobo && (
-                    <div className="mt-4 p rounded-none w-[90%]" style={{ minHeight: '400px' }}>
+                    <div className="mt-4 p rounded-none w-[98%]" style={{ minHeight: '400px' }}>
                         <Typography variant="h6" className="mb-4">Posicionando o robo. Aguarde, ao posicionar o robo corretamente, você deve ligar o tenciometro...</Typography>
-                        <LinearProgress color="error" style={{paddingTop: '5px', paddingBottom: '5px', borderRadius: '5px' }}/>
+                        <LinearProgress color="error" style={{ paddingTop: '5px', paddingBottom: '5px', borderRadius: '5px' }} />
                     </div>
                 )}
 
