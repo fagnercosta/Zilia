@@ -20,7 +20,7 @@ class TensionService:
         self.final_image_dir = 'images_final'
         self.clp_url = "opc.tcp://192.168.1.1:4840"
         self.client = Client(self.clp_url)
-        self.robo = False
+        self.robo = True #AQUI ESTA TRUE
 
         # Defina o endereço IP da Raspberry Pi, usuário e senha
         self.raspberry_ip = '192.168.1.98'
