@@ -20,7 +20,7 @@ class TensionService:
         self.final_image_dir = 'images_final'
         self.clp_url = "opc.tcp://192.168.1.1:4840"
         self.client = Client(self.clp_url)
-        self.robo = False
+        self.robo = True #TROQUE AQUI PARA TRUE SE FOR ROBO
 
         # Defina o endereço IP da Raspberry Pi, usuário e senha
         self.raspberry_ip = '192.168.1.98'
@@ -131,19 +131,55 @@ class TensionService:
         
     
     def prepare_images1(self):
-        imagemOriginal = cv2.imread('images_final/ponto_1.png') 
-        imagemOriginal = imagemOriginal[515:720, 820:1220]
+        imagemOriginal = cv2.imread('images_final/ponto_1.png')        
+
+        imagemOriginal2 = imagemOriginal[50:500,650:1500]
+        #imagemOriginal = imagemOriginal[510:720,800:1210]
+        #imagemOriginal = imagemOriginal[500:750,840:1280]
+        imagemOriginal = imagemOriginal[50:500,650:1500]
+
         
-        # Salva a imagem recortada (opcional)
-        path_p1 = "images_final/ponto_1_tratada.png"
-        cv2.imwrite(path_p1, imagemOriginal)
+
+        
+
+        # Passo 3: Reduzir ruído com um leve desfoque
+        denoised = imagemOriginal
+        novo_tamanho = (denoised.shape[1] * 2, denoised.shape[0] * 2)
+
+        denoised = cv2.resize(denoised, novo_tamanho, interpolation=cv2.INTER_NEAREST)
+
+        #AQUI>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+        '''gray = cv2.cvtColor(denoised, cv2.COLOR_BGR2GRAY)
+
+        # Aplicar filtro bilateral (remove ruído sem perder bordas)
+        gray = cv2.bilateralFilter(gray, 11, 17, 17)
+
+        # Aplicar threshold adaptativo
+        thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
+
+        # Opcional: dilatar para reforçar linhas finas (ajustável)
+        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (6, 6))
+        thresh = cv2.dilate(thresh, kernel, iterations=5)
+
+        path_bin = "images_final/ponto_1_binaria.png"
+        cv2.imwrite(path_bin, thresh)'''
+        
+         # Passo 3: Reduzir ruído com um leve desfoque
+        denoised = cv2.GaussianBlur(imagemOriginal, (7, 7), 0)
+        novo_tamanho = (denoised.shape[1] * 2, denoised.shape[0] * 2)
+
+        denoised = cv2.resize(denoised, novo_tamanho, interpolation=cv2.INTER_NEAREST)
+
+        path = "images_final/ponto_1_tratada.png"
+        cv2.imwrite(path, denoised)
+
         
         # Usa ExtractTextInImage para extrair o texto
-        extrator = ExtractTextInImage(imagemOriginal,1)
-        resultado = extrator.extract_text(image=imagemOriginal)     
+        extrator = ExtractTextInImage(path,1)
+        resultado = extrator.extract_text(image=path, image_path_original=imagemOriginal2)     
         textoResposta = extrator.normalize_text(resultado)
         
-        print("RESPOSTA p1", textoResposta)
+        print(f"RESPOSTA PONT0 {1} :", textoResposta)
         self.binarizar("images_final/ponto_1.png", 1)
         
         return textoResposta
@@ -152,20 +188,37 @@ class TensionService:
 
     def prepare_images2(self):
         imagemOriginal = cv2.imread('images_final/ponto_2.png') 
-        imagemOriginal = imagemOriginal[520:720,800:1210]
+        '''imagemOriginal2 = imagemOriginal[520:720,800:1210]
+     
 
+        imagemOriginal = imagemOriginal[470:790,840:1200]'''
         
+        '''imagemOriginal2 = imagemOriginal[50:500,650:1500]
+        #imagemOriginal = imagemOriginal[510:720,800:1210]
+        #imagemOriginal = imagemOriginal[500:750,840:1280]
+        imagemOriginal = imagemOriginal[50:500,650:1500]'''
+        
+        imagemOriginal2 = imagemOriginal[50:590,650:1500]
+        #imagemOriginal = imagemOriginal[510:720,800:1210]
+        #imagemOriginal = imagemOriginal[500:750,840:1280]
+        imagemOriginal = imagemOriginal[50:590,650:1500]
+       
+        # Passo 3: Reduzir ruído com um leve desfoque
+        denoised = cv2.GaussianBlur(imagemOriginal, (7, 7), 0)
+        novo_tamanho = (denoised.shape[1] * 2, denoised.shape[0] * 2)
 
-        path_p1 = "images_final/ponto_2_tratada.png"
-        cv2.imwrite(path_p1, imagemOriginal)
+        denoised = cv2.resize(denoised, novo_tamanho, interpolation=cv2.INTER_NEAREST)
+
+        path = "images_final/ponto_2_tratada.png"
+        cv2.imwrite(path, denoised)
         
         # Usa ExtractTextInImage para extrair o texto
-        extrator = ExtractTextInImage(imagemOriginal,2)
-        resultado = extrator.extract_text(image=imagemOriginal)
+        extrator = ExtractTextInImage(path,2)
+        resultado = extrator.extract_text(image=path, image_path_original=imagemOriginal2)
         
         textoResposta = extrator.normalize_text(resultado)
         
-        print("RESPOSTA p1", textoResposta)
+        print("RESPOSTA PONTO 02", textoResposta)
         self.binarizar("images_final/ponto_2.png", 2)
         
         return textoResposta
@@ -173,35 +226,86 @@ class TensionService:
     
     def prepare_images3(self):
         imagemOriginal = cv2.imread('images_final/ponto_3.png') 
-        imagemOriginal = imagemOriginal[510:720,800:1210]
 
-        path_p1 = "images_final/ponto_3_tratada.png"
-        cv2.imwrite(path_p1, imagemOriginal)
+        
+
+        '''imagemOriginal2 = imagemOriginal[510:720,800:1210]
+        #imagemOriginal = imagemOriginal[510:720,800:1210]
+        #imagemOriginal = imagemOriginal[500:750,840:1280]
+        imagemOriginal = imagemOriginal[470:790,840:1200]'''
+        
+        imagemOriginal2 = imagemOriginal[50:590,650:1300]
+        #imagemOriginal = imagemOriginal[510:720,800:1210]
+        #imagemOriginal = imagemOriginal[500:750,840:1280]
+        imagemOriginal = imagemOriginal[50:590,650:1300]
+
+        
+      
+
+        # Passo 3: Reduzir ruído com um leve desfoque
+        denoised = imagemOriginal
+        novo_tamanho = (denoised.shape[1] * 2, denoised.shape[0] * 2)
+
+        denoised = cv2.resize(denoised, novo_tamanho, interpolation=cv2.INTER_NEAREST)
+
+        #AQUI>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+        gray = cv2.cvtColor(denoised, cv2.COLOR_BGR2GRAY)
+
+        # Aplicar filtro bilateral (remove ruído sem perder bordas)
+        gray = cv2.bilateralFilter(gray, 11, 17, 17)
+
+        # Aplicar threshold adaptativo
+        thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
+
+        # Opcional: dilatar para reforçar linhas finas (ajustável)
+        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (6, 6))
+        thresh = cv2.dilate(thresh, kernel, iterations=7)
+
+        path_bin = "images_final/ponto_3_binaria.png"
+        cv2.imwrite(path_bin, thresh)
+
+        
+
+        path = "images_final/ponto_3_tratada.png"
+        cv2.imwrite(path, denoised)
+
         # Usa ExtractTextInImage para extrair o texto
-        extrator = ExtractTextInImage(imagemOriginal,3)
-        resultado = extrator.extract_text(image=imagemOriginal)
+        extrator = ExtractTextInImage(path_bin,3)
+        resultado = extrator.extract_text(image=path_bin,image_path_original=imagemOriginal2)
         
         textoResposta = extrator.normalize_text(resultado)
         
-        print("RESPOSTA P3", textoResposta)
+        print("RESPOSTA PONTO 03", textoResposta)
         self.binarizar("images_final/ponto_3.png", 3)
         
         return textoResposta
     
     def prepare_images4(self):
         imagemOriginal = cv2.imread('images_final/ponto_4.png') 
-        imagemOriginal = imagemOriginal[520:720,800:1210]
-
-        path_p1 = "images_final/ponto_4_tratada.png"
-        cv2.imwrite(path_p1, imagemOriginal)
+        ''' imagemOriginal2 = imagemOriginal[510:720,800:1210]
+        imagemOriginal = imagemOriginal[470:790,840:1200]'''
         
-        # Usa ExtractTextInImage para extrair o texto
-        extrator = ExtractTextInImage(imagemOriginal,4)
-        resultado = extrator.extract_text(image=imagemOriginal)
+        imagemOriginal2 = imagemOriginal[50:600,650:1200]
+        #imagemOriginal = imagemOriginal[510:720,800:1210]
+        #imagemOriginal = imagemOriginal[500:750,840:1280]
+        imagemOriginal = imagemOriginal[50:600,650:1200]
+
+        # Passo 3: Reduzir ruído com um leve desfoque
+        denoised = imagemOriginal
+        novo_tamanho = (denoised.shape[1] * 2, denoised.shape[0] * 2)
+
+        denoised = cv2.resize(denoised, novo_tamanho, interpolation=cv2.INTER_NEAREST)
+
+        path = "images_final/ponto_4_tratada.png"
+
+        cv2.imwrite(path, denoised)
+        
+        extrator = ExtractTextInImage(path,4)
+        resultado = extrator.extract_text(image=path, image_path_original=imagemOriginal2)
         
         textoResposta = extrator.normalize_text(resultado)
         
-        print("RESPOSTA P3", textoResposta)
+        print("RESPOSTA PONTO 04", textoResposta)
         self.binarizar("images_final/ponto_4.png", 4)
         
         return textoResposta
@@ -213,11 +317,11 @@ class TensionService:
     def binarizar(self, path,point):
         img = cv2.imread(path)
         image = img
-        #gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        #thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
-        cv2.rectangle(img, (800,500), (1270, 760),  (0, 255, 0), 20)
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
+        thresh =cv2.rectangle(thresh, (800,500), (1270, 760),  (0, 255, 0), 20)
 
-        cv2.imwrite(f"{self.final_image_dir}/ponto_{point}_bin.png", image)
+        cv2.imwrite(f"{self.final_image_dir}/ponto_{point}_bin.png", thresh)
 
 
     def equalizarHistograma(self, image):
