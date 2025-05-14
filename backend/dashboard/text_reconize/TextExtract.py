@@ -25,7 +25,7 @@ class ResolveDigists:
         gray = cv2.cvtColor(self.image_path, cv2.COLOR_BGR2GRAY)
         thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
         nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
-        thresh = cv2.dilate(thresh, nucleo, iterations=4)
+        thresh = cv2.dilate(thresh, nucleo, iterations=7)
 
         # Redimensionar a imagem para melhorar a detecção (aumentar 2x)
         novo_tamanho = (thresh.shape[1] * 2, thresh.shape[0] * 2)
@@ -132,18 +132,39 @@ class ExtractTextInImage:
         
        
         reader = easyocr.Reader(["pt"], gpu=True)
-        resultado = reader.readtext(image, detail=0, allowlist='0123456789')
+        resultados = reader.readtext(image=image, allowlist='0123456789')
+        resultadoEncontrados = []
+        print("textos encontrados")
+        for resultado in resultados:
+            resultadoEncontrados.append(resultado[1])
+            print(f'{resultado[1]} ')
         
-        for r in resultado:
-            print(f"Resultados do OCR - {self.point}:{resultado}")
-        if '7' in resultado or '1' in resultado:
-            print("Resolvendo confusão entre 1 e 7...")
+        
+        if '1' in resultadoEncontrados[0] or '1' in resultadoEncontrados[0]:
+            '''print("Resolvendo confusão entre 1 e 7...")
             resolve = ResolveDigists(image_path_original, self.point)
-            resultado = resolve.resolve_digits()
+            resultado = resolve.resolve_digits()'''
+            # Pré-processamento
+            gray = cv2.cvtColor(image_path_original, cv2.COLOR_BGR2GRAY)
+            thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
+            nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
+            thresh = cv2.dilate(thresh, nucleo, iterations=7)
 
-            return resultado
+            cv2.imwrite(f"FAGNER-ponto_{self.point}-PROCESSADA_TRATAMENTO-7-{self.point}.png", thresh)
+
+            reader = easyocr.Reader(["pt"], gpu=True)
+            resultados = reader.readtext(image=thresh, detail=1, allowlist='0123456789', paragraph=False)
+            resultadoEncontrados = []
+            print("textos encontrados")
+            for resultado in resultados:
+                resultadoEncontrados.append(resultado[1])
+                print(f'{resultado[1]} ')
+
+
+                return resultadoEncontrados[0]
         
-        return resultado[0];
+        print(f"Resultados do OCR APOS LEIURA - {self.point}:{resultadoEncontrados}")
+        return resultadoEncontrados[0];
 
     def normalize_text(self, resultado):
         # Processa o resultado (igual ao seu código atual)
