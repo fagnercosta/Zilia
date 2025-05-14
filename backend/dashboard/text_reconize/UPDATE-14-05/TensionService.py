@@ -20,7 +20,7 @@ class TensionService:
         self.final_image_dir = 'images_final'
         self.clp_url = "opc.tcp://192.168.1.1:4840"
         self.client = Client(self.clp_url)
-        self.robo = True #TROQUE AQUI PARA TRUE SE FOR ROBO
+        self.robo = False #TROQUE AQUI PARA TRUE SE FOR ROBO
 
         # Defina o endereço IP da Raspberry Pi, usuário e senha
         self.raspberry_ip = '192.168.1.98'
@@ -133,10 +133,10 @@ class TensionService:
     def prepare_images1(self):
         imagemOriginal = cv2.imread('images_final/ponto_1.png')        
 
-        imagemOriginal2 = imagemOriginal[600:900,650:2500]
+        imagemOriginal2 = imagemOriginal[190:410,750:1200]
         #imagemOriginal = imagemOriginal[510:720,800:1210]
         #imagemOriginal = imagemOriginal[500:750,840:1280]
-        imagemOriginal = imagemOriginal[600:900,650:2500]
+        imagemOriginal = imagemOriginal[190:410,750:1200]
 
         
 
@@ -146,7 +146,7 @@ class TensionService:
         denoised = imagemOriginal
         novo_tamanho = (denoised.shape[1] * 2, denoised.shape[0] * 2)
 
-        denoised = cv2.resize(denoised, novo_tamanho, interpolation=cv2.INTER_NEAREST)
+        #denoised = cv2.resize(denoised, novo_tamanho, interpolation=cv2.INTER_NEAREST)
 
         #AQUI>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         '''gray = cv2.cvtColor(denoised, cv2.COLOR_BGR2GRAY)
@@ -170,7 +170,7 @@ class TensionService:
 
         denoised = cv2.resize(denoised, novo_tamanho, interpolation=cv2.INTER_NEAREST)
 
-        path = "images_final/ponto_1_tratada_processamento.png"
+        path = "images_final/ponto_1_tratada.png"
         cv2.imwrite(path, denoised)
 
         
@@ -188,26 +188,17 @@ class TensionService:
 
     def prepare_images2(self):
         imagemOriginal = cv2.imread('images_final/ponto_2.png') 
-        '''imagemOriginal2 = imagemOriginal[520:720,800:1210]
-     
+        imagemOriginal2 = imagemOriginal[190:410,750:1200]
+        #imagemOriginal = imagemOriginal[510:720,800:1210]
+        #imagemOriginal = imagemOriginal[500:750,840:1280]
+        imagemOriginal = imagemOriginal[190:410,750:1200]
 
-        imagemOriginal = imagemOriginal[470:790,840:1200]'''
         
-        '''imagemOriginal2 = imagemOriginal[50:500,650:1500]
-        #imagemOriginal = imagemOriginal[510:720,800:1210]
-        #imagemOriginal = imagemOriginal[500:750,840:1280]
-        imagemOriginal = imagemOriginal[50:500,650:1500]'''
-        
-        imagemOriginal2 = imagemOriginal[200:590,650:1500]
-        #imagemOriginal = imagemOriginal[510:720,800:1210]
-        #imagemOriginal = imagemOriginal[500:750,840:1280]
-        imagemOriginal = imagemOriginal[200:590,650:1500]
        
         # Passo 3: Reduzir ruído com um leve desfoque
         denoised = cv2.GaussianBlur(imagemOriginal, (7, 7), 0)
         novo_tamanho = (denoised.shape[1] * 2, denoised.shape[0] * 2)
-
-        denoised = cv2.resize(denoised, novo_tamanho, interpolation=cv2.INTER_NEAREST)
+ 
 
         path = "images_final/ponto_2_tratada.png"
         cv2.imwrite(path, denoised)
@@ -227,17 +218,10 @@ class TensionService:
     def prepare_images3(self):
         imagemOriginal = cv2.imread('images_final/ponto_3.png') 
 
-        
-
-        '''imagemOriginal2 = imagemOriginal[510:720,800:1210]
+        imagemOriginal2 = imagemOriginal[190:410,750:1200]
         #imagemOriginal = imagemOriginal[510:720,800:1210]
         #imagemOriginal = imagemOriginal[500:750,840:1280]
-        imagemOriginal = imagemOriginal[470:790,840:1200]'''
-        
-        imagemOriginal2 = imagemOriginal[50:590,650:1300]
-        #imagemOriginal = imagemOriginal[510:720,800:1210]
-        #imagemOriginal = imagemOriginal[500:750,840:1280]
-        imagemOriginal = imagemOriginal[50:590,650:1300]
+        imagemOriginal = imagemOriginal[190:410,750:1200]
 
         
       
@@ -282,16 +266,16 @@ class TensionService:
     
     def prepare_images4(self):
         imagemOriginal = cv2.imread('images_final/ponto_4.png') 
-        ''' imagemOriginal2 = imagemOriginal[510:720,800:1210]
-        imagemOriginal = imagemOriginal[470:790,840:1200]'''
-        
-        imagemOriginal2 = imagemOriginal[50:600,650:1200]
+        imagemOriginal2 = imagemOriginal[190:410,750:1200]
         #imagemOriginal = imagemOriginal[510:720,800:1210]
         #imagemOriginal = imagemOriginal[500:750,840:1280]
-        imagemOriginal = imagemOriginal[50:600,650:1200]
+        imagemOriginal = imagemOriginal[190:410,750:1200]
+
 
         # Passo 3: Reduzir ruído com um leve desfoque
-        denoised = imagemOriginal
+        denoised = cv2.GaussianBlur(imagemOriginal, (7, 7), 0)
+        #gray = cv2.cvtColor(denoised, cv2.COLOR_BGR2GRAY)
+        #equalized = cv2.equalizeHist(gray)
         novo_tamanho = (denoised.shape[1] * 2, denoised.shape[0] * 2)
 
         denoised = cv2.resize(denoised, novo_tamanho, interpolation=cv2.INTER_NEAREST)
