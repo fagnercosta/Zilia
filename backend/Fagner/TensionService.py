@@ -20,7 +20,7 @@ class TensionService:
         self.final_image_dir = 'images_final'
         self.clp_url = "opc.tcp://192.168.1.1:4840"
         self.client = Client(self.clp_url)
-        self.robo = True #TROQUE AQUI PARA TRUE SE FOR ROBO
+        self.robo = False #TROQUE AQUI PARA TRUE SE FOR ROBO
 
         # Defina o endereço IP da Raspberry Pi, usuário e senha
         self.raspberry_ip = '192.168.1.98'
@@ -148,21 +148,6 @@ class TensionService:
 
         denoised = cv2.resize(denoised, novo_tamanho, interpolation=cv2.INTER_NEAREST)
 
-        #AQUI>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-        '''gray = cv2.cvtColor(denoised, cv2.COLOR_BGR2GRAY)
-
-        # Aplicar filtro bilateral (remove ruído sem perder bordas)
-        gray = cv2.bilateralFilter(gray, 11, 17, 17)
-
-        # Aplicar threshold adaptativo
-        thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
-
-        # Opcional: dilatar para reforçar linhas finas (ajustável)
-        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (6, 6))
-        thresh = cv2.dilate(thresh, kernel, iterations=5)
-
-        path_bin = "images_final/ponto_1_binaria.png"
-        cv2.imwrite(path_bin, thresh)'''
         
          # Passo 3: Reduzir ruído com um leve desfoque
         denoised = cv2.GaussianBlur(imagemOriginal, (7, 7), 0)
@@ -171,6 +156,7 @@ class TensionService:
         denoised = cv2.resize(denoised, novo_tamanho, interpolation=cv2.INTER_NEAREST)
 
         path = "images_final/ponto_1_tratada_processamento.png"
+        print("Imagem Processada", path)
         cv2.imwrite(path, denoised)
 
         

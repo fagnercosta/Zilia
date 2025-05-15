@@ -140,28 +140,25 @@ class ExtractTextInImage:
             print(f'{resultado[1]} ')
         
         
-        if '1' in resultadoEncontrados[0] or '1' in resultadoEncontrados[0]:
-            '''print("Resolvendo confusão entre 1 e 7...")
-            resolve = ResolveDigists(image_path_original, self.point)
-            resultado = resolve.resolve_digits()'''
-            # Pré-processamento
-            gray = cv2.cvtColor(image_path_original, cv2.COLOR_BGR2GRAY)
-            thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
-            nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
-            thresh = cv2.dilate(thresh, nucleo, iterations=7)
+            if '1' in resultadoEncontrados[0] or '1' in resultadoEncontrados[0]:
+                print("Resolvendo confusão entre 1 e 7...")
+                resolve = ResolveDigists(image_path_original, self.point)
+                resultado = resolve.resolve_digits()
+                # Pré-processamento
+                gray = cv2.cvtColor(image_path_original, cv2.COLOR_BGR2GRAY)
+                thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
+                nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
+                thresh = cv2.dilate(thresh, nucleo, iterations=7)
 
-            cv2.imwrite(f"FAGNER-ponto_{self.point}-PROCESSADA_TRATAMENTO-7-{self.point}.png", thresh)
+                cv2.imwrite(f"FAGNER-ponto_{self.point}-PROCESSADA_TRATAMENTO-7-{self.point}.png", thresh)
 
-            reader = easyocr.Reader(["pt"], gpu=True)
-            resultados = reader.readtext(image=thresh, detail=1, allowlist='0123456789', paragraph=False)
-            resultadoEncontrados = []
-            print("textos encontrados")
-            for resultado in resultados:
-                resultadoEncontrados.append(resultado[1])
-                print(f'{resultado[1]} ')
+                reader = easyocr.Reader(["pt"], gpu=True)
+                resultados = reader.readtext(image=thresh, detail=1, allowlist='0123456789', paragraph=False)
+                
+                return resultado    
 
 
-                return resultadoEncontrados[0]
+                    #return resultadoEncontrados
         
         print(f"Resultados do OCR APOS LEIURA - {self.point}:{resultadoEncontrados}")
         return resultadoEncontrados[0];

@@ -133,11 +133,10 @@ class TensionService:
     def prepare_images1(self):
         imagemOriginal = cv2.imread('images_final/ponto_1.png')        
 
-        imagemOriginal2 = imagemOriginal[190:410,750:1200]
+        imagemOriginal2 = imagemOriginal[300:500,650:1300]
         #imagemOriginal = imagemOriginal[510:720,800:1210]
         #imagemOriginal = imagemOriginal[500:750,840:1280]
-        imagemOriginal = imagemOriginal[190:410,750:1200]
-
+        imagemOriginal = imagemOriginal[300:500,650:1300]
         
 
         
@@ -168,9 +167,9 @@ class TensionService:
         denoised = cv2.GaussianBlur(imagemOriginal, (7, 7), 0)
         novo_tamanho = (denoised.shape[1] * 2, denoised.shape[0] * 2)
 
-        denoised = cv2.resize(denoised, novo_tamanho, interpolation=cv2.INTER_NEAREST)
+        denoised2 = cv2.resize(denoised, novo_tamanho, interpolation=cv2.INTER_NEAREST)
 
-        path = "images_final/ponto_1_tratada.png"
+        path = "images_final/ponto_1_tratada_processada_para_leitura.png"
         cv2.imwrite(path, denoised)
 
         
@@ -188,19 +187,25 @@ class TensionService:
 
     def prepare_images2(self):
         imagemOriginal = cv2.imread('images_final/ponto_2.png') 
-        imagemOriginal2 = imagemOriginal[190:410,750:1200]
+        '''imagemOriginal2 = imagemOriginal[300:500,650:1300]
         #imagemOriginal = imagemOriginal[510:720,800:1210]
         #imagemOriginal = imagemOriginal[500:750,840:1280]
-        imagemOriginal = imagemOriginal[190:410,750:1200]
+        imagemOriginal = imagemOriginal[300:500,650:1300]'''
+        imagemOriginal2 = imagemOriginal[300:500,650:1300]
+        #imagemOriginal = imagemOriginal[510:720,800:1210]
+        #imagemOriginal = imagemOriginal[500:750,840:1280]
+        imagemOriginal = imagemOriginal[300:500,650:1300]
 
         
        
         # Passo 3: Reduzir ruído com um leve desfoque
         denoised = cv2.GaussianBlur(imagemOriginal, (7, 7), 0)
         novo_tamanho = (denoised.shape[1] * 2, denoised.shape[0] * 2)
+
+        denoised2 = cv2.resize(denoised, novo_tamanho, interpolation=cv2.INTER_NEAREST)
  
 
-        path = "images_final/ponto_2_tratada.png"
+        path = "images_final/ponto_2_tratada_processada_para_leitura.png"
         cv2.imwrite(path, denoised)
         
         # Usa ExtractTextInImage para extrair o texto
@@ -217,45 +222,24 @@ class TensionService:
     
     def prepare_images3(self):
         imagemOriginal = cv2.imread('images_final/ponto_3.png') 
-
-        imagemOriginal2 = imagemOriginal[190:410,750:1200]
+        imagemOriginal2 = imagemOriginal[300:500,650:1300]
         #imagemOriginal = imagemOriginal[510:720,800:1210]
         #imagemOriginal = imagemOriginal[500:750,840:1280]
-        imagemOriginal = imagemOriginal[190:410,750:1200]
+        imagemOriginal = imagemOriginal[300:500,650:1300]
 
         
-      
-
+       
         # Passo 3: Reduzir ruído com um leve desfoque
-        denoised = imagemOriginal
+        denoised = cv2.GaussianBlur(imagemOriginal, (7, 7), 0)
         novo_tamanho = (denoised.shape[1] * 2, denoised.shape[0] * 2)
+ 
 
-        denoised = cv2.resize(denoised, novo_tamanho, interpolation=cv2.INTER_NEAREST)
-
-        #AQUI>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-        gray = cv2.cvtColor(denoised, cv2.COLOR_BGR2GRAY)
-
-        # Aplicar filtro bilateral (remove ruído sem perder bordas)
-        gray = cv2.bilateralFilter(gray, 11, 17, 17)
-
-        # Aplicar threshold adaptativo
-        thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
-
-        # Opcional: dilatar para reforçar linhas finas (ajustável)
-        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (6, 6))
-        thresh = cv2.dilate(thresh, kernel, iterations=7)
-
-        path_bin = "images_final/ponto_3_binaria.png"
-        cv2.imwrite(path_bin, thresh)
-
-        
-
-        path = "images_final/ponto_3_tratada.png"
+        path = "images_final/ponto_3_tratada_processada_para_leitura.png"
         cv2.imwrite(path, denoised)
-
+        
         # Usa ExtractTextInImage para extrair o texto
-        extrator = ExtractTextInImage(path_bin,3)
-        resultado = extrator.extract_text(image=path_bin,image_path_original=imagemOriginal2)
+        extrator = ExtractTextInImage(path,3)
+        resultado = extrator.extract_text(image=path, image_path_original=imagemOriginal2)
         
         textoResposta = extrator.normalize_text(resultado)
         
@@ -266,24 +250,22 @@ class TensionService:
     
     def prepare_images4(self):
         imagemOriginal = cv2.imread('images_final/ponto_4.png') 
-        imagemOriginal2 = imagemOriginal[190:410,750:1200]
+        imagemOriginal2 = imagemOriginal[300:500,650:1300]
         #imagemOriginal = imagemOriginal[510:720,800:1210]
         #imagemOriginal = imagemOriginal[500:750,840:1280]
-        imagemOriginal = imagemOriginal[190:410,750:1200]
+        imagemOriginal = imagemOriginal[300:500,650:1300]
 
-
+        
+       
         # Passo 3: Reduzir ruído com um leve desfoque
         denoised = cv2.GaussianBlur(imagemOriginal, (7, 7), 0)
-        #gray = cv2.cvtColor(denoised, cv2.COLOR_BGR2GRAY)
-        #equalized = cv2.equalizeHist(gray)
         novo_tamanho = (denoised.shape[1] * 2, denoised.shape[0] * 2)
+ 
 
-        denoised = cv2.resize(denoised, novo_tamanho, interpolation=cv2.INTER_NEAREST)
-
-        path = "images_final/ponto_4_tratada.png"
-
+        path = "images_final/ponto_4_tratada_processada_para_leitura.png"
         cv2.imwrite(path, denoised)
         
+        # Usa ExtractTextInImage para extrair o texto
         extrator = ExtractTextInImage(path,4)
         resultado = extrator.extract_text(image=path, image_path_original=imagemOriginal2)
         
