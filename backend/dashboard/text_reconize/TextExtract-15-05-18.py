@@ -25,7 +25,7 @@ class ResolveDigists:
         gray = cv2.cvtColor(self.image_path, cv2.COLOR_BGR2GRAY)
         thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
         nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
-        thresh = cv2.dilate(thresh, nucleo, iterations=4)
+        thresh = cv2.dilate(thresh, nucleo, iterations=7)
 
         # Redimensionar a imagem para melhorar a detecção (aumentar 2x)
         novo_tamanho = (thresh.shape[1] * 2, thresh.shape[0] * 2)
@@ -107,78 +107,11 @@ class ResolveDigists:
                     print(f"Confirmando na posição {position}: {text} como 7")
                     text = '7'
 
-            
-            
 
             corrected_result.append(text)
 
         return corrected_result
 
-
-class ImageEnhancer:
-    def __init__(self):
-        # Inicializa quaisquer parâmetros globais, se necessário
-        self.kernel_sharpen = np.array([[0, -1, 0], [-1, 5, -1], [0, -1, 0]])
-        self.kernel_dilate = np.ones((2, 2), np.uint8)
-
-    def enhance_image(self, image_path,point):
-        print(f"Processando imagem em {image_path}...")
-        """
-        Processa a imagem para melhorar a legibilidade para OCR.
-        
-        Args:
-            image_path (str): Caminho para a imagem de entrada.
-            
-        Returns:
-            numpy.ndarray: Imagem processada, ou None se houver erro.
-        """
-        # Carrega a imagem
-        image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
-
-        image = cv2.add(image, 10)
-        if point ==2 or point ==4:
-            cv2.imwrite(f"imagemClareada{point}.png", img=image)
-
-
-        if image is None:
-            print(f"Erro: Não foi possível carregar a imagem em {image_path}. Verifique o caminho ou a integridade do arquivo.")
-            return None
-
-        # Passo 1: Aumentar o contraste usando equalização de histograma
-        equalized = cv2.equalizeHist(image)
-        equalized = cv2.equalizeHist(equalized)
-
-        # Passo 2: Aumentar a nitidez da imagem
-        sharpened = cv2.filter2D(equalized, -1, self.kernel_sharpen)
-
-        # Passo 3: Reduzir ruído com um leve desfoque
-        denoised = cv2.GaussianBlur(sharpened, (7, 7), 9)
-        cv2.imwrite(f"DENOISE{point}.png", denoised)
-        # Passo 4: Aplicar limiarização adaptativa
-        thresh = cv2.adaptiveThreshold(
-            denoised, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5
-        )
-
-       
-
-        # Passo 5: Aplicar dilatação para engrossar os dígitos
-        thresh = cv2.erode(thresh, self.kernel_dilate, iterations=7)
-        dilated = cv2.dilate(thresh, self.kernel_dilate, iterations=18)
-        dilated = cv2.erode(dilated, self.kernel_dilate, iterations=11)
-
-        
-
-        novo_tamanho = (dilated.shape[1] * 2, dilated.shape[0] * 2) 
-        dilated_resize = cv2.resize(dilated, novo_tamanho, interpolation=cv2.INTER_CUBIC)
-
-        
-        cv2.imwrite(image_path, dilated_resize)
-
-        return dilated
-    
-    def resize_image(self, image):
-        novo_tamanho = (image.shape[1] * 2, image.shape[0] * 2)  # OpenCV usa (largura, altura)
-        return cv2.resize(image, novo_tamanho, interpolation=cv2.INTER_NEAREST)
 
 class ExtractTextInImage:
     def __init__(self, image_path=None,point=0):
@@ -197,47 +130,38 @@ class ExtractTextInImage:
             
 
         
-        # Pré-processamento
-        '''gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        gray = cv2.GaussianBlur(gray, (5, 5), 0)
-        thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
-        
-        nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3,3))
-        
-        if self.point ==1 or self.point ==3:
-             thresh = cv2.dilate(thresh, nucleo, iterations = 10)
-             thresh = cv2.erode(thresh,nucleo,iterations=10)
-             
-        else:
-            thresh = cv2.dilate(thresh, nucleo, iterations = 6)'''
-        
-        tratramento = ImageEnhancer()
-        thresh = tratramento.enhance_image(self.image_path,self.point)
-        
-        #if self.point ==4 or :
-        '''nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3,3))
-        thresh = cv2.erode(thresh,nucleo,iterations=5)
-        thresh = cv2.dilate(thresh,nucleo,iterations=5)'''
-        
-        cv2.imwrite(f"Processada-{self.point}.png", thresh)
-        # OCR com EasyOCR
-        reader = easyocr.Reader(["pt"], gpu=True)
-        
-        resultado = reader.readtext(self.image_path, detail=0, allowlist='0123456789')
-        print("RESULTADO: ",resultado[0])
-        # Pós-processamento
-        
-        if '7' in resultado[0] or '1' in resultado[0]:
-            print("Resolvendo confusão entre 1 e 7...")
-            resolve = ResolveDigists(image_path_original, self.point)
-            resultado = resolve.resolve_digits()
-
-            return resultado
        
+        reader = easyocr.Reader(["pt"], gpu=True)
+        resultados = reader.readtext(image=image, allowlist='0123456789')
+        resultadoEncontrados = []
+        print("textos encontrados")
+        for resultado in resultados:
+            resultadoEncontrados.append(resultado[1])
+            print(f'{resultado[1]} ')
         
         
+            if '1' in resultadoEncontrados[0] or '1' in resultadoEncontrados[0]:
+                print("Resolvendo confusão entre 1 e 7...")
+                resolve = ResolveDigists(image_path_original, self.point)
+                resultado = resolve.resolve_digits()
+                # Pré-processamento
+                gray = cv2.cvtColor(image_path_original, cv2.COLOR_BGR2GRAY)
+                thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
+                nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
+                thresh = cv2.dilate(thresh, nucleo, iterations=7)
+
+                cv2.imwrite(f"FAGNER-ponto_{self.point}-PROCESSADA_TRATAMENTO-7-{self.point}.png", thresh)
+
+                reader = easyocr.Reader(["pt"], gpu=True)
+                resultados = reader.readtext(image=thresh, detail=1, allowlist='0123456789', paragraph=False)
+                
+                return resultado    
+
+
+                    #return resultadoEncontrados
         
-        return resultado[0];
+        print(f"Resultados do OCR APOS LEIURA - {self.point}:{resultadoEncontrados}")
+        return resultadoEncontrados[0];
 
     def normalize_text(self, resultado):
         # Processa o resultado (igual ao seu código atual)
