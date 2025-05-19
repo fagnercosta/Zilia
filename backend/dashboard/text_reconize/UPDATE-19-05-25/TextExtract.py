@@ -107,6 +107,30 @@ class ResolveDigists:
                     print(f"Confirmando na posição {position}: {text} como 7")
                     text = '7'
 
+            # Corrigir confusão entre "0" e "8" para este dígito
+            if text == '0' or text == '8':
+                print(f"Verificando dígito na posição {position}...")
+                # Focar exatamente no segmento do meio
+                middle_height = int((y_max - y_min) / 3)
+                middle_region = digit_region[int(y_min + middle_height):int(y_min + 2 * middle_height), :]
+                white_pixels = cv2.countNonZero(middle_region)
+                total_pixels = middle_region.shape[0] * middle_region.shape[1]
+                middle_white_ratio = white_pixels / total_pixels if total_pixels > 0 else 0
+                print(f"Middle white ratio (para 0/8, posição {position}): {middle_white_ratio}")
+
+                # Ajustar o limiar com base na imagem (usando a lógica ajustada por você)
+                if middle_white_ratio > 0.15:
+                    print(f"Corrigindo na posição {position}: {text} para 0")
+                    text = '0'
+                else:
+                    print(f"Corrigindo na posição {position}: {text} para 8")
+                    text = '8'
+
+                # Salvar a região para depuração (opcional)
+                cv2.imwrite(f'middle_region_pos_{position}.png', middle_region)
+
+            corrected_result.append(text)
+
 
             corrected_result.append(text)
 
@@ -119,7 +143,7 @@ class ExtractTextInImage:
         self.point = point
         
     
-    def extract_text(self, image=None, image_path_original=None):
+    def extract_text(self, image=None, image_path_original=None, image_binaria=None):
         """Extrai texto de uma imagem (pode ser um array NumPy ou um caminho de arquivo)."""
         if image is None:
             if self.image_path is None:
@@ -132,18 +156,20 @@ class ExtractTextInImage:
         
        
         reader = easyocr.Reader(["pt"], gpu=True)
-        resultados = reader.readtext(image=image, allowlist='0123456789')
+        resultados = reader.readtext(image=image, detail=1, allowlist='0123456789')
         resultadoEncontrados = []
-        print("textos encontrados")
+        print(f"textos encontrados")
         for resultado in resultados:
             resultadoEncontrados.append(resultado[1])
             print(f'{resultado[1]} ')
+
+        print(f"textos encontrados apos for {resultadoEncontrados}")
         
         
         if '1' in resultadoEncontrados[0] or '1' in resultadoEncontrados[0]:
-            '''print("Resolvendo confusão entre 1 e 7...")
+            print("Resolvendo confusão entre 1 e 7...")
             resolve = ResolveDigists(image_path_original, self.point)
-            resultado = resolve.resolve_digits()'''
+            resultado = resolve.resolve_digits()
             # Pré-processamento
             gray = cv2.cvtColor(image_path_original, cv2.COLOR_BGR2GRAY)
             thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
@@ -154,17 +180,35 @@ class ExtractTextInImage:
 
             reader = easyocr.Reader(["pt"], gpu=True)
             resultados = reader.readtext(image=thresh, detail=1, allowlist='0123456789', paragraph=False)
-            resultadoEncontrados = []
-            print("textos encontrados")
+                
+            print(f"textos encontrados")
             for resultado in resultados:
                 resultadoEncontrados.append(resultado[1])
-                print(f'{resultado[1]} ')
+                print(f'{resultado[1]} ') 
+            
+        if '8' in resultadoEncontrados[0] or '8' in resultadoEncontrados[0]:
+            print("Resolvendo confusão entre 0 e 8...")
+            reader = easyocr.Reader(["pt"], gpu=True)
+            resultados = reader.readtext(image=image_binaria, allowlist='0123456789', paragraph=False)
+            resultadoEncontrados = []
+            print(f"textos encontrados")
+            for resultado in resultados:
+                resultadoEncontrados.append(resultado[1])
+                print(f'{resultado[1]} ') 
 
-
-                return resultadoEncontrados[0]
+        if '4' in resultadoEncontrados[0] :
+            print("Resolvendo confusão entre 4...")
+            reader = easyocr.Reader(["pt"], gpu=True)
+            resultados = reader.readtext(image=image_binaria, allowlist='0123456789', paragraph=False)
+            resultadoEncontrados = []
+            print(f"textos encontrados")
+            for resultado in resultados:
+                resultadoEncontrados.append(resultado[1])
+                print(f'{resultado[1]} ') 
+            
         
         print(f"Resultados do OCR APOS LEIURA - {self.point}:{resultadoEncontrados}")
-        return resultadoEncontrados[0];
+        return resultadoEncontrados;
 
     def normalize_text(self, resultado):
         # Processa o resultado (igual ao seu código atual)
