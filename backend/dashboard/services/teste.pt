@@ -1,0 +1,38 @@
+class BannerBlock(StructBlock):
+    """Componente de banner com imagem e link.
+
+    Atributos:
+        image (ImageChooserBlock): Imagem do banner.
+        link (URLBlock): URL de redirecionamento.
+        alt_text (CharBlock): Texto alternativo para acessibilidade.
+        target (ChoiceBlock): Modo de abertura do link.
+    """
+
+    image = ImageChooserBlock(
+        required=True,
+        label="Banner Image",
+        help_text="Upload banner image (recommended: 1920x600px)"
+    )
+    link = URLBlock(
+        required=False,
+        label="Banner Link",
+        help_text="URL for banner redirection"
+    )
+    alt_text = CharBlock(
+        required=True,
+        label="Alt Text",
+        help_text="Image description for accessibility"
+    )
+    target = blocks.ChoiceBlock(
+        choices=[
+            ('_self', 'Same tab'),
+            ('_blank', 'New tab'),
+        ],
+        default='_self',
+        label="Open link in"
+    )
+
+    class Meta:
+        icon = 'image'
+        label = "Wide Banner"
+        template = "blocks/banner_block.html"

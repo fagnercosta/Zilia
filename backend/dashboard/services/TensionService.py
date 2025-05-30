@@ -20,7 +20,7 @@ class TensionService:
         self.final_image_dir = 'images_final'
         self.clp_url = "opc.tcp://192.168.1.1:4840"
         self.client = Client(self.clp_url)
-        self.robo = False #TROQUE AQUI PARA TRUE SE FOR ROBO
+        #TROQUE AQUI PARA TRUE SE FOR ROBO  
 
         # Defina o endereço IP da Raspberry Pi, usuário e senha
         self.raspberry_ip = '192.168.1.98'
@@ -136,7 +136,7 @@ class TensionService:
         imagemOriginal2 = imagemOriginal[300:500,650:1300]
         #imagemOriginal = imagemOriginal[510:720,800:1210]
         #imagemOriginal = imagemOriginal[500:750,840:1280]
-        imagemOriginal = imagemOriginal[270:550,600:1300]
+        imagemOriginal = imagemOriginal[300:530,620:1280]
         
 
         
@@ -159,7 +159,8 @@ class TensionService:
         gray = cv2.cvtColor(denoised, cv2.COLOR_BGR2GRAY)
         thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
         nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
-        thresh = cv2.dilate(thresh, nucleo, iterations=9)
+        thresh = cv2.dilate(thresh, nucleo, iterations=12)
+        thresh = cv2.erode(thresh, nucleo, iterations=5)
 
         path_binaria = "images_final/ponto_1_tratada_processada_para_leitura_binaria.png"
         cv2.imwrite(path_binaria, thresh)                                                                                                                               
@@ -188,11 +189,11 @@ class TensionService:
         #imagemOriginal = imagemOriginal[510:720,800:1210]
         #imagemOriginal = imagemOriginal[500:750,840:1280]
         imagemOriginal = imagemOriginal[300:500,650:1300]'''
-        imagemOriginal2 = imagemOriginal[300:500,650:1300]
+        imagemOriginal2 = imagemOriginal[300:500,650:1280]
         #imagemOriginal = imagemOriginal[510:720,800:1210]
         #imagemOriginal = imagemOriginal[500:750,840:1280]
         #imagemOriginal = imagemOriginal[300:500,650:1300]
-        imagemOriginal = imagemOriginal[270:550,650:1300]
+        imagemOriginal = imagemOriginal[300:530,620:1280]
          
        
         # Passo 3: Reduzir ruído com um leve desfoque
@@ -233,10 +234,8 @@ class TensionService:
     def prepare_images3(self):
         imagemOriginal = cv2.imread('images_final/ponto_3.png') 
         imagemOriginal2 = imagemOriginal[300:500,650:1300]
-        #imagemOriginal = imagemOriginal[510:720,800:1210]
-        #imagemOriginal = imagemOriginal[500:750,840:1280]
-        #imagemOriginal = imagemOriginal[300:500,650:1300]
-        imagemOriginal = imagemOriginal[270:550,600:1300]
+        
+        imagemOriginal = imagemOriginal[300:530,620:1280]
 
         
        
@@ -251,7 +250,8 @@ class TensionService:
         gray = cv2.cvtColor(denoised, cv2.COLOR_BGR2GRAY)
         thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
         nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
-        thresh = cv2.dilate(thresh, nucleo, iterations=10)
+        thresh = cv2.dilate(thresh, nucleo, iterations=12)
+        thresh = cv2.erode(thresh, nucleo, iterations=5)
 
         path_binaria = "images_final/ponto_3_tratada_processada_para_leitura_binaria.png"
         cv2.imwrite(path_binaria, thresh)                                                                                                                               

@@ -166,7 +166,7 @@ class ExtractTextInImage:
         print(f"textos encontrados apos for {resultadoEncontrados}")
         
         
-        if '1' in resultadoEncontrados[0] or '1' in resultadoEncontrados[0]:
+        if '1' in resultadoEncontrados[0]:
             print("Resolvendo confusão entre 1 e 7...")
             resolve = ResolveDigists(image_path_original, self.point)
             resultado = resolve.resolve_digits()
@@ -186,7 +186,7 @@ class ExtractTextInImage:
                 resultadoEncontrados.append(resultado[1])
                 print(f'{resultado[1]} ') 
             
-        if '8' in resultadoEncontrados[0] or '8' in resultadoEncontrados[0]:
+        if '8' in resultadoEncontrados[0]:
             print("Resolvendo confusão entre 0 e 8...")
             reader = easyocr.Reader(["pt"], gpu=True)
             resultados = reader.readtext(image=image_binaria, allowlist='0123456789', paragraph=False)
@@ -196,18 +196,21 @@ class ExtractTextInImage:
                 resultadoEncontrados.append(resultado[1])
                 print(f'{resultado[1]} ') 
 
-        if '4' in resultadoEncontrados[0] :
-            print("Resolvendo confusão entre 4...")
+        '''if ('40' in resultadoEncontrados[0] and not '400' in resultadoEncontrados[0]) or not '405' in resultadoEncontrados[0] and '400' in resultadoEncontrados[0]:
+            print("Resolvendo confusão entre 40...")
             reader = easyocr.Reader(["pt"], gpu=True)
             resultados = reader.readtext(image=image_binaria, allowlist='0123456789', paragraph=False)
             resultadoEncontrados = []
             print(f"textos encontrados")
             for resultado in resultados:
                 resultadoEncontrados.append(resultado[1])
-                print(f'{resultado[1]} ') 
+                print(f'{resultado[1]} ') '''
             
         
         print(f"Resultados do OCR APOS LEIURA - {self.point}:{resultadoEncontrados}")
+        
+        if len(resultadoEncontrados) >1 and ('37' in resultadoEncontrados[0]):
+            return resultadoEncontrados[1]
         return resultadoEncontrados;
 
     def normalize_text(self, resultado):
