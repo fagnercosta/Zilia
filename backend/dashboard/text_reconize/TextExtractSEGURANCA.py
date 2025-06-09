@@ -187,21 +187,23 @@ class ExtractTextInImage:
             print(f'RESULTADO >>>>>>> {resultado[1]} - {resultado[0]} \n')'''
         
         print(f"textos encontrados")
-        print(f"textos encontrados")
-        resultadoEncontrados = []  # Inicializar a lista
         for resultado in resultados:
             coordenadas, texto, confianca = resultado
             
-            # Calcular o ratio para o bounding box específico do texto detectado
-            largura = abs(coordenadas[1][0] - coordenadas[0][0])  # Diferença entre x inicial e final
-            altura = abs(coordenadas[2][1] - coordenadas[0][1])  # Diferença entre y superior e inferior
+            # O texto na posição [1] é a string com os números (ex.: "375" ou "315")
+            texto = resultado[1]
+            
+            # Calcular o ratio do bounding box para usar na verificação
+            largura = abs(coordenadas[1][0] - coordenadas[0][0])
+            altura = abs(coordenadas[2][1] - coordenadas[0][1])
             ratio = largura / altura if altura != 0 else 0
 
-            # Verificar cada caractere do texto e corrigir apenas "1" para "7" se necessário
+            # Verificar cada caractere do texto e corrigir "1" para "7" se necessário
             texto_corrigido = ""
             for char in texto:
-                if char == "1":  # Verificar "1" vs "7"
-                    if ratio > 0.5:  # "7" é mais largo
+                print(f"Ratio {ratio}")
+                if char == "1" or char==7:  # Se o caractere for "1", verificar o ratio
+                    if ratio > 0.5:  # "7" é mais largo, ajuste o limiar se necessário
                         texto_corrigido += "7"
                     else:
                         texto_corrigido += "1"
@@ -210,7 +212,7 @@ class ExtractTextInImage:
 
             # Adicionar o texto corrigido à lista e imprimir
             resultadoEncontrados.append(texto_corrigido)
-            print(f'RESULTADO >>>>>>> {texto_corrigido} - {coordenadas} - Ratio: {ratio:.2f} \n')
+            print(f'RESULTADO >>>>>>> {texto_corrigido} - {coordenadas} \n')
         
         
 

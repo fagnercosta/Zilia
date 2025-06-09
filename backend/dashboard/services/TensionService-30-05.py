@@ -133,10 +133,10 @@ class TensionService:
     def prepare_images1(self):
         imagemOriginal = cv2.imread('images_final/ponto_1.png')        
 
-        imagemOriginal2 = imagemOriginal[260:530,810:1260]
+        imagemOriginal2 = imagemOriginal[300:500,650:1300]
         #imagemOriginal = imagemOriginal[510:720,800:1210]
         #imagemOriginal = imagemOriginal[500:750,840:1280]
-        imagemOriginal = imagemOriginal[250:570,700:1360]
+        imagemOriginal = imagemOriginal[300:530,620:1280]
         
 
         
@@ -159,13 +159,8 @@ class TensionService:
         gray = cv2.cvtColor(denoised, cv2.COLOR_BGR2GRAY)
         thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
         nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
-        thresh = cv2.dilate(thresh, nucleo, iterations=11)
-        thresh = cv2.erode(thresh, nucleo, iterations=8)
-
-        thresh = cv2.equalizeHist(thresh)
-
-        #new_size = (thresh.shape[1] * 8, thresh.shape[0] * 4)
-        #thresh = cv2.resize(thresh, new_size, interpolation=cv2.INTER_NEAREST)
+        thresh = cv2.dilate(thresh, nucleo, iterations=12)
+        thresh = cv2.erode(thresh, nucleo, iterations=5)
 
         path_binaria = "images_final/ponto_1_tratada_processada_para_leitura_binaria.png"
         cv2.imwrite(path_binaria, thresh)                                                                                                                               
@@ -177,8 +172,8 @@ class TensionService:
 
         
         # Usa ExtractTextInImage para extrair o texto
-        extrator = ExtractTextInImage(path_binaria,1)
-        resultado = extrator.extract_text(image=path_binaria, image_path_original=imagemOriginal2, image_binaria=path_binaria)     
+        extrator = ExtractTextInImage(path,1)
+        resultado = extrator.extract_text(image=path, image_path_original=imagemOriginal2, image_binaria=path_binaria)     
         textoResposta = extrator.normalize_text(resultado)
         
         print(f"RESPOSTA PONT0 {1} :", textoResposta)
@@ -190,10 +185,15 @@ class TensionService:
 
     def prepare_images2(self):
         imagemOriginal = cv2.imread('images_final/ponto_2.png') 
-        imagemOriginal2 = imagemOriginal[260:530,810:1260]
+        '''imagemOriginal2 = imagemOriginal[300:500,650:1300]
         #imagemOriginal = imagemOriginal[510:720,800:1210]
         #imagemOriginal = imagemOriginal[500:750,840:1280]
-        imagemOriginal = imagemOriginal[250:570,700:1360]
+        imagemOriginal = imagemOriginal[300:500,650:1300]'''
+        imagemOriginal2 = imagemOriginal[300:500,650:1280]
+        #imagemOriginal = imagemOriginal[510:720,800:1210]
+        #imagemOriginal = imagemOriginal[500:750,840:1280]
+        #imagemOriginal = imagemOriginal[300:500,650:1300]
+        imagemOriginal = imagemOriginal[300:530,620:1280]
          
        
         # Passo 3: Reduzir ruído com um leve desfoque
@@ -209,8 +209,7 @@ class TensionService:
         gray = cv2.cvtColor(denoised, cv2.COLOR_BGR2GRAY)
         thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
         nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
-        thresh = cv2.dilate(thresh, nucleo, iterations=11)
-        thresh = cv2.erode(thresh, nucleo, iterations=8)
+        thresh = cv2.dilate(thresh, nucleo, iterations=7)
 
         path_binaria = "images_final/ponto_2_tratada_processada_para_leitura_binaria.png"
         cv2.imwrite(path_binaria, thresh)                                                                                                                               
@@ -221,8 +220,8 @@ class TensionService:
         cv2.imwrite(path, denoised)
         
         # Usa ExtractTextInImage para extrair o texto
-        extrator = ExtractTextInImage(path_binaria,2)
-        resultado = extrator.extract_text(image=path_binaria, image_path_original=imagemOriginal2, image_binaria=path_binaria)
+        extrator = ExtractTextInImage(path,2)
+        resultado = extrator.extract_text(image=path, image_path_original=imagemOriginal2, image_binaria=path_binaria)
         
         textoResposta = extrator.normalize_text(resultado)
         
@@ -234,10 +233,9 @@ class TensionService:
     
     def prepare_images3(self):
         imagemOriginal = cv2.imread('images_final/ponto_3.png') 
-        imagemOriginal2 = imagemOriginal[260:530,810:1260]
-        #imagemOriginal = imagemOriginal[510:720,800:1210]
-        #imagemOriginal = imagemOriginal[500:750,840:1280]
-        imagemOriginal = imagemOriginal[250:570,700:1360]
+        imagemOriginal2 = imagemOriginal[300:500,650:1300]
+        
+        imagemOriginal = imagemOriginal[300:530,620:1280]
 
         
        
@@ -252,10 +250,8 @@ class TensionService:
         gray = cv2.cvtColor(denoised, cv2.COLOR_BGR2GRAY)
         thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
         nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
-        '''thresh = cv2.dilate(thresh, nucleo, iterations=12)
-        thresh = cv2.erode(thresh, nucleo, iterations=5)'''
-        thresh = cv2.dilate(thresh, nucleo, iterations=11)
-        thresh = cv2.erode(thresh, nucleo, iterations=8)
+        thresh = cv2.dilate(thresh, nucleo, iterations=12)
+        thresh = cv2.erode(thresh, nucleo, iterations=5)
 
         path_binaria = "images_final/ponto_3_tratada_processada_para_leitura_binaria.png"
         cv2.imwrite(path_binaria, thresh)                                                                                                                               
@@ -267,8 +263,8 @@ class TensionService:
         cv2.imwrite(path, denoised)
         
         # Usa ExtractTextInImage para extrair o texto
-        extrator = ExtractTextInImage(path_binaria,3)
-        resultado = extrator.extract_text(image=path_binaria, image_path_original=imagemOriginal2, image_binaria=path_binaria)
+        extrator = ExtractTextInImage(path,3)
+        resultado = extrator.extract_text(image=path, image_path_original=imagemOriginal2, image_binaria=path_binaria)
         
         textoResposta = extrator.normalize_text(resultado)
         
@@ -279,10 +275,10 @@ class TensionService:
     
     def prepare_images4(self):
         imagemOriginal = cv2.imread('images_final/ponto_4.png') 
-        imagemOriginal2 = imagemOriginal[260:530,810:1260]
+        imagemOriginal2 = imagemOriginal[300:500,650:1300]
         #imagemOriginal = imagemOriginal[510:720,800:1210]
         #imagemOriginal = imagemOriginal[500:750,840:1280]
-        imagemOriginal = imagemOriginal[250:570,700:1360]
+        imagemOriginal = imagemOriginal[270:550,600:1300]
 
         
        
@@ -297,8 +293,7 @@ class TensionService:
         gray = cv2.cvtColor(denoised, cv2.COLOR_BGR2GRAY)
         thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
         nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
-        thresh = cv2.dilate(thresh, nucleo, iterations=9)
-        thresh = cv2.erode(thresh, nucleo, iterations=6)
+        thresh = cv2.dilate(thresh, nucleo, iterations=7)
 
         path_binaria = "images_final/ponto_4_tratada_processada_para_leitura_binaria.png"
         cv2.imwrite(path_binaria, thresh)                                                                                                                               
@@ -310,8 +305,8 @@ class TensionService:
         cv2.imwrite(path, denoised)
         
         # Usa ExtractTextInImage para extrair o texto
-        extrator = ExtractTextInImage(path_binaria,4)
-        resultado = extrator.extract_text(image=path_binaria, image_path_original=imagemOriginal2, image_binaria=path_binaria)
+        extrator = ExtractTextInImage(path,4)
+        resultado = extrator.extract_text(image=path, image_path_original=imagemOriginal2, image_binaria=path_binaria)
         
         textoResposta = extrator.normalize_text(resultado)
         
