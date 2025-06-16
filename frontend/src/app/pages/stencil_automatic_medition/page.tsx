@@ -17,6 +17,7 @@ import axios from "axios";
 import { set } from "date-fns";
 import { CircleX, Link } from "lucide-react";
 import { useRouter } from "next/navigation";
+import path from "path";
 import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -32,6 +33,10 @@ interface FormData {
     is_approved_status: boolean;
     cicles: number;
     stencil_id: number;
+    path_p1 : string | null;
+    path_p2 : string | null;
+    path_p3 : string | null;
+    path_p4 : string | null;
 }
 
 interface RequestRaspy {
@@ -44,6 +49,10 @@ interface RequestRaspy {
     textoP2: string;
     textoP3: string;
     textoP4: string;
+    path_p1 : string ;
+    path_p2 : string ;
+    path_p3 : string ;
+    path_p4 : string ;
 }
 
 export default function StencilAutomaticMedition() {
@@ -58,7 +67,7 @@ export default function StencilAutomaticMedition() {
     const [title, setTitle] = useState<string>("Success");
     const [message, setMessage] = useState('');
     const navigate = useRouter();
-    const [disabledInput, setDisabledInput] = useState(false);
+    const [disabledInput, setDisabledInput] = useState(true);
     const [loadingPhotos, setLoadingPhotos] = useState(false);
     const [loadingRobot, setLoadingRobot] = useState(false);
     const [menssagemRobo, setMenssagemRobo] = useState("");
@@ -104,6 +113,7 @@ export default function StencilAutomaticMedition() {
 
         if (retorno) {
             setActiceStatus(false);
+            setActivePending(false)
         }
         return retorno;
 
@@ -204,6 +214,10 @@ export default function StencilAutomaticMedition() {
         is_approved_status: false,
         cicles: 0,
         stencil_id: selectedStencil ? selectedStencil.stencil_id : 0,
+        path_p1: null,
+        path_p2: null,        
+        path_p3: null,        
+        path_p4: null
     });
 
     const getStencils = async () => {
@@ -310,10 +324,7 @@ export default function StencilAutomaticMedition() {
             setAlert("warning");
             setViewAltert(true);
         } else {
-            setTimeout(() => {
-                setLendo(true);
-                setLoadingRobot(true);
-            }, 100);
+            
             setMenssagemRobo("");
             handleFormStencilId();
 
@@ -331,6 +342,10 @@ export default function StencilAutomaticMedition() {
                             p2: response.data.textoP2,
                             p3: response.data.textoP3,
                             p4: response.data.textoP4,
+                            path_p1: response.data.path_p1,
+                            path_p2: response.data.path_p2,
+                            path_p3: response.data.path_p3,
+                            path_p4: response.data.path_p4
                         };
 
                         const shouldApprove = checkApprovalStatus(
@@ -350,7 +365,7 @@ export default function StencilAutomaticMedition() {
                         return {
                             ...newFormData,
                             is_approved_status: shouldApprove,
-                            is_pending_measurement: shouldApproveAll
+                            is_pending_measurement: false
                         };
                     });
                 }
@@ -610,19 +625,7 @@ export default function StencilAutomaticMedition() {
                                     />
                                 </Grid>
 
-                                <Grid item xs={12} sm={12} md={6}>
-                                    <FormControlLabel
-                                        control={
-                                            <Checkbox
-                                                name="is_approved_status"
-                                                checked={formData.is_pending_measurement}
-                                                onChange={handleChange}
-                                                disabled={active_pending}
-                                            />
-                                        }
-                                        label="Pendente"
-                                    />
-                                </Grid>
+                                
 
                                 <Grid item xs={12} sm={12} md={12} style={{ display: "flex", flexDirection: 'row', justifyContent: 'space-between', marginTop: '20px' }}>
                                     {!salvando && (

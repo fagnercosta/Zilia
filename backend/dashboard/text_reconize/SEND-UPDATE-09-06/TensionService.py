@@ -28,10 +28,10 @@ class TensionService:
         self.password = 'smart'
 
     def getFotos(self):
-        path_p1 = os.path.join(self.final_image_dir, f"ponto_1_{self.stencil_id}.png")
-        path_p2 = os.path.join(self.final_image_dir, f"ponto_2_{self.stencil_id}.png")
-        path_p3 = os.path.join(self.final_image_dir, f"ponto_3_{self.stencil_id}.png") 
-        path_p4 = os.path.join(self.final_image_dir, f"ponto_4_{self.stencil_id}.png")
+        path_p1 = os.path.join(self.final_image_dir, f"ponto_1_bin.png")
+        path_p2 = os.path.join(self.final_image_dir, f"ponto_2_bin.png")
+        path_p3 = os.path.join(self.final_image_dir, f"ponto_3_bin.png") 
+        path_p4 = os.path.join(self.final_image_dir, f"ponto_4_bin.png")
         
        
         return path_p1.replace("\\", "/"), path_p2.replace("\\", "/"), path_p3.replace("\\", "/"), path_p4.replace("\\", "/")
@@ -54,7 +54,7 @@ class TensionService:
 
         # Transferindo a imagem da Raspberry Pi para o Windows
         sftp = ssh.open_sftp()
-        destination_path_image = os.path.join(self.final_image_dir,f"ponto_1_{self.stencil_id}.png") 
+        destination_path_image = os.path.join(self.final_image_dir,"ponto_1.png") 
         sftp.get('images/ValuePoint1.jpg', destination_path_image)
         sftp.close()
         ssh.close()
@@ -131,7 +131,7 @@ class TensionService:
         
     
     def prepare_images1(self):
-        '''imagemOriginal = cv2.imread('images_final/ponto_1.png')        
+        imagemOriginal = cv2.imread('images_final/ponto_1.png')        
 
         imagemOriginal2 = imagemOriginal[260:530,810:1260]
         #imagemOriginal = imagemOriginal[510:720,800:1210]
@@ -152,9 +152,9 @@ class TensionService:
 
         denoised2 = cv2.resize(denoised, novo_tamanho, interpolation=cv2.INTER_NEAREST)
 
-        
+        '''
         BINARIZANDO A IMAGEM
-        
+        '''
          # Pré-processamento
         gray = cv2.cvtColor(denoised, cv2.COLOR_BGR2GRAY)
         thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
@@ -170,7 +170,7 @@ class TensionService:
         path_binaria = "images_final/ponto_1_tratada_processada_para_leitura_binaria.png"
         cv2.imwrite(path_binaria, thresh)                                                                                                                               
 
-        FIM DA BINAREIZAÇAO
+        '''FIM DA BINAREIZAÇAO'''
 
         path = "images_final/ponto_1_tratada_processada_para_leitura.png"
         cv2.imwrite(path, denoised)
@@ -182,30 +182,30 @@ class TensionService:
         textoResposta = extrator.normalize_text(resultado)
         
         print(f"RESPOSTA PONT0 {1} :", textoResposta)
-        self.binarizar("images_final/ponto_1.png", 1)'''
+        self.binarizar("images_final/ponto_1.png", 1)
         
-        return "00.0"
+        return textoResposta
 
     
 
     def prepare_images2(self):
-        '''imagemOriginal = cv2.imread('images_final/ponto_2.png') 
+        imagemOriginal = cv2.imread('images_final/ponto_2.png') 
         imagemOriginal2 = imagemOriginal[260:530,810:1260]
         #imagemOriginal = imagemOriginal[510:720,800:1210]
         #imagemOriginal = imagemOriginal[500:750,840:1280]
-        imagemOriginal = imagemOriginal[250:570,700:1360]'''
+        imagemOriginal = imagemOriginal[250:570,700:1360]
          
        
-        '''# Passo 3: Reduzir ruído com um leve desfoque
+        # Passo 3: Reduzir ruído com um leve desfoque
         denoised = cv2.GaussianBlur(imagemOriginal, (7, 7), 0)
         novo_tamanho = (denoised.shape[1] * 2, denoised.shape[0] * 2)
 
         denoised2 = cv2.resize(denoised, novo_tamanho, interpolation=cv2.INTER_NEAREST)
 
-       
+        '''
         BINARIZANDO A IMAGEM
         '''
-        ''' # Pré-processamento
+         # Pré-processamento
         gray = cv2.cvtColor(denoised, cv2.COLOR_BGR2GRAY)
         thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
         nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
@@ -215,9 +215,9 @@ class TensionService:
         path_binaria = "images_final/ponto_2_tratada_processada_para_leitura_binaria.png"
         cv2.imwrite(path_binaria, thresh)                                                                                                                               
 
-        FIM DA BINAREIZAÇAO'''
+        '''FIM DA BINAREIZAÇAO'''
 
-        '''path = "images_final/ponto_2_tratada_processada_para_leitura.png"
+        path = "images_final/ponto_2_tratada_processada_para_leitura.png"
         cv2.imwrite(path, denoised)
         
         # Usa ExtractTextInImage para extrair o texto
@@ -227,40 +227,40 @@ class TensionService:
         textoResposta = extrator.normalize_text(resultado)
         
         print("RESPOSTA PONTO 02", textoResposta)
-        self.binarizar("images_final/ponto_2.png", 2)'''
+        self.binarizar("images_final/ponto_2.png", 2)
         
-        return "00.0"
+        return textoResposta
         
     
     def prepare_images3(self):
-        '''imagemOriginal = cv2.imread('images_final/ponto_3.png') 
+        imagemOriginal = cv2.imread('images_final/ponto_3.png') 
         imagemOriginal2 = imagemOriginal[260:530,810:1260]
         #imagemOriginal = imagemOriginal[510:720,800:1210]
         #imagemOriginal = imagemOriginal[500:750,840:1280]
-        imagemOriginal = imagemOriginal[250:570,700:1360]'''
+        imagemOriginal = imagemOriginal[250:570,700:1360]
 
         
        
-        ''' # Passo 3: Reduzir ruído com um leve desfoque
+        # Passo 3: Reduzir ruído com um leve desfoque
         denoised = cv2.GaussianBlur(imagemOriginal, (7, 7), 0)
-        novo_tamanho = (denoised.shape[1] * 2, denoised.shape[0] * 2)'''
+        novo_tamanho = (denoised.shape[1] * 2, denoised.shape[0] * 2)
  
         '''
         BINARIZANDO A IMAGEM
         '''
          # Pré-processamento
-        '''gray = cv2.cvtColor(denoised, cv2.COLOR_BGR2GRAY)
+        gray = cv2.cvtColor(denoised, cv2.COLOR_BGR2GRAY)
         thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
-        nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))'''
+        nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
         '''thresh = cv2.dilate(thresh, nucleo, iterations=12)
-        thresh = cv2.erode(thresh, nucleo, iterations=5)
+        thresh = cv2.erode(thresh, nucleo, iterations=5)'''
         thresh = cv2.dilate(thresh, nucleo, iterations=11)
         thresh = cv2.erode(thresh, nucleo, iterations=8)
 
         path_binaria = "images_final/ponto_3_tratada_processada_para_leitura_binaria.png"
         cv2.imwrite(path_binaria, thresh)                                                                                                                               
 
-        FIM DA BINAREIZAÇAO
+        '''FIM DA BINAREIZAÇAO'''
 
 
         path = "images_final/ponto_3_tratada_processada_para_leitura.png"
@@ -273,12 +273,12 @@ class TensionService:
         textoResposta = extrator.normalize_text(resultado)
         
         print("RESPOSTA PONTO 03", textoResposta)
-        self.binarizar("images_final/ponto_3.png", 3)'''
+        self.binarizar("images_final/ponto_3.png", 3)
         
-        return "00.0"
+        return textoResposta
     
     def prepare_images4(self):
-        '''imagemOriginal = cv2.imread('images_final/ponto_4.png') 
+        imagemOriginal = cv2.imread('images_final/ponto_4.png') 
         imagemOriginal2 = imagemOriginal[260:530,810:1260]
         #imagemOriginal = imagemOriginal[510:720,800:1210]
         #imagemOriginal = imagemOriginal[500:750,840:1280]
@@ -288,37 +288,37 @@ class TensionService:
        
         # Passo 3: Reduzir ruído com um leve desfoque
         denoised = cv2.GaussianBlur(imagemOriginal, (7, 7), 0)
-        novo_tamanho = (denoised.shape[1] * 2, denoised.shape[0] * 2)'''
+        novo_tamanho = (denoised.shape[1] * 2, denoised.shape[0] * 2)
 
         '''
         BINARIZANDO A IMAGEM
         '''
          # Pré-processamento
-        '''gray = cv2.cvtColor(denoised, cv2.COLOR_BGR2GRAY)
+        gray = cv2.cvtColor(denoised, cv2.COLOR_BGR2GRAY)
         thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
         nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
         thresh = cv2.dilate(thresh, nucleo, iterations=9)
         thresh = cv2.erode(thresh, nucleo, iterations=6)
 
         path_binaria = "images_final/ponto_4_tratada_processada_para_leitura_binaria.png"
-        cv2.imwrite(path_binaria, thresh)  '''                                                                                                                             
+        cv2.imwrite(path_binaria, thresh)                                                                                                                               
 
         '''FIM DA BINAREIZAÇAO'''
  
 
-        '''path = "images_final/ponto_4_tratada_processada_para_leitura.png"
-        cv2.imwrite(path, denoised)'''
+        path = "images_final/ponto_4_tratada_processada_para_leitura.png"
+        cv2.imwrite(path, denoised)
         
-        '''# Usa ExtractTextInImage para extrair o texto
+        # Usa ExtractTextInImage para extrair o texto
         extrator = ExtractTextInImage(path_binaria,4)
         resultado = extrator.extract_text(image=path_binaria, image_path_original=imagemOriginal2, image_binaria=path_binaria)
         
         textoResposta = extrator.normalize_text(resultado)
         
         print("RESPOSTA PONTO 04", textoResposta)
-        self.binarizar("images_final/ponto_4.png", 4)'''
+        self.binarizar("images_final/ponto_4.png", 4)
         
-        return "00.0"
+        return textoResposta
     
 
     def recortarImagem(self, img,x,y,w,h):
