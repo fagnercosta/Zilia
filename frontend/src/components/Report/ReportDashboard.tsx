@@ -18,6 +18,9 @@ import { Stencil, StencilRobotMedition, StencilTensionValues } from '@/types/mod
 import Logo from "../../assets/logo.png"
 import StencilImage from "../../assets/Stencil.jpeg"
 import TableScratch from './TableScratch';
+import { te } from 'date-fns/locale';
+
+import { useState } from 'react';
 
 interface Props {
     stencil: Stencil,
@@ -149,10 +152,20 @@ const stylesListTensionPoints = StyleSheet.create({
     container: {
         display: "flex",
         width: "100%",
-        flexDirection: "row",
+        flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
         padding: 10
+    },
+
+    containerImagens: {
+        display: "flex",
+        width: "100%",
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        padding: 10,
+        gap: 10
     }
 })
 
@@ -245,6 +258,10 @@ const StencilReport = ({
 }: Props) => {
     // const StencilReport = () => {
     const urlsGraphs: any[] = []
+    // Estados para nome do responsável
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+
 
 
     return (
@@ -263,34 +280,34 @@ const StencilReport = ({
                 </View>
                 <View style={stylesBody.containerItemsInfo}>
                     <CardInfos
-                        textHeader='Identification'
+                        textHeader='Identificação'
                         attribute={stencil.stencil_part_nbr}
                     />
                     <CardInfos
-                        textHeader="Status"
+                        textHeader="Situação"
                         attribute={stencil.status}
                     />
                     <CardInfos
-                        textHeader="Manufacturing"
+                        textHeader="Data de Fabricação"
                         attribute={formatDateTime(stencil.mfg_date) ?? "N/A"}
                     />
                 </View>
                 <View style={stylesBody.containerItemsInfo}>
                     <CardInfos
-                        textHeader='Tickness'
+                        textHeader='Espessura'
                         attribute={`${stencil.thickness} mm`}
                     />
                     <CardInfos
-                        textHeader='Destination'
+                        textHeader='Destino'
                         attribute={stencil.stencil_destination}
                     />
                     <CardInfos
-                        textHeader='Location'
+                        textHeader='Localização'
                         attribute={stencil.location}
                     />
                 </View>
                 <View style={stylesBody.containerStencilInfo}>
-                    <CardPerformed textHeader='Last Medition ' dataTime={
+                    <CardPerformed textHeader='Ultima Medição ' dataTime={
                         tensionValues && tensionValues.length > 0
                             ? String(
                                 tensionValues[tensionValues.length - 1]?.measurement_datetime
@@ -390,12 +407,7 @@ const StencilReport = ({
                                         marginTop: 20
                                     }}
                                     >
-                                        <Text style={stylesLastMedition.text}>
-                                            {getSmallestPoint(stencil.p1_value, stencil.p2_value, stencil.p3_value, stencil.p4_value)?.message}
-                                        </Text>
-                                        <CircleColorPointer
-                                            valuePoint={stencil.p1_value > 0 ? getSmallestPoint(stencil.p1_value, stencil.p2_value, stencil.p3_value, stencil.p4_value)?.point : 0}
-                                        />
+                                        
                                     </View>
                                 </View>
                             </View>
@@ -404,12 +416,50 @@ const StencilReport = ({
                 </View>
                 <Text style={{ ...styles.tittleReport, marginLeft: 20, marginTop: 30 }}>Medidas dos Valores de tensão</Text>
                 <View style={stylesListTensionPoints.container}>
+                    
+                    <div style={stylesListTensionPoints.containerImagens}>
+                        <Image
+                            src={`http://localhost:8000/${tensionValues?.[0]?.path_p1}`}
+                                style={{
+                                width: "100%",
+                                height: 100,
+                                objectFit: "cover"
+                                            }}
+                                />
+
+                        <Image
+                            src={`http://localhost:8000/${tensionValues?.[0]?.path_p2}`}
+                                style={{
+                                width: "100%",
+                                height: 100,
+                                objectFit: "cover"
+                                            }}
+                                />
+
+                        <Image
+                            src={`http://localhost:8000/${tensionValues?.[0]?.path_p3}`}
+                                style={{
+                                width: "100%",
+                                height: 100,
+                                objectFit: "cover"
+                                            }}
+                                />
+
+                        <Image
+                            src={`http://localhost:8000/${tensionValues?.[0]?.path_p4}`}
+                                style={{
+                                width: "100%",
+                                height: 100,
+                                objectFit: "cover"
+                                            }}
+                                />
+                    </div>
                     <Table
                         tensionValues={tensionValues}
                     />
                 </View>
 
-                <Text style={{ ...styles.tittleReport, marginLeft: 20, marginTop: 180 }}>Medidas de Arranhões</Text>
+                <Text style={{ ...styles.tittleReport, marginLeft: 20, marginTop: 150 }}>Medidas de Arranhões</Text>
 
                 <View style={stylesListTensionPoints.container}>
                     < TableScratch
@@ -437,6 +487,8 @@ const StencilReport = ({
                                                     objectFit: "cover"
                                                 }}
                                             />
+                                            
+                                            
                                             <Text style={{
                                                 top: 0,
                                                 left: 0,
@@ -465,7 +517,7 @@ const StencilReport = ({
                 </View>
                 <View style={stylesSignature.container}>
                     <View style={stylesSignature.fieldSignature}></View>
-                    <Text style={stylesSignature.textSignature}>Assinatura</Text>
+                    <Text style={stylesSignature.textSignature}> Responsável pela medição: {tensionValues?.[0]?.responsable || 'Não informado'}</Text>
                 </View>
             </Page>
             <Page size="A4" style={styles.page}>

@@ -128,6 +128,10 @@ export default function Home() {
     localStorage.removeItem("token");
     localStorage.removeItem("tokenTimestamp");
 
+    localStorage.removeItem("first_name");
+    localStorage.removeItem("last_name");
+    localStorage.removeItem("email");
+
     // Redireciona para a página de login
     router.push('/login');
   }, [router]);

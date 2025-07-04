@@ -127,7 +127,7 @@ export function getSmallestPoint(
             message: `P1 is the worst case: ${p4} N/cm2`,
             point: p4
         }
-    }
+    } 
 }
 
 export function arraysAreEqual(arr1: Stencil[], arr2: Stencil[]): boolean {

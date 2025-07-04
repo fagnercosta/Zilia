@@ -63,6 +63,7 @@ class ProcessedImage(models.Model):
     
 
     def __str__(self):
+        
         return self.image_path
 
 class StencilType(models.Model):
@@ -87,6 +88,13 @@ class StencilTensionValues(models.Model):
     p2 = models.FloatField()
     p3 = models.FloatField()
     p4 = models.FloatField()
+
+    responsable = models.CharField(null=True, blank=True,max_length=50)
+
+    path_p1 = models.CharField(null=True,max_length=255)
+    path_p2 = models.CharField(null=True,max_length=255)
+    path_p3 = models.CharField(null=True,max_length=255)
+    path_p4 = models.CharField(null=True,max_length=255)
     
     measurement_datetime = models.DateTimeField()
     is_registration_measurement = models.BooleanField()

@@ -32,6 +32,14 @@ export interface Stencil {
     object_status: string;
 }
 
+export interface Arranhaos {
+    id: number;
+    scratch_count: number;
+    timestamp: string;
+}
+
+
+
 export interface UsersTipe{
     id: number;
     first_name: string;
@@ -54,6 +62,11 @@ export interface StencilTensionValues {
     is_approved_status: boolean;
     cicles: number;
     stencil_id: number;
+    path_p1: string;
+    path_p2: string;
+    path_p3: string;
+    path_p4: string;
+    responsable: string;
 }
 
 export interface StencilRobotMedition{
@@ -62,4 +75,5 @@ export interface StencilRobotMedition{
     scratch_count: number
     stncil: number
     timestamp: string
+    
 }

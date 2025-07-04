@@ -12,38 +12,13 @@ import { BASE_URL } from "@/types/api";
 import { Stencil } from "@/types/models";
 import { ConfigurationsModel } from "@/types/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { 
-  Alert, 
-  AlertColor, 
-  Button, 
-  Autocomplete, 
-  Checkbox, 
-  Divider, 
-  LinearProgress, 
-  CircularProgress, 
-  Typography, 
-  FormControl, 
-  FormControlLabel, 
-  Grid, 
-  IconButton, 
-  InputLabel, 
-  MenuItem, 
-  Select, 
-  SelectChangeEvent, 
-  Snackbar, 
-  TextField, 
-  AlertProps,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle 
-} from "@mui/material";
+import { Alert, AlertColor, Button, Autocomplete, Checkbox, Divider, LinearProgress, CircularProgress, Typography, FormControl, FormControlLabel, Grid, IconButton, InputLabel, MenuItem, Select, SelectChangeEvent, Snackbar, TextField, AlertProps } from "@mui/material";
 import axios from "axios";
 import { set } from "date-fns";
 import { CircleX, Link } from "lucide-react";
 import { useRouter } from "next/navigation";
-import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import path from "path";
+import React, { ChangeEvent, FormEvent, use, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -82,7 +57,6 @@ interface RequestRaspy {
 }
 
 export default function StencilAutomaticMedition() {
-    // Estados principais
     const [stencilList, setStencilList] = useState<Stencil[] | undefined>([]);
     const [stencilSelected, setStencilSelected] = useState(0);
     const [resposta, setResposta] = useState<RequestRaspy>();
@@ -103,20 +77,148 @@ export default function StencilAutomaticMedition() {
     const [viewAltert, setViewAltert] = useState(false);
     const [lendo, setLendo] = useState(false);
     const [carregadoCiclos, setCarregadoCiclos] = useState(false);
-    const [nomeResponsavel, setNomeResponsavel] = useState('');
+
+    const [nomeResponsavel,setNomeResponsavel] = useState('');
+
     const [active_status, setActiceStatus] = useState(true);
     const [active_pending, setActivePending] = useState(true);
+
     const [limits, setLimits] = useState({
         minLimitTension: 0,
         maxLimitTension: 0,
         scratchesValue: 0
-    });
+    })
 
-    // Estados para o diálogo de confirmação
-    const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
-    const [formDataToSubmit, setFormDataToSubmit] = useState<FormData | null>(null);
+    const checkApprovalStatus = (p1: number | string | null, p2: number | string | null, p3: number | string | null, p4: number | string | null) => {
+        const p1Num = p1 !== null ? Number(p1) : null;
+        const p2Num = p2 !== null ? Number(p2) : null;
+        const p3Num = p3 !== null ? Number(p3) : null;
+        const p4Num = p4 !== null ? Number(p4) : null;
 
-    // Estado do formulário
+        console.log("LIMITES:", limits)
+
+        let retorno = true;
+        if (p1Num !== null && p1Num < limits.minLimitTension) {
+            retorno = false;
+        }
+
+        if (p2Num !== null && p2Num < limits.minLimitTension) {
+            retorno = false;
+        }
+
+        if (p3Num !== null && p3Num < limits.minLimitTension) {
+            retorno = false;
+        }
+
+        if (p4Num !== null && p4Num < limits.minLimitTension) {
+            retorno = false;
+        }
+
+        if (retorno) {
+            setActiceStatus(false);
+            setActivePending(false)
+        }
+        return retorno;
+
+    };
+
+    const checkApprovalStatusAll = (p1: number | string | null, p2: number | string | null, p3: number | string | null, p4: number | string | null) => {
+        const p1Num = p1 !== null ? Number(p1) : null;
+        const p2Num = p2 !== null ? Number(p2) : null;
+        const p3Num = p3 !== null ? Number(p3) : null;
+        const p4Num = p4 !== null ? Number(p4) : null;
+
+        let retorno = false;
+        if (p1Num !== null && p1Num < limits.minLimitTension) {
+            retorno = true;
+        }
+
+        if (p2Num !== null && p2Num < limits.minLimitTension) {
+            retorno = true;
+        }
+
+        if (p3Num !== null && p3Num < limits.minLimitTension) {
+            retorno = true;
+        }
+
+        if (p4Num !== null && p4Num < limits.minLimitTension) {
+            retorno = true;
+        }
+
+        if (retorno) {
+            setActivePending(false)
+        }
+
+        return retorno;
+
+    };
+
+    function handleInputChange(text: String) {
+        setInputValue(text);
+        console.log("Input.." + text);
+    }
+
+    const handleDecimalChange = (e: any) => {
+        const value = e.target.value;
+        // Verifica se o valor corresponde a um número decimal válido (incluindo vazio para permitir apagar)
+        if (value === '' || /^[0-9]*[.,]?[0-9]*$/.test(value)) {
+            // Substitui vírgula por ponto se necessário
+            const normalizedValue = value.replace(',', '.');
+            setFormData({
+                ...formData,
+                [e.target.name]: normalizedValue
+            });
+        }
+    };
+
+    async function handlePosicionarRobo() {
+        setLendo(false);
+        setResposta(undefined);
+        setLoadingRobot(false);
+
+        setTimeout(() => {
+            setPositionRobo(true);
+            setViewAltert(false);
+        }, 10);
+
+        try {
+            let responseRobo = await axios.get(`http://127.0.0.1:8000/api/position-point/`);
+            responseRobo = await axios.get(`http://127.0.0.1:8000/api/position-point/`);
+            console.log("Resposta Robo" + responseRobo.data.menssage);
+            setMenssagemRobo(responseRobo.data.menssage);
+            let messagemText = `${menssagemRobo}. Agora coloque o CLP no modo manual, abra a porta, ligue o tensiometro, feche a porta e coloque o o CPL no automaático e inicie a medição `;
+
+            if (menssagemRobo.length < 5) {
+                setMenssagemRobo("Robo posicionado");
+            }
+
+            messagemText = `Robo posicionado. Agora coloque o CLP no modo manual, abra a porta, ligue o tensiometro, feche a porta e coloque o o CPL no automaático e inicie a medição `;
+
+            setMessage(messagemText || "");
+            setAlert("success");
+            setViewAltert(true);
+            setPositionRobo(false);
+        } catch (error: any) {
+            if (error.response) {
+                if (error.response.status === 500) {
+                    setMessage("Problema na comunicação com o robo. Sugestão: resetar o CLP.");
+                    setAlert("error");
+                    setTitle("Error");
+                } else {
+                    setMessage(`Erro ${error.response.status}: ${error.response.data?.message || "Erro desconhecido"}`);
+                }
+            } else if (error.request) {
+                setMessage("Erro na comunicação com o servidor");
+            } else {
+                setMessage("Erro inesperado ao buscar os dados");
+            }
+
+            setAlert("error");
+            setViewAltert(true);
+            setPositionRobo(false);
+        }
+    }
+
     const [formData, setFormData] = useState<FormData>({
         p1: null,
         p2: null,
@@ -135,100 +237,6 @@ export default function StencilAutomaticMedition() {
         responsable: localStorage.getItem("first_name") + " " + localStorage.getItem("last_name"),
     });
 
-    // Monitorar abertura do diálogo para debug
-    useEffect(() => {
-        console.log("Estado do diálogo alterado:", openConfirmDialog);
-        console.log("Dados para submissão:", formDataToSubmit);
-    }, [openConfirmDialog, formDataToSubmit]);
-
-    // Funções de validação
-    const checkApprovalStatus = (p1: number | string | null, p2: number | string | null, p3: number | string | null, p4: number | string | null) => {
-        const p1Num = p1 !== null ? Number(p1) : null;
-        const p2Num = p2 !== null ? Number(p2) : null;
-        const p3Num = p3 !== null ? Number(p3) : null;
-        const p4Num = p4 !== null ? Number(p4) : null;
-
-        let retorno = true;
-        if (p1Num !== null && p1Num < limits.minLimitTension) {
-            retorno = false;
-        }
-        if (p2Num !== null && p2Num < limits.minLimitTension) {
-            retorno = false;
-        }
-        if (p3Num !== null && p3Num < limits.minLimitTension) {
-            retorno = false;
-        }
-        if (p4Num !== null && p4Num < limits.minLimitTension) {
-            retorno = false;
-        }
-
-        if (retorno) {
-            setActiceStatus(false);
-            setActivePending(false);
-        }
-        return retorno;
-    };
-
-    const checkApprovalStatusAll = (p1: number | string | null, p2: number | string | null, p3: number | string | null, p4: number | string | null) => {
-        const p1Num = p1 !== null ? Number(p1) : null;
-        const p2Num = p2 !== null ? Number(p2) : null;
-        const p3Num = p3 !== null ? Number(p3) : null;
-        const p4Num = p4 !== null ? Number(p4) : null;
-
-        let retorno = false;
-        if (p1Num !== null && p1Num < limits.minLimitTension) {
-            retorno = true;
-        }
-        if (p2Num !== null && p2Num < limits.minLimitTension) {
-            retorno = true;
-        }
-        if (p3Num !== null && p3Num < limits.minLimitTension) {
-            retorno = true;
-        }
-        if (p4Num !== null && p4Num < limits.minLimitTension) {
-            retorno = true;
-        }
-
-        if (retorno) {
-            setActivePending(false);
-        }
-        return retorno;
-    };
-
-    // Funções de manipulação de dados
-    const handleDecimalChange = (e: any) => {
-        const value = e.target.value;
-        if (value === '' || /^[0-9]*[.,]?[0-9]*$/.test(value)) {
-            const normalizedValue = value.replace(',', '.');
-            setFormData({
-                ...formData,
-                [e.target.name]: normalizedValue
-            });
-        }
-    };
-
-    const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-        const { name, value, type, checked } = event.target;
-
-        const newFormData = {
-            ...formData,
-            [name]: type === 'checkbox' ? checked : value,
-        };
-
-        const shouldApprove = checkApprovalStatus(
-            newFormData.p1,
-            newFormData.p2,
-            newFormData.p3,
-            newFormData.p4
-        );
-
-        setFormData({
-            ...newFormData,
-            is_approved_status: shouldApprove || newFormData.is_approved_status
-        });
-    };
-
-    // Funções de API
     const getStencils = async () => {
         try {
             const response = await axios.get(`http://127.0.0.1:8000/api/stencil/`);
@@ -240,52 +248,42 @@ export default function StencilAutomaticMedition() {
                 setAlert("warning");
             }
         } catch (error: any) {
-            handleApiError(error);
+            if (error.response) {
+                if (error.response.status === 404) {
+                    setMessage('API não encontrada. Verifique o endereço.');
+                } else if (error.response.status === 500) {
+                    setMessage('Erro interno no servidor da API.');
+                } else {
+                    setMessage(`Erro da API: ${error.response.status}`);
+                }
+            } else if (error.request) {
+                setMessage('Erro de conexão com a API. Verifique se ela está online.');
+            } else {
+                setMessage('Ocorreu um erro inesperado.');
+            }
+            setAlert("error");
+            setViewAltert(true);
         }
     };
 
     const getParams = async () => {
-        try {
-            const response = await axios.get(`${BASE_URL}api/parameters-tension/`);
-            if (response.data.results.length > 0) {
-                const firstResult = response.data.results[0];
-                setLimits({
-                    minLimitTension: firstResult.min_value,
-                    maxLimitTension: firstResult.max_value,
-                    scratchesValue: firstResult.scratch_value,
-                });
-            }
-        } catch (error) {
-            console.error("Erro ao buscar parâmetros:", error);
-        }
-    };
+        const response = await axios.get(`${BASE_URL}api/parameters-tension/`)
+        if (response.data.results.length > 0) {
+            const firstResult = response.data.results[0];
 
-    const fetchLatestMeasurement = async (stencilId: number) => {
-        setCarregadoCiclos(true);
-        try {
-            const url = `${BASE_URL}/stencil-tension/latest/${stencilId}/`;
-            const response = await axios.get(url);
-            const lastCicles = response.data?.cicles || 0;
-            setFormData(prev => ({
-                ...prev,
-                cicles: lastCicles + 1
-            }));
-        } catch (error) {
-            console.error("Erro ao buscar ciclos:", error);
-            setFormData(prev => ({
-                ...prev,
-                cicles: 1,
-            }));
-        } finally {
-            setTimeout(() => {
-                setCarregadoCiclos(false);
-            }, 2000);
+            const dados = {
+                minLimitTension: firstResult.min_value,
+                maxLimitTension: firstResult.max_value,
+                scratchesValue: firstResult.scratch_value,
+            };
+            console.log("DADOS:>", dados)
+            setLimits(dados);
         }
-    };
 
-    // Funções de manipulação do formulário
+    }
+
     const resetFormExceptDate = () => {
-        setFormData({
+        setFormData(prev => ({
             p1: "",
             p2: "",
             p3: "",
@@ -294,19 +292,26 @@ export default function StencilAutomaticMedition() {
             path_p2: null,
             path_p3: null,
             path_p4: null,
-            measurement_datetime: new Date(new Date().getTime() - 4 * 60 * 60 * 1000),
+            measurement_datetime: new Date(new Date().getTime() - 4 * 60 * 60 * 1000), // Mantém a data atual
             is_registration_measurement: false,
             is_pending_measurement: false,
             is_approved_status: false,
             cicles: 0,
             stencil_id: selectedStencil ? selectedStencil.stencil_id : 0,
-            responsable: localStorage.getItem("first_name") + " " + localStorage.getItem("last_name"),
-        });
+            responsable:  localStorage.getItem("first_name") + " " + localStorage.getItem("last_name"),
+        }));
+
         setResposta(undefined);
         setDisabledInput(false);
         setActiceStatus(true);
         setActivePending(true);
     };
+
+    useEffect(() => {
+        getStencils();
+        getParams()
+        resetForm();
+    }, []);
 
     const resetForm = () => {
         setFormData(prev => ({
@@ -315,6 +320,10 @@ export default function StencilAutomaticMedition() {
             responsable: localStorage.getItem("first_name") + " " + localStorage.getItem("last_name"),
         }));
     };
+
+    
+
+
 
     const handleFormStencilId = () => {
         setFormData(prev => ({
@@ -330,27 +339,6 @@ export default function StencilAutomaticMedition() {
         }
     };
 
-    // Funções de manipulação do robô
-    const handlePosicionarRobo = async () => {
-        setLendo(false);
-        setResposta(undefined);
-        setLoadingRobot(false);
-        setPositionRobo(true);
-        setViewAltert(false);
-
-        try {
-            const responseRobo = await axios.get(`http://127.0.0.1:8000/api/position-point/`);
-            setMenssagemRobo(responseRobo.data.menssage || "Robô posicionado");
-            setMessage("Robô posicionado. Agora coloque o CLP no modo manual, abra a porta, ligue o tensiômetro, feche a porta e coloque o CPL no automático e inicie a medição");
-            setAlert("success");
-            setViewAltert(true);
-            setPositionRobo(false);
-        } catch (error: any) {
-            handleApiError(error);
-            setPositionRobo(false);
-        }
-    };
-
     const takePhotoRaspRequest = async (stencilId: number) => {
         resetFormExceptDate();
         setResposta(undefined);
@@ -359,147 +347,200 @@ export default function StencilAutomaticMedition() {
         setLendo(false);
         setLoadingRobot(false);
 
-        if (!selectedStencil?.stencil_id) {
+        if (selectedStencil?.stencil_id === 0 || selectedStencil?.stencil_id === undefined) {
             setMessage("Selecione um stencil para realizar a medição.");
             setAlert("warning");
             setViewAltert(true);
-            return;
-        }
+        } else {
 
-        setMenssagemRobo("");
-        handleFormStencilId();
+            setMenssagemRobo("");
+            handleFormStencilId();
 
-        try {
-            const response = await axios.post(`http://127.0.0.1:8000/api/takephotraspy/${selectedStencil.stencil_id}/`);
-            setLoadingRobot(false);
-            setResposta(response.data);
-            fetchLatestMeasurement(selectedStencil.stencil_id);
+            try {
+                const response = await axios.post(`http://127.0.0.1:8000/api/takephotraspy/${selectedStencil?.stencil_id}/`);
+                if (response) {
+                    setLoadingRobot(false);
+                    setResposta(response.data);
+                    console.log("resposta >>> ", resposta);
+                    fetchLatestMeasurement(selectedStencil?.stencil_id);
 
-            setFormData(prev => ({
-                ...prev,
-                p1: response.data.textoP1,
-                p2: response.data.textoP2,
-                p3: response.data.textoP3,
-                p4: response.data.textoP4,
-                path_p1: response.data.p1,
-                path_p2: response.data.p2,
-                path_p3: response.data.p3,
-                path_p4: response.data.p4,
-                responsable: localStorage.getItem("first_name") + " " + localStorage.getItem("last_name"),
-                is_approved_status: checkApprovalStatus(
-                    response.data.textoP1,
-                    response.data.textoP2,
-                    response.data.textoP3,
-                    response.data.textoP4
-                ),
-                is_pending_measurement: false
-            }));
-            handleDisableInput();
-        } catch (error) {
-            setMessage("Erro ao realizar a operação. Não foi possível se conectar com o robô. Tente Novamente");
-            setLendo(false);
-            setLoadingRobot(false);
-            setAlert("error");
-            setViewAltert(true);
+                    setFormData((prevFormData) => {
+                        const newFormData = {
+                            ...prevFormData,
+                            p1: response.data.textoP1,
+                            p2: response.data.textoP2,
+                            p3: response.data.textoP3,
+                            p4: response.data.textoP4,
+                            path_p1: response.data.p1,
+                            path_p2: resposta?.p2,
+                            path_p3: resposta?.p3,
+                            path_p4: resposta?.p4,
+                            responsable: localStorage.getItem("first_name") + " " + localStorage.getItem("last_name"),
+                        };
+
+                        const shouldApprove = checkApprovalStatus(
+                            newFormData.p1,
+                            newFormData.p2,
+                            newFormData.p3,
+                            newFormData.p4
+                        );
+
+                        const shouldApproveAll = checkApprovalStatusAll(
+                            newFormData.p1,
+                            newFormData.p2,
+                            newFormData.p3,
+                            newFormData.p4
+                        )
+
+                        return {
+                            ...newFormData,
+                            is_approved_status: shouldApprove,
+                            is_pending_measurement: false,
+                            path_p1: response.data.p1,
+                            path_p2: response.data.p2,
+                            path_p3: response.data.p3,
+                            path_p4: response.data.p4
+                        };
+                    });
+                }
+                handleDisableInput();
+            } catch (error) {
+                setMessage("Erro ao realizar a operação. Não foi possível se conectar com o robo. Tente Novamente");
+                setLendo(false);
+                setLoadingRobot(false);
+                setAlert("error");
+                setViewAltert(true);
+            }
         }
     };
 
-    // Funções de manipulação de eventos
     const handleClose = (event: React.SyntheticEvent | Event, reason?: string) => {
-        if (reason === 'clickaway') return;
+        if (reason === 'clickaway') {
+            return;
+        }
         setOpenSnackBar(false);
+    };
+
+    const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const { name, value, type, checked } = event.target;
+
+        const newFormData = {
+            ...formData,
+            [name]: type === 'checkbox' ? checked : value,
+        };
+
+        // Verifica se algum ponto é menor que 30 e atualiza o is_approved_status
+        const shouldApprove = checkApprovalStatus(
+            newFormData.p1,
+            newFormData.p2,
+            newFormData.p3,
+            newFormData.p4
+        );
+
+        setFormData({
+            ...newFormData,
+            is_approved_status: shouldApprove || newFormData.is_approved_status
+        });
+    };
+
+    const fetchLatestMeasurement = async (stencilId: number) => {
+        console.log(`Buscando ciclos para stencil ${stencilId}`);
+        setCarregadoCiclos(true)
+
+        try {
+            const url = `${BASE_URL}/stencil-tension/latest/${stencilId}/`;
+            console.log(`URL da requisição: ${url}`);
+
+            const response = await axios.get(url);
+            console.log("Resposta da API:", response.data);
+
+            const lastCicles = response.data?.cicles || 0;
+            console.log(`Últimos ciclos: ${lastCicles}, Novo valor: ${lastCicles + 1}`);
+
+            setFormData(prev => ({
+                ...prev,
+                cicles: lastCicles + 1
+
+            }));
+        } catch (error) {
+
+            console.error("Erro detalhado:", error);
+            setFormData(prev => ({
+                ...prev,
+                cicles: 1,
+
+            }));
+        } finally {
+
+            setTimeout(() => {
+                setCarregadoCiclos(false);
+            }, 2000)
+            //setCarregadoCiclos(false); //
+        }
     };
 
     const handleChangeAutocomplete = (event: React.SyntheticEvent, value: Stencil | null) => {
         setSelectedStencil(value);
         if (value) {
             setStencilSelected(value.stencil_id);
-            setFormData(prev => ({
-                ...prev,
+            setFormData(prevData => ({
+                ...prevData,
                 stencil_id: value.stencil_id,
             }));
         }
     };
 
-    // Função principal de submissão
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        
-        // Validação dos campos
-        if ((!formData.p1 || Number(formData.p1) <= 0) || !formData.p2 || !formData.p3 || !formData.p4 || formData.cicles === 0) {
-            setMessage("Preencha todos os campos corretamente antes de salvar");
-            setAlert("error");
-            setOpenSnackBar(true);
-            return;
-        }
 
-        // Preparar dados para envio
-        const fullName = localStorage.getItem("first_name") + " " + localStorage.getItem("last_name");
-        const updatedFormData = {
-            ...formData,
-            responsable: fullName
-        };
-        
-        // Atualizar estado e abrir diálogo
-        setFormDataToSubmit(updatedFormData);
-        setTimeout(() => setOpenConfirmDialog(true), 0);
-    };
 
-    const handleConfirmSubmit = async () => {
-        if (!formDataToSubmit) return;
-        
-        setOpenConfirmDialog(false);
-        setSalvando(true);
 
-        try {
-            const response = await axios.post(`${BASE_URL}api/stencilTensionValues/`, formDataToSubmit);
-            if (response) {
-                setMessage("Medição de tensão cadastrada com sucesso!");
-                setAlert("success");
-                resetFormExceptDate();
-            }
-        } catch (error) {
-            console.error("Erro ao salvar:", error);
-            setMessage("Erro ao realizar a operação.");
-            setAlert("error");
-        } finally {
-            setSalvando(false);
-            setOpenSnackBar(true);
-        }
-    };
-
-    // Função auxiliar para tratamento de erros
-    const handleApiError = (error: any) => {
-        if (error.response) {
-            if (error.response.status === 500) {
-                setMessage("Problema na comunicação com o robô. Sugestão: resetar o CLP.");
+        if (formData.cicles !== 0) {
+            if (formData.p1 === null || Number(formData.p1) <= 0 || formData.p2 === null || Number(formData.p2) <= 0 || formData.p3 === null || Number(formData.p3) <= 0 || formData.p4 === null || Number(formData.p4) <= 0) {
+                setMessage("Preencha todos valores de tensão para salvar a medição corretamente.");
+                setAlert("error");
+                setOpenSnackBar(true);
+                return
             } else {
-                setMessage(`Erro ${error.response.status}: ${error.response.data?.message || "Erro desconhecido"}`);
-            }
-        } else if (error.request) {
-            setMessage("Erro na comunicação com o servidor");
-        } else {
-            setMessage("Erro inesperado ao buscar os dados");
-        }
-        setAlert("error");
-        setViewAltert(true);
-    };
+                setSalvando(true);
+                try {
 
-    // Efeitos iniciais
-    useEffect(() => {
-        getStencils();
-        getParams();
-        resetForm();
-    }, []);
+                    console.log("Dados para salvar: ",formData);
+                    const response = await axios.post(`${BASE_URL}api/stencilTensionValues/`, formData);
+                    if (response) {
+                        setTimeout(() => {
+                            setSalvando(false);
+                        }, 3000);
+                        setMessage("Medição de tensão cadastrada com sucesso!");
+                        setAlert("success");
+                        setOpenSnackBar(true);
+                        resetFormExceptDate();
+
+                        //navigate.push("/pages/stencil_automatic_medition");
+                    }
+                } catch (error) {
+                    console.log(error);
+                    setMessage("Erro ao realizar a operação.");
+                    setAlert("error");
+                    setOpenSnackBar(true);
+                }
+            }
+
+        } else {
+            setMessage("O campo ciclos não pode estar ser igual a zero");
+            setAlert("warning");
+            setOpenSnackBar(true);
+        }
+    };
 
     return (
         <main className="lg:ml-[23rem] p-4">
             <Sidebar />
 
-            <div className="w-full mt-10 flex flex-col items-start justify-start">
+            <div className="w-full  mt-10 flex flex-col items-start justify-start">
 
                 {viewAltert && (
-                    <div className="w-[100%] mb-4">
+                    <div className="w-[100%] mb-4 ">
                         <AlertItem severity={alert} message={message} title={title} />
                     </div>
                 )}
@@ -529,13 +570,13 @@ export default function StencilAutomaticMedition() {
                                         type="number"
                                         size="small"
                                         disabled={disabledInput}
-                                        required
+                                        required={true}
                                         value={formData.p1}
                                         onChange={handleDecimalChange}
                                         InputLabelProps={{ shrink: true }}
                                         inputProps={{
-                                            inputMode: 'decimal',
-                                            pattern: '[0-9]*[.,]?[0-9]*'
+                                            inputMode: 'decimal', // Isso ajuda com teclados móveis
+                                            pattern: '[0-9]*[.,]?[0-9]*' // Padrão para números decimais
                                         }}
                                     />
                                 </Grid>
@@ -543,7 +584,7 @@ export default function StencilAutomaticMedition() {
                                     <TextField
                                         fullWidth
                                         type="number"
-                                        required
+                                        required={true}
                                         label="P2"
                                         name="p2"
                                         disabled={disabledInput}
@@ -558,7 +599,7 @@ export default function StencilAutomaticMedition() {
                                         fullWidth
                                         type="number"
                                         label="P3"
-                                        required
+                                        required={true}
                                         disabled={disabledInput}
                                         name="p3"
                                         size="small"
@@ -571,7 +612,7 @@ export default function StencilAutomaticMedition() {
                                     <TextField
                                         fullWidth
                                         type="number"
-                                        required
+                                        required={true}
                                         label="P4"
                                         name="p4"
                                         disabled={disabledInput}
@@ -589,13 +630,14 @@ export default function StencilAutomaticMedition() {
                                     <TextField
                                         fullWidth
                                         type="number"
-                                        required
+                                        required={true}
                                         label="Ciclos"
                                         size="small"
                                         name="cicles"
                                         value={formData.cicles}
                                         onChange={handleChange}
-                                        disabled
+                                        disabled={true}
+
                                     />
                                     {carregadoCiclos && (
                                         <div>
@@ -603,12 +645,13 @@ export default function StencilAutomaticMedition() {
                                             <LinearProgress color="info" />
                                         </div>
                                     )}
+
                                 </Grid>
                                 <Grid item xs={12} sm={12} md={6}>
                                     <TextField
                                         fullWidth
                                         type="datetime-local"
-                                        required
+                                        required={true}
                                         label="Data da medição"
                                         size="small"
                                         name="measurement_datetime"
@@ -631,16 +674,11 @@ export default function StencilAutomaticMedition() {
                                     />
                                 </Grid>
 
+
+
                                 <Grid item xs={12} sm={12} md={12} style={{ display: "flex", flexDirection: 'row', justifyContent: 'space-between', marginTop: '20px' }}>
                                     {!salvando && (
-                                        <Button 
-                                            type="submit" 
-                                            disabled={stencilList?.length === 0 || !resposta || carregadoCiclos} 
-                                            variant="contained" 
-                                            color="primary"
-                                        >
-                                            Cadastrar
-                                        </Button>
+                                        <Button type="submit" disabled={stencilList?.length === 0 || !resposta || carregadoCiclos} variant="contained" color="primary">Cadastrar</Button>
                                     )}
                                     {salvando && (
                                         <div>
@@ -652,13 +690,7 @@ export default function StencilAutomaticMedition() {
                                     )}
                                     {!loadingRobot && (
                                         <div>
-                                            <Button 
-                                                variant="contained" 
-                                                onClick={() => takePhotoRaspRequest(stencilSelected)}
-                                                style={{ backgroundColor: 'rgb(96 165 250)', color: 'white' }}
-                                            >
-                                                Iniciar coleta de dados
-                                            </Button>
+                                            <a style={{ cursor: 'pointer', padding: '10px', backgroundColor: 'rgb(96 165 250)', color: 'white', borderRadius: '5px' }} onClick={() => takePhotoRaspRequest(stencilSelected)}> Iniciar coleta de dados</a>
                                         </div>
                                     )}
                                 </Grid>
@@ -668,6 +700,7 @@ export default function StencilAutomaticMedition() {
                 </Card>
 
                 {resposta && (
+
                     <Card className="mt-4 p rounded-none w-[100%] bg-slate-50" style={{ minHeight: '300px' }}>
                         <CardHeader>
                             <CardTitle className="text-2xl font-bold">Imagens coletadas</CardTitle>
@@ -677,25 +710,30 @@ export default function StencilAutomaticMedition() {
                             <Grid item xs={12} sm={6} md={3}>
                                 <div>
                                     <p className="font-bold mb-2">Ponto 01</p>
-                                    <img className="rounded-lg" src={`http://localhost:8000/${resposta.p1}?timestamp=${new Date().getTime()}`} width="100%" height="100%" alt="Ponto 1" />
+
+                                    <img className="rounded-lg" src={`http://localhost:8000/${resposta.p1}?timestamp=${new Date().getTime()}`} width="100%" height="100%" />
+
+                                </div>
+                            </Grid>
+                            <Grid item xs={12} sm={12} md={3}>
+                                <div >
+                                    <p className="font-bold mb-2" >Ponto 2</p>
+                                    <img className="rounded-lg" src={`http://localhost:8000/${resposta.p2}?timestamp=${new Date().getTime()}/`} width="100%" height="100%" />
+
                                 </div>
                             </Grid>
                             <Grid item xs={12} sm={12} md={3}>
                                 <div>
-                                    <p className="font-bold mb-2">Ponto 2</p>
-                                    <img className="rounded-lg" src={`http://localhost:8000/${resposta.p2}?timestamp=${new Date().getTime()}/`} width="100%" height="100%" alt="Ponto 2" />
+                                    <p className="font-bold mb-2" >Ponto 3</p>
+                                    <img className="rounded-lg" src={`http://localhost:8000/${resposta.p3}?timestamp=${new Date().getTime()}/`} width="100%" height="100%" />
+
                                 </div>
                             </Grid>
                             <Grid item xs={12} sm={12} md={3}>
                                 <div>
-                                    <p className="font-bold mb-2">Ponto 3</p>
-                                    <img className="rounded-lg" src={`http://localhost:8000/${resposta.p3}?timestamp=${new Date().getTime()}/`} width="100%" height="100%" alt="Ponto 3" />
-                                </div>
-                            </Grid>
-                            <Grid item xs={12} sm={12} md={3}>
-                                <div>
-                                    <p className="font-bold mb-2">Ponto 4</p>
-                                    <img className="rounded-lg" src={`http://localhost:8000/${resposta.p4}?timestamp=${new Date().getTime()}/`} width="100%" height="100%" alt="Ponto 4" />
+                                    <p className="font-bold mb-2" >Ponto 4</p>
+                                    <img className="rounded-lg" src={`http://localhost:8000/${resposta.p4}?timestamp=${new Date().getTime()}/`} width="100%" height="100%" />
+
                                 </div>
                             </Grid>
                         </Grid>
@@ -717,77 +755,10 @@ export default function StencilAutomaticMedition() {
 
                 {positionRobo && (
                     <div className="mt-4 p rounded-none w-[98%]" style={{ minHeight: '400px' }}>
-                        <Typography variant="h6" className="mb-4">Posicionando o robô. Aguarde, ao posicionar o robô corretamente, você deve ligar o tensiômetro...</Typography>
+                        <Typography variant="h6" className="mb-4">Posicionando o robo. Aguarde, ao posicionar o robo corretamente, você deve ligar o tenciometro...</Typography>
                         <LinearProgress color="error" style={{ paddingTop: '5px', paddingBottom: '5px', borderRadius: '5px' }} />
                     </div>
                 )}
-
-                {/* Diálogo de Confirmação */}
-                <Dialog
-                    open={openConfirmDialog}
-                    onClose={() => setOpenConfirmDialog(false)}
-                    aria-labelledby="alert-dialog-title"
-                    aria-describedby="alert-dialog-description"
-                    fullWidth
-                    maxWidth="sm"
-                    style={{ zIndex: 9999 }}
-                >
-                    <DialogTitle id="alert-dialog-title" style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
-                        <Typography variant="h6" component="div" style={{ fontWeight: 'bold' }}>
-                            Confirmar salvamento
-                        </Typography>
-                    </DialogTitle>
-                    <DialogContent style={{ padding: '20px', backgroundColor: '#f8fafc' }}>
-                        <DialogContentText id="alert-dialog-description">
-                            <Typography variant="body1" style={{ marginBottom: '15px' }}>
-                                Você está prestes a salvar os seguintes valores:
-                            </Typography>
-                            
-                            <Grid container spacing={2} style={{ marginBottom: '20px' }}>
-                                <Grid item xs={6}>
-                                    <Typography><strong>P1:</strong> {formDataToSubmit?.p1 || 'N/A'}</Typography>
-                                </Grid>
-                                <Grid item xs={6}>
-                                    <Typography><strong>P2:</strong> {formDataToSubmit?.p2 || 'N/A'}</Typography>
-                                </Grid>
-                                <Grid item xs={6}>
-                                    <Typography><strong>P3:</strong> {formDataToSubmit?.p3 || 'N/A'}</Typography>
-                                </Grid>
-                                <Grid item xs={6}>
-                                    <Typography><strong>P4:</strong> {formDataToSubmit?.p4 || 'N/A'}</Typography>
-                                </Grid>
-                                <Grid item xs={6}>
-                                    <Typography><strong>Ciclos:</strong> {formDataToSubmit?.cicles || '0'}</Typography>
-                                </Grid>
-                                <Grid item xs={6}>
-                                    <Typography><strong>Responsável:</strong> {formDataToSubmit?.responsable || 'Não informado'}</Typography>
-                                </Grid>
-                            </Grid>
-                            
-                            <Typography variant="body1" style={{ fontWeight: 'bold' }}>
-                                Deseja realmente salvar esta medição?
-                            </Typography>
-                        </DialogContentText>
-                    </DialogContent>
-                    <DialogActions style={{ backgroundColor: '#f8fafc', borderTop: '1px solid #e2e8f0', padding: '15px' }}>
-                        <Button 
-                            onClick={() => setOpenConfirmDialog(false)} 
-                            color="primary"
-                            variant="outlined"
-                            style={{ marginRight: '10px' }}
-                        >
-                            Cancelar
-                        </Button>
-                        <Button 
-                            onClick={handleConfirmSubmit} 
-                            color="primary" 
-                            variant="contained"
-                            autoFocus
-                        >
-                            Confirmar
-                        </Button>
-                    </DialogActions>
-                </Dialog>
 
                 <Snackbar
                     open={openSnackBar}

@@ -14,6 +14,7 @@ from dashboard.views import (
    
     ProcessedImageViewSet,
     ProcessedLastImageViewSet,
+    ProcessedImagesByStencilViewSet,
     takephoto,
     takephotoraspy,
     positionRoboPoint,
@@ -46,6 +47,8 @@ router.register(r"stencilTensionLastValues", StencilTensionLastValuesViewSet, ba
 router.register(r'processedimages', ProcessedImageViewSet, basename='processedimage')
 router.register(r'processedlastimages', ProcessedLastImageViewSet, basename='processedlastimage')
 router.register(r'parameters-tension', ParameterTensionView, basename='parameters-tension')
+
+router.register(r'processed-images-by-stencil', ProcessedImagesByStencilViewSet, basename='processed-images-by-stencil')
 
 
 urlpatterns = [

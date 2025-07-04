@@ -1,3 +1,4 @@
+import logging
 from dashboard.services import wiptrackSincronizeService
 from dashboard.models import (
      
@@ -7,6 +8,11 @@ from dashboard.models import (
     ProcessedImage,ParameterTension
     
 )
+
+import json
+from datetime import datetime
+import os
+from django.conf import settings
 
 from django.utils import timezone
 from rest_framework import status
@@ -23,6 +29,12 @@ from rest_framework import generics
 from dashboard.models import CustomUser  # Importe seu modelo de usuário
 from .serializers import CustomUserSerializer  # Importe o serializer
 
+
+# views.py
+import logging
+
+# Obtém o logger para este arquivo
+logger = logging.getLogger(__name__)
 from rest_framework import generics
 from .serializers import UserCreateSerializer
 from django.contrib.auth import get_user_model
@@ -35,7 +47,7 @@ from dashboard.serializers import (
     UserSerializer,
     ProcessedImageSerializer,
     ConfigurationsSerializer,
-    LoginSerializer, ParameterTensionSerializer
+    LoginSerializer, ParameterTensionSerializer, Configurations
 )
 from django.contrib.auth.models import Group, User
 from rest_framework import permissions, viewsets
@@ -61,6 +73,7 @@ from dashboard.services.ReaderPointersService import ReaderPointerService
 # INTEGRAÇÃO COM WIPTRACK
 # Por Fagner Costa
 
+logger = logging.getLogger(__name__)
 
 @api_view(['GET'])
 def findOneStencil(request):
@@ -184,6 +197,27 @@ class ProcessedLastImageViewSet(viewsets.ModelViewSet):
                 raise Http404("Nenhuma imagem encontrada para este stencil.")
             
             return [latest_image]  # Retorna dentro de uma lista
+            
+        # Se não houver stencil_id, retorna todos ordenados do mais recente
+        return ProcessedImage.objects.all().order_by('-timestamp')
+    
+class ProcessedImagesByStencilViewSet(viewsets.ModelViewSet):
+    queryset = ProcessedImage.objects.all().order_by('-timestamp')
+    serializer_class = ProcessedImageSerializer
+
+    def get_queryset(self):
+        stencil_id = self.request.query_params.get('stencil_id', None)
+        
+        if stencil_id:
+            # Filtra todas as imagens pelo stencil_id, ordenadas do mais recente para o mais antigo
+            images = ProcessedImage.objects.filter(
+                stencil_id=stencil_id
+            ).order_by('-timestamp')
+            
+            if not images.exists():
+                raise Http404("Nenhuma imagem encontrada para este stencil.")
+            
+            return images
             
         # Se não houver stencil_id, retorna todos ordenados do mais recente
         return ProcessedImage.objects.all().order_by('-timestamp')
@@ -416,6 +450,10 @@ class StencilTensionLastValuesViewSet(viewsets.ModelViewSet):
     queryset = StencilTensionValues.objects.all()
     serializer_class = StencilTensionValuesSerializer
 
+
+        
+    
+
     def get_queryset(self):
         id = self.request.query_params.get('stencil_identification', None)
         
@@ -450,12 +488,57 @@ class StencilTensionValuesViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
+        
+        logger.info("Dados recebidos no POST: %s", self.request.data)
+
+        # Pega os valores que você precisa
+        # Pega os valores que você precisa CORRETAMENTE (acessando como dicionário)
+        tension_data = {
+            'p1': request.data['p1'],  # Acesso correto com colchetes
+            'p2': request.data['p2'],
+            'p3': request.data['p3'],
+            'p4': request.data['p4'],
+            'stencil_id': request.data.get('stencil_id')  # Usando .get() para segurança
+        }
+
+        self.sendApiZilia(tension_data)
+    
+        
         # Adicione aqui a lógica de criação customizada, se necessário
         self.perform_create(serializer)
         
         # Retorna uma resposta de sucesso
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    
+
+     
+
+   
+    
+
+    def sendApiZilia(self, pontos):
+        try:
+            # Acesso seguro aos valores com tratamento de erros
+            p1 = pontos.get('p1')
+            p2 = pontos.get('p2')
+            p3 = pontos.get('p3')
+            p4 = pontos.get('p4')
+            
+            print(f"Valores recebidos - P1: {p1}, P2: {p2}, P3: {p3}, P4: {p4}")
+            
+            # Logging correto (os valores devem ser passados como argumentos)
+            logger.warning("P1: %s", p1)
+            logger.warning("P2: %s", p2)
+            
+            # Aqui você pode adicionar a lógica para enviar para sua API
+            
+        except KeyError as e:
+            logger.error(f"Chave não encontrada nos dados: {e}")
+        except Exception as e:
+            logger.error(f"Erro inesperado: {e}")
+
+
     
     def perform_create(self, serializer):
         stencil_tension_value = serializer.save()
@@ -531,9 +614,12 @@ class LoginView(APIView):
         token, created = Token.objects.get_or_create(user=user)
 
         return Response({
-            'token': token.key,  # Retorna o token do usuário
+            'token': token.key,           # Retorna o token do usuário
             'user_id': user.id,
-            'email': user.email
+            'email': user.email,
+            'first_name': user.first_name,
+            'last_name': user.last_name,  # Incluindo os nomes
+
         }, status=status.HTTP_200_OK)
 
 class ParameterTensionView(viewsets.ModelViewSet):

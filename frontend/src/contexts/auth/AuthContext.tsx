@@ -45,6 +45,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = () => {
     // Remover o token do localStorage e do cookie
     localStorage.removeItem("token");
+    
+    localStorage.removeItem("first_name");
+    localStorage.removeItem("last_name");
+    localStorage.removeItem("email");
     document.cookie = cookie.serialize('authToken', '', {
       httpOnly: false,
       secure: process.env.NODE_ENV !== 'development',

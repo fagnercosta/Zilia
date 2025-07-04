@@ -14,6 +14,8 @@ import datetime
 
 from dashboard.serializers import StencilSerializer
 
+from dashboard.models import Stencil
+
 
 FILE_PATH = os.path.join("/",settings.BASE_DIR,"dashboard", "services", "data-prod.txt")
 URL_API_LOCAL = url = "http://localhost:8000/api/stencil/"
@@ -277,13 +279,18 @@ class WiptrackSincronizeService:
             
                 
                 dataStencil =json.dumps(new_data, indent=4)
+
+                stencil_found = Stencil.objects.filter(stencil_id=stencil_id).exists()
+
+                status = new_data.get("status")
+               
+                
                  
-                if stencil_ativo:
+                if stencil_ativo and not stencil_found  and status != 'SCRAP':
                     self.sendDataApi(dataStencil)
 
                 time.sleep(3)
-        except Exception as e:
-                    
+        except Exception as e:            
                     print(f"Registro com erro...", e)
                     
         

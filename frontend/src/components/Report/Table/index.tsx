@@ -90,7 +90,7 @@ const Table: React.FC<Props> = ({ tensionValues }) => {
                         </Text>
                         <Text style={styles.textItem}>
                             {value.is_approved_status !== undefined ?
-                                (value.is_approved_status ? "Approved" : "Disapproved")
+                                (value.is_approved_status ? "Aprovado" : "Reprovado")
                                 : "Não informado."}
                         </Text>
                         <Text style={styles.textItem}>{value.p1}</Text>

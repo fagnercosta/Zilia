@@ -64,7 +64,17 @@ const Sidebar = ({ logouFunction }: Props) => {
                         <div className="flex h-9 w-9 shrink-0 items-center justify-center bg-blue-400 text-primary-foreground rounded-full">
                             <FileClock className="h-4 w-4" />
                         </div>
-                        <span className="">Histórico de medições</span>
+                        <span className="">Medições de Tensão</span>
+                    </Link>
+
+                    <Link
+                        href={"/pages/list_stencil_scracth"}
+                        className="flex h-9 w-auto items-center text-muted-foreground text-lg gap-3 hover:opacity-60"
+                    >
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center bg-blue-400 text-primary-foreground rounded-full">
+                            <FileClock className="h-4 w-4" />
+                        </div>
+                        <span className="">Medições de Arranhões</span>
                     </Link>
 
                     

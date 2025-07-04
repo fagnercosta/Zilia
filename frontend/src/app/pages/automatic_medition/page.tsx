@@ -96,6 +96,13 @@ export default function AutomaticMedition() {
 
     const handleLogout = useCallback(() => {
         // Remover o cookie definindo uma data de expiração no passado
+        localStorage.removeItem("token");
+        localStorage.removeItem("tokenTimestamp");
+
+        localStorage.removeItem("first_name");
+        localStorage.removeItem("last_name");
+        localStorage.removeItem("email");
+
         document.cookie = cookie.serialize('authToken', '', {
             httpOnly: false, // No lado do cliente, httpOnly deve ser false
             secure: process.env.NODE_ENV !== 'development',

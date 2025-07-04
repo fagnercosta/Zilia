@@ -98,8 +98,14 @@ export default function Login() {
 
             if (response.ok) {
                 const data = await response.json();
+                console.log(data);
                 if (typeof window !== 'undefined') {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('first_name', data.first_name);
+                    localStorage.setItem('last_name', data.last_name);
+                    localStorage.setItem('email', data.email);
                     login(data.token);  // Chamada correta do login
+                    
                 }
             } else if (response.status === 401 || response.status === 400) {
                 setMessageSnack("Usuário ou senha inválidos");

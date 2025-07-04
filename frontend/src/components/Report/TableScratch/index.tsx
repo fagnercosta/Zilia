@@ -66,7 +66,7 @@ const TableScratch: React.FC<Props> = ({ arranhoesList }) => {
         },
     });
 
-    const arrayTitles: string[] = ["Data","Hora","Scratch Count"];
+    const arrayTitles: string[] = ["Data","Hora","Arranhões"];
 
     return (
         <View style={styles.container}>
