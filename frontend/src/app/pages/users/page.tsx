@@ -136,13 +136,12 @@ export default function Users() {
                                         <TableRow key={index}>
                                             <TableCell>{item.first_name}</TableCell>
                                             <TableCell>{item.email}</TableCell>
+                                            
                                             <TableCell>
-                                                <Button 
-
-                                                    disabled={true}
-                                                    variant="outline" 
-                                                    size="sm" 
-                                                    onClick={() => handleEdit(item.id)}  // Função de edição
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => handleEdit(item.id)}
                                                 >
                                                     Editar
                                                 </Button>

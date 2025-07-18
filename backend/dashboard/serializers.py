@@ -27,10 +27,32 @@ class ProcessedImageSerializer(serializers.ModelSerializer):
         model = ProcessedImage
         fields = ['id', 'stencil', 'image_path', 'scratch_count', 'timestamp']
 
-class UserSerializer(serializers.ModelSerializer):
+'''class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["url", "username", "email", "groups"]
+        fields = ["url", "username", "email", "groups"]'''
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ('id', 'email', 'first_name', 'last_name', 'is_active', 'is_staff', 'is_superuser', 'password')
+        extra_kwargs = {
+            'password': {'write_only': True, 'required': False}
+        }
+
+    def update(self, instance, validated_data):
+        password = validated_data.pop('password', None)  # remove 'password' do dict
+
+        # Atualiza os demais campos normalmente
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        # Atualiza a senha (se fornecida)
+        if password:
+            instance.set_password(password)
+
+        instance.save()
+        return instance
 
 
 class GroupSerializer(serializers.ModelSerializer):

@@ -22,7 +22,7 @@ from dashboard.views import (
     # ConfigurationsViewSet,
     configurations_manager,
     test_services_points,
-    UserCreateSerializer,
+    UserCreateSerializer, UserRetrieveUpdateDestroyView,
     UserCreateView,
     UserDetailView,
     UserListView, ParameterTensionView, LatestStencilTensionView,sincronizedStencilData
@@ -53,6 +53,7 @@ router.register(r'processed-images-by-stencil', ProcessedImagesByStencilViewSet,
 
 urlpatterns = [
     path('create-user/', UserCreateView.as_view(), name='create_user'),  # URL para criar usuário
+    path('users/<int:pk>/', UserRetrieveUpdateDestroyView.as_view(), name='user-detail'),
     path('users/', UserListView.as_view(), name='user_list'),  # Rota para listar usuários
     path('users/<int:id>/', UserDetailView.as_view(), name='user_detail'),  # Rota com o ID do usuário7
     path('login/', LoginView.as_view(), name='login'),  # Rota de login

@@ -591,6 +591,10 @@ class UserListView(generics.ListAPIView):
     queryset = CustomUser.objects.all()  # Busca todos os usuários
     serializer_class = CustomUserSerializer  # Usa o serializer para formatar os dados
 
+class UserRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = CustomUser.objects.all()
+    serializer_class = UserSerializer
+
 class UserDetailView(generics.RetrieveAPIView):
     queryset = CustomUser.objects.all()  # Defina a consulta que busca todos os usuários
     serializer_class = CustomUserSerializer  # Defina o serializer que será usado

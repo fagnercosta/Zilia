@@ -4,20 +4,32 @@ import Sidebar from "@/components/Sidebar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BASE_URL } from "@/types/api";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Alert, AlertColor, Button, Checkbox, Grid, IconButton, Snackbar, TextField } from "@mui/material";
+import {
+  Alert,
+  AlertColor,
+  Button,
+  Checkbox,
+  Grid,
+  Snackbar,
+  TextField,
+} from "@mui/material";
 import axios from "axios";
-import { CircleX } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 
-// Definição do esquema de validação com Zod
 const userSchema = z.object({
   email: z.string().email("E-mail inválido"),
   first_name: z.string().min(2, "Mínimo 2 caracteres"),
   last_name: z.string().min(2, "Mínimo 2 caracteres"),
-  password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres").optional(),
+  password: z
+    .string()
+    .optional()
+    .refine(
+      (val) => val === undefined || val === "" || val.length >= 6,
+      "A senha deve ter pelo menos 6 caracteres"
+    ),
   is_active: z.boolean().default(true),
   super_user: z.boolean().default(false),
 });
@@ -28,7 +40,6 @@ export default function EditarUsuario({ params }: { params: { id: string } }) {
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [alert, setAlert] = useState<AlertColor>("success");
   const [message, setMessage] = useState("");
-  const [user, setUser] = useState<FormData | null>(null);
   const navigate = useRouter();
 
   const {
@@ -52,21 +63,28 @@ export default function EditarUsuario({ params }: { params: { id: string } }) {
     const fetchUser = async () => {
       try {
         const response = await axios.get(`${BASE_URL}users/${params.id}/`);
-        setUser(response.data);
-        reset(response.data); // Preenche o formulário com os dados do usuário
+        const { password, ...userWithoutPassword } = response.data; // remove a senha
+        reset(userWithoutPassword); // preenche o form sem a senha
       } catch (error) {
         setMessage("Erro ao carregar os dados do usuário.");
         setAlert("error");
         setOpenSnackBar(true);
       }
-    };
+  };
 
-    fetchUser();
-  }, [params.id, reset]);
+  fetchUser();
+}, [params.id, reset]);
 
   const onSubmit = async (data: FormData) => {
     try {
-      await axios.put(`${BASE_URL}users/${params.id}/`, data);
+      // Se senha estiver vazia, remove antes de enviar
+      const payload = { ...data };
+      if (!payload.password?.trim()) {
+        delete payload.password;
+      }
+
+      await axios.put(`${BASE_URL}users/${params.id}/`, payload);
+
       setMessage("Usuário atualizado com sucesso!");
       setAlert("success");
       setOpenSnackBar(true);
@@ -94,7 +112,13 @@ export default function EditarUsuario({ params }: { params: { id: string } }) {
                     name="first_name"
                     control={control}
                     render={({ field }) => (
-                      <TextField {...field} fullWidth label="Primeiro Nome" error={!!errors.first_name} helperText={errors.first_name?.message} />
+                      <TextField
+                        {...field}
+                        fullWidth
+                        label="Primeiro Nome"
+                        error={!!errors.first_name}
+                        helperText={errors.first_name?.message}
+                      />
                     )}
                   />
                 </Grid>
@@ -103,7 +127,13 @@ export default function EditarUsuario({ params }: { params: { id: string } }) {
                     name="last_name"
                     control={control}
                     render={({ field }) => (
-                      <TextField {...field} fullWidth label="Último Nome" error={!!errors.last_name} helperText={errors.last_name?.message} />
+                      <TextField
+                        {...field}
+                        fullWidth
+                        label="Último Nome"
+                        error={!!errors.last_name}
+                        helperText={errors.last_name?.message}
+                      />
                     )}
                   />
                 </Grid>
@@ -112,7 +142,14 @@ export default function EditarUsuario({ params }: { params: { id: string } }) {
                     name="email"
                     control={control}
                     render={({ field }) => (
-                      <TextField {...field} fullWidth label="E-mail" type="email" error={!!errors.email} helperText={errors.email?.message} />
+                      <TextField
+                        {...field}
+                        fullWidth
+                        label="E-mail"
+                        type="email"
+                        error={!!errors.email}
+                        helperText={errors.email?.message}
+                      />
                     )}
                   />
                 </Grid>
@@ -121,7 +158,15 @@ export default function EditarUsuario({ params }: { params: { id: string } }) {
                     name="password"
                     control={control}
                     render={({ field }) => (
-                      <TextField {...field} fullWidth label="Senha" type="password" error={!!errors.password} helperText={errors.password?.message} />
+                      <TextField
+                        {...field}
+                        fullWidth
+                        label="Senha"
+                        type="password"
+                        autoComplete="new-password"  // <-- aqui
+                        error={!!errors.password}
+                        helperText={errors.password?.message || "Deixe em branco para manter a senha atual"}
+                      />
                     )}
                   />
                 </Grid>
@@ -155,8 +200,17 @@ export default function EditarUsuario({ params }: { params: { id: string } }) {
           </CardContent>
         </Card>
       </div>
-      <Snackbar open={openSnackBar} autoHideDuration={4000} onClose={() => setOpenSnackBar(false)} message={message}>
-        <Alert onClose={() => setOpenSnackBar(false)} severity={alert} sx={{ width: "100%" }}>
+      <Snackbar
+        open={openSnackBar}
+        autoHideDuration={4000}
+        onClose={() => setOpenSnackBar(false)}
+        message={message}
+      >
+        <Alert
+          onClose={() => setOpenSnackBar(false)}
+          severity={alert}
+          sx={{ width: "100%" }}
+        >
           {message}
         </Alert>
       </Snackbar>
