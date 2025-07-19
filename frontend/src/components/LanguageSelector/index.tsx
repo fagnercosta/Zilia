@@ -1,6 +1,7 @@
 "use client";
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import ReactCountryFlag from "react-country-flag";
 import {
   Select,
   SelectContent,
@@ -13,8 +14,8 @@ const LanguageSelector = () => {
   const { i18n } = useTranslation();
 
   const languages = [
-    { code: 'en', name: 'English', flag: 'us' },
-    { code: 'pt', name: 'Português', flag: '🇧🇷' },
+    { code: 'en', name: 'English', countryCode: 'US' },
+    { code: 'pt', name: 'Português', countryCode: 'BR' },
   ];
 
   const handleLanguageChange = (value: string) => {
@@ -25,10 +26,18 @@ const LanguageSelector = () => {
 
   return (
     <Select value={i18n.language} onValueChange={handleLanguageChange}>
-      <SelectTrigger className="w-[140px] bg-transparent border-gray-300">
+      <SelectTrigger className="w-[180px] bg-transparent border-gray-300">
         <SelectValue>
           <div className="flex items-center gap-2">
-            <span className="text-lg">{currentLanguage.flag}</span>
+            <ReactCountryFlag 
+              countryCode={currentLanguage.countryCode}
+              svg
+              style={{
+                width: '1.5em',
+                height: '1.5em',
+              }}
+              title={currentLanguage.name}
+            />
             <span className="text-sm">{currentLanguage.name}</span>
           </div>
         </SelectValue>
@@ -37,7 +46,15 @@ const LanguageSelector = () => {
         {languages.map((lang) => (
           <SelectItem key={lang.code} value={lang.code}>
             <div className="flex items-center gap-2">
-              <span className="text-lg">{lang.flag}</span>
+              <ReactCountryFlag 
+                countryCode={lang.countryCode}
+                svg
+                style={{
+                  width: '1.5em',
+                  height: '1.5em',
+                }}
+                title={lang.name}
+              />
               <span>{lang.name}</span>
             </div>
           </SelectItem>
