@@ -615,7 +615,7 @@ export default function Home() {
                         className="bg-orange-400  text-white w-[25%] hover:opacity-60 p-1.5 rounded"
                       >
                         {({ blob, url, loading, error }) =>
-                          loading ? t('dashboard.newMeasurements.generatingReport') : t('dashboard.newMeasurements.generateReport')
+                          loading ? t('dashboard:newMeasurements.generatingReport') : t('dashboard:newMeasurements.generateReport')
                         }
                       </PDFDownloadLink>
                       

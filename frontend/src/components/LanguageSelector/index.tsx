@@ -13,7 +13,7 @@ const LanguageSelector = () => {
   const { i18n } = useTranslation();
 
   const languages = [
-    { code: 'en', name: 'English', flag: '🇺🇸' },
+    { code: 'en', name: 'English', flag: 'us' },
     { code: 'pt', name: 'Português', flag: '🇧🇷' },
   ];
 

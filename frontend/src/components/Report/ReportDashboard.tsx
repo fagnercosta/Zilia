@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useTransition } from 'react';
 import { Page, Text, View, Document, StyleSheet, Image } from '@react-pdf/renderer';
 import { formatDateTime, getRGB, getRGBScrath, getSmallestPoint } from '../../functions/functions';
 import A1 from "../../assets/usado/A1.jpg"
@@ -19,6 +19,10 @@ import Logo from "../../assets/logo.png"
 import StencilImage from "../../assets/Stencil.jpeg"
 import TableScratch from './TableScratch';
 import { te } from 'date-fns/locale';
+
+import { useTranslation } from 'react-i18next';
+
+
 
 import { useState } from 'react';
 
@@ -262,6 +266,8 @@ const StencilReport = ({
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
 
+    const { t } = useTranslation(['reports']);
+
 
 
     return (
@@ -280,7 +286,7 @@ const StencilReport = ({
                 </View>
                 <View style={stylesBody.containerItemsInfo}>
                     <CardInfos
-                        textHeader='Identificação'
+                        textHeader={t('reports:report.identificacao')}
                         attribute={stencil.stencil_part_nbr}
                     />
                     <CardInfos

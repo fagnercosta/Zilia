@@ -1,7 +1,12 @@
 {
-  "title": "Relatórios",
-  "generate": "Gerar Relatório",
-  "compliance": "Relatório de Conformidade",
-  "export": "Exportar",
-  "download": "Baixar PDF"
+  
+  "report":{
+    "title": "Relatórios",
+    "generate": "Gerar Relatório",
+    "compliance": "Relatório de Conformidade",
+    "export": "Exportar",
+    "download": "Baixar PDF",
+    "identificacao":"Identificação"
+  }
+
 }
