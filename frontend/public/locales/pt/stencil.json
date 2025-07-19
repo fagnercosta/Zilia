@@ -1,0 +1,53 @@
+{
+  "selectStencil": "Selecione o stencil",
+  "manual": {
+    "title": "Medição manual dos valores de tensão",
+    "stencils": "Stencils",
+    "cycles": "Ciclos",
+    "measurementDate": "Data da medição",
+    "register": "Cadastrar",
+    "noStencils": "Não há stencils cadastrados.",
+    "errorLoading": "Erro ao buscar os stencils.",
+    "success": "Cadastro realizado com sucesso",
+    "error": "Erro ao realizar a operação."
+  },
+  "tensionList": {
+    "title": "Histórico de medições",
+    "searchButton": "Buscar Medições do Stencil",
+    "manualMeasurement": "Realizar Medição Manual",
+    "automaticMeasurement": "Realizar Medição Automática",
+    "columns": {
+      "p1": "P1",
+      "p2": "P2",
+      "p3": "P3",
+      "p4": "P4",
+      "cycles": "Ciclos",
+      "date": "Data da Medição"
+    },
+    "messages": {
+      "found": "Medições encontradas!",
+      "notFound": "Não foram encontrados medições para este Stencil!",
+      "error": "Erro ao processar requisição..."
+    }
+  },
+  "scratchList": {
+    "title": "Histórico de medições",
+    "searchButton": "Buscar Medições do Stencil",
+    "automaticMeasurement": "Realizar Medição Automática",
+    "columns": {
+      "scratchCount": "Número de Arranhões",
+      "date": "Data da Medição"
+    },
+    "messages": {
+      "found": "Medições encontradas!",
+      "notFound": "Não foram encontrados medições para este Stencil!",
+      "error": "Erro ao processar requisição..."
+    }
+  },
+  "terms": {
+    "stencil": "Stencil",
+    "tension": "Tensão",
+    "scratches": "Arranhões",
+    "cycles": "Ciclos"
+  }
+}

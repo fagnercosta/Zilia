@@ -10,20 +10,23 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
+import { useTranslation } from 'react-i18next';
 
 // Definição do esquema de validação com Zod
-const userSchema = z.object({
-  email: z.string().email("E-mail inválido"),
-  first_name: z.string().min(2, "Mínimo 2 caracteres"),
-  last_name: z.string().min(2, "Mínimo 2 caracteres"),
-  password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres"),
+const createUserSchema = (t: any) => z.object({
+  email: z.string().email(t('configuration:users.validation.invalidEmail')),
+  first_name: z.string().min(2, t('configuration:users.validation.minChars', { min: 2 })),
+  last_name: z.string().min(2, t('configuration:users.validation.minChars', { min: 2 })),
+  password: z.string().min(6, t('configuration:users.validation.passwordMinChars', { min: 6 })),
   is_active: z.boolean().default(true),
   super_user: z.boolean().default(false),
 });
 
-type FormData = z.infer<typeof userSchema>;
+type FormData = z.infer<ReturnType<typeof createUserSchema>>;
 
 export default function CadastroUser() {
+  const { t } = useTranslation(['configuration', 'common']);
+  const userSchema = createUserSchema(t);
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [alert, setAlert] = useState<AlertColor>("success");
   const [message, setMessage] = useState("");
@@ -48,12 +51,12 @@ export default function CadastroUser() {
   const onSubmit = async (data: FormData) => {
     try {
       await axios.post(`${BASE_URL}create-user/`, data);
-      setMessage("Cadastro realizado com sucesso!");
+      setMessage(t('configuration:users.successMessage'));
       setAlert("success");
       setOpenSnackBar(true);
       navigate.push("/pages/users");
     } catch (error) {
-      setMessage("Erro ao realizar a operação.");
+      setMessage(t('configuration:users.errorMessage'));
       setAlert("error");
       setOpenSnackBar(true);
     }
@@ -66,7 +69,7 @@ export default function CadastroUser() {
       <div className="w-full h-[80vh] flex flex-col items-center justify-center">
         <Card className="w-[70%] bg-slate-50">
           <CardHeader>
-            <CardTitle className="text-2xl font-bold">Cadastro de Usuários</CardTitle>
+            <CardTitle className="text-2xl font-bold">{t('configuration:users.registrationTitle')}</CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit(onSubmit)}>
@@ -76,7 +79,7 @@ export default function CadastroUser() {
                     name="first_name"
                     control={control}
                     render={({ field }) => (
-                      <TextField size="small"{...field} fullWidth label="Primeiro Nome" error={!!errors.first_name} helperText={errors.first_name?.message} />
+                      <TextField size="small"{...field} fullWidth label={t('configuration:users.firstName')} error={!!errors.first_name} helperText={errors.first_name?.message} />
                     )}
                   />
                 </Grid>
@@ -85,7 +88,7 @@ export default function CadastroUser() {
                     name="last_name"
                     control={control}
                     render={({ field }) => (
-                      <TextField size="small"{...field} fullWidth label="Último Nome" error={!!errors.last_name} helperText={errors.last_name?.message} />
+                      <TextField size="small"{...field} fullWidth label={t('configuration:users.lastName')} error={!!errors.last_name} helperText={errors.last_name?.message} />
                     )}
                   />
                 </Grid>
@@ -94,7 +97,7 @@ export default function CadastroUser() {
                     name="email"
                     control={control}
                     render={({ field }) => (
-                      <TextField  size="small" {...field} fullWidth label="E-mail" type="email" error={!!errors.email} helperText={errors.email?.message} />
+                      <TextField  size="small" {...field} fullWidth label={t('configuration:users.email')} type="email" error={!!errors.email} helperText={errors.email?.message} />
                     )}
                   />
                 </Grid>
@@ -103,7 +106,7 @@ export default function CadastroUser() {
                     name="password"
                     control={control}
                     render={({ field }) => (
-                      <TextField size="small" {...field} fullWidth label="Senha" type="password" error={!!errors.password} helperText={errors.password?.message} />
+                      <TextField size="small" {...field} fullWidth label={t('configuration:users.password')} type="password" error={!!errors.password} helperText={errors.password?.message} />
                     )}
                   />
                 </Grid>
@@ -115,7 +118,7 @@ export default function CadastroUser() {
                       <Checkbox {...field} checked={field.value} />
                     )}
                   />
-                  Usuário Ativo
+                  {t('configuration:users.activeUser')}
                 </Grid>
                 <Grid item xs={3} sm={12} md={3}>
                   <Controller
@@ -125,17 +128,17 @@ export default function CadastroUser() {
                       <Checkbox {...field} checked={field.value} />
                     )}
                   />
-                  Administrador
+                  {t('configuration:users.administrator')}
                 </Grid>
                 <Grid item xs={6} sm={12} md={6} style={{ display: "flex", gap: "10px" }}>
                   <Button type="submit" variant="contained" color="primary">
-                    Cadastrar
+                    {t('configuration:users.register')}
                   </Button>
 
                   <a 
                     onClick={() => navigate.push("/")}
                     style={{cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "red", color: "white", padding: "10px", paddingLeft:'30px', paddingRight:'30px', borderRadius: "5px"}}>
-                    CANCELAR
+                    {t('configuration:users.cancel')}
                   </a>
                 </Grid>
                

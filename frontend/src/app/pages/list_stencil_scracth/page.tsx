@@ -28,14 +28,17 @@ import { Button } from "@/components/ui/button";
 import { CirclePlus, Search } from "lucide-react";
 import { formatDateTime } from "@/functions/functions";
 import Link from "next/link";
+import { useTranslation } from 'react-i18next';
 
 // Colunas da Tabela
-const columns = [
-    { label: "Número de Arranhões", minWidth: 50 },
-    { label: "Data da Medição", minWidth: 100 }
+const getColumns = (t: any) => [
+    { label: t('stencil:scratchList.columns.scratchCount'), minWidth: 50 },
+    { label: t('stencil:scratchList.columns.date'), minWidth: 100 }
 ];
 
 export default function ListStencilMedition() {
+    const { t } = useTranslation(['stencil', 'common']);
+    const columns = getColumns(t);
     const router = useRouter();
     const [stencils, setStencils] = useState<Stencil[]>([]);
     const [arranhoes,setArranhoes] = useState<Arranhaos[]>([]);
@@ -93,11 +96,11 @@ export default function ListStencilMedition() {
 
                 //setTensionValues(responseValues.data.results);
                 setArranhoes(responseValues.data.results)
-                setMessage(responseValues.data.results.length > 0 ? "Medições encontradas!" : "Não foram encontrados medições para este Stencil!");
+                setMessage(responseValues.data.results.length > 0 ? t('stencil:scratchList.messages.found') : t('stencil:scratchList.messages.notFound'));
                 setTypeMessage(responseValues.data.results.length > 0 ? "success" : "warning");
                 setOpenSnackBar(true);
             } catch (error: any) {
-                setMessage("Erro ao processar requisição...");
+                setMessage(t('stencil:scratchList.messages.error'));
                 setTypeMessage("error");
                 setOpenSnackBar(true);
             } finally {
@@ -120,7 +123,7 @@ export default function ListStencilMedition() {
             <Sidebar logouFunction={handleLogout} />
             <div className="flex flex-col min-h-screen relative">
                 <header className="w-full h-2 p-5 flex items-center justify-start">
-                    <h1 className="text-4xl font-bold">Histórico de medições</h1>
+                    <h1 className="text-4xl font-bold">{t('stencil:scratchList.title')}</h1>
                 </header>
                 <section className="w-full h-auto p-5 flex items-center">
                     <SelectHistory stencils={stencils} selectedStencil={selectedStencil} setSelectedStencil={setSelectedStencil} />
@@ -130,14 +133,14 @@ export default function ListStencilMedition() {
                         disabled={selectedStencil === null ? true : false}
 
                     >
-                        Buscar Medições do Stencil
+                        {t('stencil:scratchList.searchButton')}
                         <Search className="w-5 h-5" />
                     </Button>
                     <section className="ml-auto flex gap-2">
                 
 
                         <Link href={"/pages/automatic_medition"} className="h-[50px]  bg-yellow-400  gap-2 rounded-[6px] px-2 text-white font-bold hover:opacity-60 flex items-center">
-                            Realizar Medição Automática
+                            {t('stencil:scratchList.automaticMeasurement')}
                             <CirclePlus className="w-5 h-5" />
                         </Link>
                     </section>
@@ -158,7 +161,7 @@ export default function ListStencilMedition() {
                                 {loadingValues ? (
                                     <TableRow>
                                         <TableCell colSpan={columns.length}>
-                                            <Typography variant="h6">Carregando...</Typography>
+                                            <Typography variant="h6">{t('common:app.loading')}</Typography>
                                             <LinearProgress color="info" />
                                         </TableCell>
                                     </TableRow>
@@ -181,8 +184,8 @@ export default function ListStencilMedition() {
                         page={page}
                         onPageChange={handleChangePage}
                         onRowsPerPageChange={handleChangeRowsPerPage}
-                        labelRowsPerPage="Linhas por página"
-                        labelDisplayedRows={({ from, to, count }) => `${from}–${to} de ${count} registros`}
+                        labelRowsPerPage={t('common:pagination.rowsPerPage')}
+                        labelDisplayedRows={({ from, to, count }) => `${from}–${to} ${t('common:pagination.of')} ${count} ${t('common:pagination.records')}`}
                     />
                 </section>
             </div>

@@ -10,13 +10,15 @@ import { ModalOpenConfigurations } from "../Modals/ModalOpenConfigurations"
 import SnackBarControl from "../SnackBarControl"
 import { SnackControl } from "@/types/utils"
 import InovaBottomImage from "../InovaBottomImage"
+import LanguageSelector from "../LanguageSelector"
+import { useTranslation } from "react-i18next"
 
 interface Props {
     logouFunction?: () => void
 }
 
 const Sidebar = ({ logouFunction }: Props) => {
-
+    const { t } = useTranslation('common');
     
 
     const [isOpen, setIsOpen] = useState(false)
@@ -46,6 +48,7 @@ const Sidebar = ({ logouFunction }: Props) => {
                         className="w-[120px] h-[120px] object-cover"
                     />
                     <h1 className="text-4xl font-bold text-white">StencilVision</h1>
+                    <LanguageSelector />
                 </header>
                 <nav className="flex flex-col items-start gap-4 px-3 py-5">
                     <Link
@@ -55,7 +58,7 @@ const Sidebar = ({ logouFunction }: Props) => {
                         <div className="flex h-9 w-9 shrink-0 items-center justify-center bg-blue-400 text-primary-foreground rounded-full">
                             <PanelBottom className="h-4 w-4" />
                         </div>
-                        <span className="">Painel de controle</span>
+                        <span className="">{t('navigation.dashboard')}</span>
                     </Link>
                     <Link
                         href={"/pages/list_stencil_medition"}
@@ -64,7 +67,7 @@ const Sidebar = ({ logouFunction }: Props) => {
                         <div className="flex h-9 w-9 shrink-0 items-center justify-center bg-blue-400 text-primary-foreground rounded-full">
                             <FileClock className="h-4 w-4" />
                         </div>
-                        <span className="">Medições de Tensão</span>
+                        <span className="">{t('navigation.tensionMeasurements')}</span>
                     </Link>
 
                     <Link
@@ -74,7 +77,7 @@ const Sidebar = ({ logouFunction }: Props) => {
                         <div className="flex h-9 w-9 shrink-0 items-center justify-center bg-blue-400 text-primary-foreground rounded-full">
                             <FileClock className="h-4 w-4" />
                         </div>
-                        <span className="">Medições de Arranhões</span>
+                        <span className="">{t('navigation.scratchMeasurements')}</span>
                     </Link>
 
                     
@@ -89,7 +92,7 @@ const Sidebar = ({ logouFunction }: Props) => {
                                 <div className="flex h-9 w-9 shrink-0 items-center justify-center bg-blue-400 text-primary-foreground rounded-full">
                                     <ClipboardMinus className="h-4 w-4" />
                                 </div>
-                                <span className="">Modo manual</span>
+                                <span className="">{t('navigation.manualMode')}</span>
                                 {!isOpen
                                     ? <ChevronDown className="h-5 w-5 " />
                                     : <ChevronUp className="h-5 w-5 " />}
@@ -104,7 +107,7 @@ const Sidebar = ({ logouFunction }: Props) => {
                                     <div className="flex h-9 w-9 shrink-0 items-center justify-center bg-blue-400 text-primary-foreground rounded-full">
                                         <Activity className="h-4 w-4" />
                                     </div>
-                                    <span className="w-[60%]">Medição de tensão</span>
+                                    <span className="w-[60%]">{t('navigation.tensionMeasurement')}</span>
                                 </Link>
                                 
 
@@ -129,7 +132,7 @@ const Sidebar = ({ logouFunction }: Props) => {
                                     <div className="flex h-9 w-9 shrink-0 items-center justify-center bg-blue-400 text-primary-foreground rounded-full">
                                         <FileClock className="h-4 w-4" />
                                     </div>
-                                    <span className="">Usuários</span>
+                                    <span className="">{t('navigation.users')}</span>
                                 </Link>
 
                     <div
@@ -153,7 +156,7 @@ const Sidebar = ({ logouFunction }: Props) => {
                         
                         
                         <LogOut className="h-5 w-5" />
-                        <span className="">Sair</span>
+                        <span className="">{t('navigation.logout')}</span>
                     </div>
 
                     <InovaBottomImage />

@@ -1,0 +1,15 @@
+{
+  "title": "Usuários",
+  "registerNewUser": "Cadastrar Novo Usuário",
+  "editUser": "Editar Usuário",
+  "firstName": "Primeiro Nome",
+  "email": "E-mail",
+  "actions": "Ações",
+  "edit": "Editar",
+  "register": "Cadastrar",
+  "loading": "Carregando...",
+  "validation": {
+    "invalidEmail": "E-mail inválido",
+    "minLength": "Mínimo {{min}} caracteres"
+  }
+}

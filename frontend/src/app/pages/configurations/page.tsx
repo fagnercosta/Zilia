@@ -22,8 +22,10 @@ import { boolean } from "zod";
 import { CircularProgress, Snackbar, Alert, IconButton } from "@mui/material";
 import { CircleX } from "lucide-react";
 import AlertItem from "@/components/AlertItem";
+import { useTranslation } from 'react-i18next';
 
 export default function Configurations() {
+    const { t } = useTranslation(['configuration', 'common']);
 
     const [alert, setAlert] = useState<AlertColor>("success");
     const [title, setTitle] = useState<string>("Success");
@@ -93,7 +95,7 @@ export default function Configurations() {
                 setSnackControl({
                     openSnackBar: true,
                     alert: "error",
-                    message: "Erro, problema com a api."
+                    message: t('configuration:settings.apiError')
                 })
             }
             console.log(error)
@@ -156,7 +158,7 @@ export default function Configurations() {
         setViewAltert(false)
         try {
             setSincronizando(true);
-            setMensagemSincronizacao("Processando a sincronização!")
+            setMensagemSincronizacao(t('configuration:settings.processingSynchronization'))
             setDisableButtonSinc(true)
 
             rota = `${BASE_URL}sinck_data_stencil/`;
@@ -168,14 +170,14 @@ export default function Configurations() {
                 setDisableButtonSinc(false); // Corrigido o nome se necessário
                 setAlert("error"); // Adicionado para consistência
                 setViewAltert(true); // Corrigido o nome se necessário
-                setMessage("Erro durante a sincronização. Erro 500");
+                setMessage(t('configuration:settings.syncError500'));
             } else {
                 console.log("Sucesso ao sincronizar");
                 setSincronizando(false);
                 setDisableButtonSinc(false); // Corrigido o nome se necessário
                 setAlert("success");
                 setViewAltert(true); // Corrigido o nome se necessário
-                setMessage("Sincronização realizada com sucesso.");
+                setMessage(t('configuration:settings.syncSuccess'));
             }
 
             
@@ -185,7 +187,7 @@ export default function Configurations() {
             setDisableButtonSinc(false)
             setAlert("error");
             setViewAltert(true)
-            setMessage("Erro ao sincronizar. Tente novamente.");
+            setMessage(t('configuration:settings.syncError'));
         }
     }
 
@@ -264,12 +266,12 @@ export default function Configurations() {
                                 )}
                     <Card className="w-[100%] bg-slate-50">
                         <CardHeader>
-                            <CardTitle className="text-2xl text-blue-400">Configurações</CardTitle>
+                            <CardTitle className="text-2xl text-blue-400">{t('configuration:settings.title')}</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <div className="w-full flex flex-col items-start justify-start gap-5">
                                 <div className="w-full flex items-center justify-start gap-2">
-                                    <span className="mr-auto font-bold text-[18px]">Alerta de manuntenção preventiva:</span>
+                                    <span className="mr-auto font-bold text-[18px]">{t('configuration:settings.preventiveMaintenanceAlert')}</span>
                                     <div style={{
                                         width: 25,
                                         height: 25,
@@ -284,19 +286,19 @@ export default function Configurations() {
                                     />
                                 </div>
                                 <div className="w-full flex items-center justify-start">
-                                    <span className="mr-auto font-bold text-[18px]">Teste de conexão com o WipTrack:</span>
+                                    <span className="mr-auto font-bold text-[18px]">{t('configuration:settings.wipTrackConnectionTest')}</span>
                                     <Button className="bg-blue-400">
-                                        Iniciar Teste
+                                        {t('configuration:settings.startTest')}
                                     </Button>
                                 </div>
                                 <div className="w-full flex items-center justify-start">
-                                    <span className="mr-auto font-bold text-[18px]">Ativar a sincronização automática:</span>
+                                    <span className="mr-auto font-bold text-[18px]">{t('configuration:settings.automaticSyncActivation')}</span>
                                     <Button
                                         className="bg-blue-400"
                                         onClick={() => handleSincrozizeDataWiptrack()}
                                         disabled={disableButtonSinc}
                                     >
-                                        Iniciar Sincronização
+                                        {t('configuration:settings.startSync')}
                                     </Button>
                                 </div>
                                 <div className="w-full ">
@@ -338,7 +340,7 @@ export default function Configurations() {
                                 <div className="w-full flex items-center justify-start">
                                     <span className="mr-auto font-bold text-[18px]">Limite de arranhões:</span>
                                     <div className="flex items-center gap-4">
-                                        <span className="font-bold text-[18px]">Máx:</span>
+                                        <span className="font-bold text-[18px]">{t('configuration:settings.max')}</span>
                                         <TextField
                                             onChange={changeMaxScratches}
                                             value={limits.scratchesValue}

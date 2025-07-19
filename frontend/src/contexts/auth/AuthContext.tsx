@@ -17,7 +17,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
 
   useEffect(() => {
-    // Recupera o token do localStorage e cookies ao carregar o componente
     const storedToken = localStorage.getItem("token");
     const cookies = cookie.parse(document.cookie);
     const authToken = cookies.authToken || storedToken;

@@ -13,14 +13,17 @@ import { Button } from "@/components/ui/button";
 import { CirclePlus, CircleX, Search } from "lucide-react";
 import { formatDateTime } from "@/functions/functions";
 import Link from "next/link";
+import { useTranslation } from 'react-i18next';
 
-const columns = [
-    { label: 'Primeiro Nome', minWidth: 50 },
-    { label: 'E-mail', minWidth: 50 },
-    { label: 'Ações', minWidth: 50 },  // Nova coluna para ações
+const getColumns = (t: any) => [
+    { label: t('configuration:users.firstName'), minWidth: 50 },
+    { label: t('configuration:users.email'), minWidth: 50 },
+    { label: t('configuration:users.actions'), minWidth: 50 },  // Nova coluna para ações
 ];
 
 export default function Users() {
+    const { t } = useTranslation(['configuration', 'common']);
+    const columns = getColumns(t);
     const router = useRouter();
     const [stencils, setStencils] = useState<Stencil[]>([]);
     const [selectedStencil, setSelectedStencil] = useState<Stencil | null>(null);
@@ -102,7 +105,7 @@ export default function Users() {
             <div className="flex flex-col min-h-screen">
                 <section className="w-full h-auto p-5 items-center justify-start flex">
                     <Link href={"/pages/cadastro_user"} className="h-[50px] ml-auto bg-blue-400 flex gap-2 rounded-[6px] justify-end items-center px-2 text-white font-bold hover:opacity-60">
-                        Cadastrar Novo Usuário
+                        {t('configuration:users.title')}
                         <CirclePlus className="w-5 h-5" />
                     </Link>
                 </section>
@@ -125,7 +128,7 @@ export default function Users() {
                                         <TableCell colSpan={columns.length}>
                                             <Grid item xs={12} md={12} lg={12}>
                                                 <div style={{ width: 400 }}>
-                                                    <Typography variant="h6" color="#121212">Carregando...</Typography>
+                                                    <Typography variant="h6" color="#121212">{t('common:app.loading')}</Typography>
                                                     <LinearProgress color="info" />
                                                 </div>
                                             </Grid>
@@ -143,7 +146,7 @@ export default function Users() {
                                                     size="sm"
                                                     onClick={() => handleEdit(item.id)}
                                                 >
-                                                    Editar
+                                                    {t('configuration:users.edit')}
                                                 </Button>
                                             </TableCell>
                                         </TableRow>

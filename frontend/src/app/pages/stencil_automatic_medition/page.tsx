@@ -46,6 +46,7 @@ import { useRouter } from "next/navigation";
 import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useTranslation } from 'react-i18next';
 
 interface FormData {
     p1: number | string | null;
@@ -82,6 +83,7 @@ interface RequestRaspy {
 }
 
 export default function StencilAutomaticMedition() {
+    const { t } = useTranslation(['automatic', 'common']);
     // Estados principais
     const [stencilList, setStencilList] = useState<Stencil[] | undefined>([]);
     const [stencilSelected, setStencilSelected] = useState(0);
@@ -231,12 +233,12 @@ export default function StencilAutomaticMedition() {
     // Funções de API
     const getStencils = async () => {
         try {
-            const response = await axios.get(`http://127.0.0.1:8000/api/stencil/`);
+            const response = await axios.get(`${BASE_URL}api/stencil/`);
             if (response && response.data.results.length > 0) {
                 setStencilList(response.data.results);
                 setStencils(response.data.results);
             } else if (!response || response.data.results.length === 0) {
-                setMessage('Não há stencils cadastrados.');
+                setMessage(t('automatic:tension.noStencils'));
                 setAlert("warning");
             }
         } catch (error: any) {
@@ -339,9 +341,9 @@ export default function StencilAutomaticMedition() {
         setViewAltert(false);
 
         try {
-            const responseRobo = await axios.get(`http://127.0.0.1:8000/api/position-point/`);
+            const responseRobo = await axios.get(`${BASE_URL}api/position-point/`);
             setMenssagemRobo(responseRobo.data.menssage || "Robô posicionado");
-            setMessage("Robô posicionado. Agora coloque o CLP no modo manual, abra a porta, ligue o tensiômetro, feche a porta e coloque o CPL no automático e inicie a medição");
+            setMessage(t('automatic:tension.robotPositioned'));
             setAlert("success");
             setViewAltert(true);
             setPositionRobo(false);
@@ -360,7 +362,7 @@ export default function StencilAutomaticMedition() {
         setLoadingRobot(false);
 
         if (!selectedStencil?.stencil_id) {
-            setMessage("Selecione um stencil para realizar a medição.");
+            setMessage(t('automatic:tension.selectStencil'));
             setAlert("warning");
             setViewAltert(true);
             return;
@@ -370,7 +372,7 @@ export default function StencilAutomaticMedition() {
         handleFormStencilId();
 
         try {
-            const response = await axios.post(`http://127.0.0.1:8000/api/takephotraspy/${selectedStencil.stencil_id}/`);
+            const response = await axios.post(`${BASE_URL}api/takephotraspy/${selectedStencil.stencil_id}/`);
             setLoadingRobot(false);
             setResposta(response.data);
             fetchLatestMeasurement(selectedStencil.stencil_id);
@@ -396,7 +398,7 @@ export default function StencilAutomaticMedition() {
             }));
             handleDisableInput();
         } catch (error) {
-            setMessage("Erro ao realizar a operação. Não foi possível se conectar com o robô. Tente Novamente");
+            setMessage(t('automatic:tension.robotError'));
             setLendo(false);
             setLoadingRobot(false);
             setAlert("error");
@@ -427,7 +429,7 @@ export default function StencilAutomaticMedition() {
         
         // Validação dos campos
         if ((!formData.p1 || Number(formData.p1) <= 0) || !formData.p2 || !formData.p3 || !formData.p4 || formData.cicles === 0) {
-            setMessage("Preencha todos os campos corretamente antes de salvar");
+            setMessage(t('automatic:tension.fillFields'));
             setAlert("error");
             setOpenSnackBar(true);
             return;
@@ -454,13 +456,13 @@ export default function StencilAutomaticMedition() {
         try {
             const response = await axios.post(`${BASE_URL}api/stencilTensionValues/`, formDataToSubmit);
             if (response) {
-                setMessage("Medição de tensão cadastrada com sucesso!");
+                setMessage(t('automatic:tension.savedSuccess'));
                 setAlert("success");
                 resetFormExceptDate();
             }
         } catch (error) {
             console.error("Erro ao salvar:", error);
-            setMessage("Erro ao realizar a operação.");
+            setMessage(t('automatic:tension.operationError'));
             setAlert("error");
         } finally {
             setSalvando(false);
@@ -472,14 +474,14 @@ export default function StencilAutomaticMedition() {
     const handleApiError = (error: any) => {
         if (error.response) {
             if (error.response.status === 500) {
-                setMessage("Problema na comunicação com o robô. Sugestão: resetar o CLP.");
+                setMessage(t('automatic:tension.robotCommunicationProblem'));
             } else {
-                setMessage(`Erro ${error.response.status}: ${error.response.data?.message || "Erro desconhecido"}`);
+                setMessage(t('automatic:tension.errorWithStatus', { status: error.response.status, message: error.response.data?.message || t('automatic:tension.unknownError') }));
             }
         } else if (error.request) {
-            setMessage("Erro na comunicação com o servidor");
+            setMessage(t('automatic:tension.serverError'));
         } else {
-            setMessage("Erro inesperado ao buscar os dados");
+            setMessage(t('automatic:tension.unexpectedError'));
         }
         setAlert("error");
         setViewAltert(true);
@@ -506,7 +508,7 @@ export default function StencilAutomaticMedition() {
 
                 <Card className="w-[100%] m-0 bg-slate-50">
                     <CardHeader>
-                        <CardTitle className="text-2xl font-bold">Medição Automática dos valores de tensão</CardTitle>
+                        <CardTitle className="text-2xl font-bold">{t('automatic:tension.title')}</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <form onSubmit={handleSubmit}>
@@ -590,7 +592,7 @@ export default function StencilAutomaticMedition() {
                                         fullWidth
                                         type="number"
                                         required
-                                        label="Ciclos"
+                                        label={t('automatic:tension.cycles')}
                                         size="small"
                                         name="cicles"
                                         value={formData.cicles}
@@ -599,7 +601,7 @@ export default function StencilAutomaticMedition() {
                                     />
                                     {carregadoCiclos && (
                                         <div>
-                                            <Typography variant="h6">Carregando ciclos...</Typography>
+                                            <Typography variant="h6">{t('automatic:tension.loading')}</Typography>
                                             <LinearProgress color="info" />
                                         </div>
                                     )}
@@ -609,7 +611,7 @@ export default function StencilAutomaticMedition() {
                                         fullWidth
                                         type="datetime-local"
                                         required
-                                        label="Data da medição"
+                                        label={t('automatic:tension.measurementDate')}
                                         size="small"
                                         name="measurement_datetime"
                                         value={formData.measurement_datetime ? new Date(formData.measurement_datetime).toISOString().slice(0, 16) : ""}
@@ -627,7 +629,7 @@ export default function StencilAutomaticMedition() {
                                                 disabled={active_status}
                                             />
                                         }
-                                        label="A medição Aprovada"
+                                        label={t('automatic:tension.approvedMeasurement')}
                                     />
                                 </Grid>
 
@@ -639,14 +641,14 @@ export default function StencilAutomaticMedition() {
                                             variant="contained" 
                                             color="primary"
                                         >
-                                            Cadastrar
+                                            {t('automatic:tension.register')}
                                         </Button>
                                     )}
                                     {salvando && (
                                         <div>
                                             <LinearProgress color="primary" style={{ width: '100%', paddingRight: '2px' }} />
                                             <Typography variant="h6" marginBottom='10px' color="textSecondary" align="center" gutterBottom>
-                                                Salvando dados....
+                                                {t('automatic:tension.savingData')}
                                             </Typography>
                                         </div>
                                     )}
@@ -657,7 +659,7 @@ export default function StencilAutomaticMedition() {
                                                 onClick={() => takePhotoRaspRequest(stencilSelected)}
                                                 style={{ backgroundColor: 'rgb(96 165 250)', color: 'white' }}
                                             >
-                                                Iniciar coleta de dados
+                                                {t('automatic:tension.startDataCollection')}
                                             </Button>
                                         </div>
                                     )}
@@ -670,32 +672,32 @@ export default function StencilAutomaticMedition() {
                 {resposta && (
                     <Card className="mt-4 p rounded-none w-[100%] bg-slate-50" style={{ minHeight: '300px' }}>
                         <CardHeader>
-                            <CardTitle className="text-2xl font-bold">Imagens coletadas</CardTitle>
+                            <CardTitle className="text-2xl font-bold">{t('automatic:tension.collectedImages')}</CardTitle>
                             <Divider />
                         </CardHeader>
                         <Grid container spacing={2} className="p-4" style={{ minHeight: '100%' }}>
                             <Grid item xs={12} sm={6} md={3}>
                                 <div>
-                                    <p className="font-bold mb-2">Ponto 01</p>
-                                    <img className="rounded-lg" src={`http://localhost:8000/${resposta.p1}?timestamp=${new Date().getTime()}`} width="100%" height="100%" alt="Ponto 1" />
+                                    <p className="font-bold mb-2">{t('automatic:tension.point1')}</p>
+                                    <img className="rounded-lg" src={`${BASE_URL}${resposta.p1}?timestamp=${new Date().getTime()}`} width="100%" height="100%" alt="Ponto 1" />
                                 </div>
                             </Grid>
                             <Grid item xs={12} sm={12} md={3}>
                                 <div>
-                                    <p className="font-bold mb-2">Ponto 2</p>
-                                    <img className="rounded-lg" src={`http://localhost:8000/${resposta.p2}?timestamp=${new Date().getTime()}/`} width="100%" height="100%" alt="Ponto 2" />
+                                    <p className="font-bold mb-2">{t('automatic:tension.point2')}</p>
+                                    <img className="rounded-lg" src={`${BASE_URL}${resposta.p2}?timestamp=${new Date().getTime()}/`} width="100%" height="100%" alt="Ponto 2" />
                                 </div>
                             </Grid>
                             <Grid item xs={12} sm={12} md={3}>
                                 <div>
-                                    <p className="font-bold mb-2">Ponto 3</p>
-                                    <img className="rounded-lg" src={`http://localhost:8000/${resposta.p3}?timestamp=${new Date().getTime()}/`} width="100%" height="100%" alt="Ponto 3" />
+                                    <p className="font-bold mb-2">{t('automatic:tension.point3')}</p>
+                                    <img className="rounded-lg" src={`${BASE_URL}${resposta.p3}?timestamp=${new Date().getTime()}/`} width="100%" height="100%" alt="Ponto 3" />
                                 </div>
                             </Grid>
                             <Grid item xs={12} sm={12} md={3}>
                                 <div>
-                                    <p className="font-bold mb-2">Ponto 4</p>
-                                    <img className="rounded-lg" src={`http://localhost:8000/${resposta.p4}?timestamp=${new Date().getTime()}/`} width="100%" height="100%" alt="Ponto 4" />
+                                    <p className="font-bold mb-2">{t('automatic:tension.point4')}</p>
+                                    <img className="rounded-lg" src={`${BASE_URL}${resposta.p4}?timestamp=${new Date().getTime()}/`} width="100%" height="100%" alt="Ponto 4" />
                                 </div>
                             </Grid>
                         </Grid>
@@ -704,7 +706,7 @@ export default function StencilAutomaticMedition() {
 
                 {loadingRobot && (
                     <div className="mt-4 p rounded-none w-[98%]" style={{ minHeight: '30px' }}>
-                        <Typography variant="h6" className="mb-4">Coletando dados...</Typography>
+                        <Typography variant="h6" className="mb-4">{t('automatic:tension.collectingData')}</Typography>
                         <LinearProgress color="success" style={{ paddingTop: '5px', paddingBottom: '5px', borderRadius: '5px' }} />
                     </div>
                 )}
@@ -717,7 +719,7 @@ export default function StencilAutomaticMedition() {
 
                 {positionRobo && (
                     <div className="mt-4 p rounded-none w-[98%]" style={{ minHeight: '400px' }}>
-                        <Typography variant="h6" className="mb-4">Posicionando o robô. Aguarde, ao posicionar o robô corretamente, você deve ligar o tensiômetro...</Typography>
+                        <Typography variant="h6" className="mb-4">{t('automatic:tension.positioningRobot')}</Typography>
                         <LinearProgress color="error" style={{ paddingTop: '5px', paddingBottom: '5px', borderRadius: '5px' }} />
                     </div>
                 )}
@@ -734,13 +736,13 @@ export default function StencilAutomaticMedition() {
                 >
                     <DialogTitle id="alert-dialog-title" style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
                         <Typography variant="h6" component="div" style={{ fontWeight: 'bold' }}>
-                            Confirmar salvamento
+                            {t('automatic:tension.confirmSave')}
                         </Typography>
                     </DialogTitle>
                     <DialogContent style={{ padding: '20px', backgroundColor: '#f8fafc' }}>
                         <DialogContentText id="alert-dialog-description">
                             <Typography variant="body1" style={{ marginBottom: '15px' }}>
-                                Você está prestes a salvar os seguintes valores:
+                                {t('automatic:tension.aboutToSave')}:
                             </Typography>
                             
                             <Grid container spacing={2} style={{ marginBottom: '20px' }}>
@@ -757,15 +759,15 @@ export default function StencilAutomaticMedition() {
                                     <Typography><strong>P4:</strong> {formDataToSubmit?.p4 || 'N/A'}</Typography>
                                 </Grid>
                                 <Grid item xs={6}>
-                                    <Typography><strong>Ciclos:</strong> {formDataToSubmit?.cicles || '0'}</Typography>
+                                    <Typography><strong>{t('automatic:tension.cycles')}:</strong> {formDataToSubmit?.cicles || '0'}</Typography>
                                 </Grid>
                                 <Grid item xs={6}>
-                                    <Typography><strong>Responsável:</strong> {formDataToSubmit?.responsable || 'Não informado'}</Typography>
+                                    <Typography><strong>{t('automatic:tension.responsible')}:</strong> {formDataToSubmit?.responsable || t('automatic:tension.notInformed')}</Typography>
                                 </Grid>
                             </Grid>
                             
                             <Typography variant="body1" style={{ fontWeight: 'bold' }}>
-                                Deseja realmente salvar esta medição?
+                                {t('automatic:tension.reallyWantToSave')}
                             </Typography>
                         </DialogContentText>
                     </DialogContent>
@@ -776,7 +778,7 @@ export default function StencilAutomaticMedition() {
                             variant="outlined"
                             style={{ marginRight: '10px' }}
                         >
-                            Cancelar
+                            {t('automatic:tension.cancel')}
                         </Button>
                         <Button 
                             onClick={handleConfirmSubmit} 
@@ -784,7 +786,7 @@ export default function StencilAutomaticMedition() {
                             variant="contained"
                             autoFocus
                         >
-                            Confirmar
+                            {t('automatic:tension.confirm')}
                         </Button>
                     </DialogActions>
                 </Dialog>

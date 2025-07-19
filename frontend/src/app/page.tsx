@@ -28,11 +28,12 @@ import InovaImage from "../assets/inova.png"
 import InovaBottomImage from "@/components/InovaBottomImage";
 import { fstat } from "fs";
 import AlertItem from "@/components/AlertItem";
+import { useTranslation } from 'react-i18next';
 
 
 
 export default function Home() {
-
+  const { t } = useTranslation(['dashboard', 'common']);
   const router = useRouter();
   const [stencilDigited, setStencilDigited] = useState("")
   const [stencil, setStencil] = useState<Stencil | null>()
@@ -65,7 +66,7 @@ export default function Home() {
   const action = (
     <React.Fragment>
       <Button color="secondary" size="sm" onClick={handleClose}>
-        UNDO
+        {t('common.app.undo')}
       </Button>
       <IconButton
         size="small"
@@ -143,12 +144,12 @@ export default function Home() {
   const scanBarCode = async () => {
     setOpenSnackBar(true)
     setAlert("info")
-    setMessageSnack("Esperando o sensor reconhecer um código...")
+    setMessageSnack(t('dashboard:messages.waitingSensor'))
     try {
       const response = await axios.get(`${BASE_URL}api/scanner/`)
       setOpenSnackBar(false)
       setAlert("success")
-      setMessageSnack("Código encontrado!")
+      setMessageSnack(t('dashboard:messages.codeFound'))
       setOpenSnackBar(true)
 
       setStencilDigited(response.data.scanned_code)
@@ -161,7 +162,7 @@ export default function Home() {
   const handleStencil = async () => {
     setViewAltert(false)
     if (stencilDigited == "" || stencilDigited == null) {
-      setMessageSnack("Forneça um stencil")
+      setMessageSnack(t('dashboard:messages.provideStencil'))
       setOpenSnackBar(true)
       setAlert("warning")
     } else {
@@ -190,14 +191,14 @@ export default function Home() {
             // setCicles(stencilValues[stencilValues.length - 1].cicles);
             setStencilTensionValues(stencilValues)
             setLastStencilValues(lastStencilValues)
-            setMessageSnack("Valores encontrados!")
+            setMessageSnack(t('dashboard:messages.valuesFound'))
             setOpenSnackBar(true)
             setAlert("success")
 
 
 
           } else {
-            setMessageSnack('Não foram encontrados valores para o Stencil')
+            setMessageSnack(t('dashboard:messages.noValuesFound'))
             setAlert("warning")
             setOpenSnackBar(true)
           }
@@ -213,7 +214,7 @@ export default function Home() {
             setLastRobotMedition(responseLastMedition.data.results[responseLastMedition.data.results.length - 1])
             console.log("ALL"+responseLastMedition.data.results)
           } else {
-            setMessageSnack('Stencil sem medição de arranhões ');
+            setMessageSnack(t('dashboard:messages.stencilWithoutScratchMeasurement'));
             setOpenSnackBar(true);
             setAlert("warning")
           }
@@ -223,14 +224,14 @@ export default function Home() {
 
 
         } else {
-          setMessageSnack('Stencil não encontrado. Ou o Stencil está sem medições de arranhões');
+          setMessageSnack(t('dashboard:messages.stencilNotFoundOrNoMeasurements'));
           setOpenSnackBar(true);
           setAlert("warning")
         }
       } catch (error: any) {
         if (!error.response) {
           // Erro de rede ou servidor inacessível
-          setMessageSnack('Erro de rede. Houve um problema de comunicação com o servidor.');
+          setMessageSnack(t('dashboard:messages.networkError'));
           setAlert("error")
           setViewAltert(true)
           //setOpenSnackBar(true);
@@ -239,24 +240,24 @@ export default function Home() {
           if (stencil != null) {
 
             if (stencilTensionValues?.length === 0) {
-              setMessageSnack(`Stencil ${stencil.stencil_part_nbr} está sem medições de  tensão `);
+              setMessageSnack(t('dashboard:messages.stencilWithoutTensionMeasurements', { partNumber: stencil.stencil_part_nbr }));
               setOpenSnackBar(true);
               setAlert("warning")
             } else {
-              setMessageSnack(`Stencil ${stencil.stencil_part_nbr} foi encontrado, mas está sem medições de arranhões `);
+              setMessageSnack(t('dashboard:messages.stencilFoundButNoScratchMeasurements', { partNumber: stencil.stencil_part_nbr }));
               setOpenSnackBar(true);
               setAlert("success")
             }
 
           } else {
-            setMessageSnack('Stencil não encontrado');
+            setMessageSnack(t('dashboard:messages.stencilNotFound'));
             setOpenSnackBar(true);
             setAlert("error")
           }
 
         } else {
           // Outros erros
-          setMessageSnack('Ocorreu um erro ao buscar os dados. Por favor, tente novamente.');
+          setMessageSnack(t('dashboard:messages.errorFetchingData'));
           setAlert("warning")
           setOpenSnackBar(true);
         }
@@ -268,7 +269,7 @@ export default function Home() {
   const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       if (stencilDigited == "" || stencilDigited == null) {
-        setMessageSnack("Forneça um stencil")
+        setMessageSnack(t('dashboard:messages.provideStencil'))
         setOpenSnackBar(true)
         setAlert("warning")
       } else {
@@ -294,14 +295,14 @@ export default function Home() {
 
               // setCicles(stencilValues[stencilValues.length - 1].cicles);
               setStencilTensionValues(stencilValues)
-              setMessageSnack("Valores encontrados!")
+              setMessageSnack(t('dashboard:messages.valuesFound'))
               setOpenSnackBar(true)
               setAlert("success")
 
 
 
             } else {
-              setMessageSnack('Não foram encontrados valores para o Stencil')
+              setMessageSnack(t('dashboard:messages.noValuesFound'))
               setAlert("warning")
               setOpenSnackBar(true)
             }
@@ -311,7 +312,7 @@ export default function Home() {
             if (responseLastMedition.status === 200) {
               setLastRobotMedition(responseLastMedition.data.results[responseLastMedition.data.results.length - 1])
             } else {
-              setMessageSnack('Stencil sem medição de arranhões ');
+              setMessageSnack(t('dashboard:messages.stencilWithoutScratchMeasurement'));
               setOpenSnackBar(true);
               setAlert("warning")
             }
@@ -321,14 +322,14 @@ export default function Home() {
 
 
           } else {
-            setMessageSnack('Stencil não encontrado. Ou o Stencil está sem medições de arranhões');
+            setMessageSnack(t('dashboard:messages.stencilNotFoundOrNoMeasurements'));
             setOpenSnackBar(true);
             setAlert("warning")
           }
         } catch (error: any) {
           if (!error.response) {
             // Erro de rede ou servidor inacessível
-            setMessageSnack('Erro de rede. Houve um problema de comunicação com Api.');
+            setMessageSnack(t('dashboard:messages.networkError'));
             setAlert("error")
             setOpenSnackBar(true);
           } else if (error.response.status === 404) {
@@ -336,24 +337,24 @@ export default function Home() {
             if (stencil != null) {
 
               if (stencilTensionValues?.length === 0) {
-                setMessageSnack(`Stencil ${stencil.stencil_part_nbr} está sem medições de  tensão `);
+                setMessageSnack(t('dashboard:messages.stencilWithoutTensionMeasurements', { partNumber: stencil.stencil_part_nbr }));
                 setOpenSnackBar(true);
                 setAlert("warning")
               } else {
-                setMessageSnack(`Stencil ${stencil.stencil_part_nbr} foi encontrado, mas está sem medições de arranhões `);
+                setMessageSnack(t('dashboard:messages.stencilFoundButNoScratchMeasurements', { partNumber: stencil.stencil_part_nbr }));
                 setOpenSnackBar(true);
                 setAlert("success")
               }
 
             } else {
-              setMessageSnack('Stencil não encontrado');
+              setMessageSnack(t('dashboard:messages.stencilNotFound'));
               setOpenSnackBar(true);
               setAlert("error")
             }
 
           } else {
             // Outros erros
-            setMessageSnack('Ocorreu um erro ao buscar os dados. Por favor, tente novamente.');
+            setMessageSnack(t('dashboard:messages.errorFetchingData'));
             setAlert("warning")
             setOpenSnackBar(true);
           }
@@ -381,7 +382,7 @@ export default function Home() {
 
         {viewAltert && (
           <section className="grid grid-cols-1 mb-4">
-            <AlertItem variant="standard" severity={alert} message={messageSnack} title="Error"/>
+            <AlertItem variant="standard" severity={alert} message={messageSnack} title={t('dashboard:alerts.error')}/>
           </section>
         )}
 
@@ -392,12 +393,12 @@ export default function Home() {
             <CardHeader>
               <div className="flex items-center justify-center">
                 <CardTitle className="text-lg sm:text-xl text-blue-400 font-bold">
-                  Pesquisa de Stencil
+                  {t('dashboard:search.title')}
                 </CardTitle>
                 <Search className="ml-auto w-6 h-6 text-blue-400" />
               </div>
               <CardDescription>
-                Pesquise para verificar as medições
+                {t('dashboard:search.description')}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -405,7 +406,7 @@ export default function Home() {
                 <div className="flex items-center justify-between w-full">
                   <Input
                     type="search"
-                    placeholder="Digite o identificador..."
+                    placeholder={t('dashboard:search.placeholder')}
                     className="w-9/12 bg-white"
                     onChange={(e) => setStencilDigited(e.target.value)}
                     onKeyDown={handleKeyDown}
@@ -420,13 +421,13 @@ export default function Home() {
                     </HoverCardTrigger>
                     <HoverCardContent>
                       <div className="flex items-start space-x-4 flex-col gap-3">
-                        <h3 className="font-bold ">Código de barras</h3>
-                        Esta função permite ler um código de barras de um Stencil e transcreve para o campo de pesquisa.
+                        <h3 className="font-bold ">{t('dashboard:search.barcode.title')}</h3>
+                        {t('dashboard:search.barcode.description')}
                       </div>
                     </HoverCardContent>
                   </HoverCard>
                 </div>
-                <Button className="w-full bg-blue-400" onClick={handleStencil} disabled={stencilDigited.length === 0 ? true : false}>Pesquisar</Button>
+                <Button className="w-full bg-blue-400" onClick={handleStencil} disabled={stencilDigited.length === 0 ? true : false}>{t('dashboard:search.button')}</Button>
               </div>
 
             </CardContent>
@@ -437,12 +438,12 @@ export default function Home() {
             <CardHeader>
               <div className="flex items-center justify-center">
                 <CardTitle className="text-lg sm:text-xl text-blue-400 font-bold">
-                  Ciclos
+                  {t('dashboard:cycles.title')}
                 </CardTitle>
                 <RefreshCcw className="ml-auto w-6 h-6 text-blue-400" />
               </div>
               <CardDescription>
-                Informações sobre os ciclos das medidas
+                {t('dashboard:cycles.description')}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -458,12 +459,12 @@ export default function Home() {
             <CardHeader>
               <div className="flex items-center justify-center">
                 <CardTitle className="text-lg sm:text-xl text-blue-400 font-bold">
-                  Status
+                  {t('dashboard:status.title')}
                 </CardTitle>
                 <ChartColumnIncreasing className="ml-auto w-6 h-6 text-blue-400" />
               </div>
               <CardDescription>
-                Mostra o status do Stencil
+                {t('dashboard:status.description')}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -479,12 +480,12 @@ export default function Home() {
             <CardHeader>
               <div className="flex items-center justify-center">
                 <CardTitle className="text-lg sm:text-xl text-blue-400 font-bold">
-                  Ultima medição
+                  {t('dashboard:lastMeasurement.title')}
                 </CardTitle>
                 <Calendar className="ml-auto w-6 h-6 text-blue-400" />
               </div>
               <CardDescription>
-                Mostra a data referente a última medição
+                {t('dashboard:lastMeasurement.description')}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -504,12 +505,12 @@ export default function Home() {
             <CardHeader>
               <div className="flex items-center justify-center">
                 <CardTitle className="text-lg sm:text-xl text-blue-400 font-bold">
-                  Ultimos pontos medidos
+                  {t('dashboard:lastPoints.title')}
                 </CardTitle>
                 <Diameter className="ml-auto w-6 h-6 text-blue-400" />
               </div>
               <CardDescription>
-                Mostra o valor de tensão dos pontos na ultima medição
+                {t('dashboard:lastPoints.description')}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -532,12 +533,12 @@ export default function Home() {
             <CardHeader>
               <div className="flex items-center justify-center">
                 <CardTitle className="text-lg sm:text-xl text-blue-400 font-bold">
-                  Limite de vida estimado
+                  {t('dashboard:lifeLimit.title')}
                 </CardTitle>
                 <SquareActivity className="ml-auto w-6 h-6 text-blue-400" />
               </div>
               <CardDescription>
-                Mostra o limite de vida estimado do Stencil
+                {t('dashboard:lifeLimit.description')}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -554,12 +555,12 @@ export default function Home() {
             <CardHeader>
               <div className="flex items-center justify-center">
                 <CardTitle className="text-lg sm:text-xl text-blue-400 font-bold">
-                  Novas medições
+                  {t('dashboard:newMeasurements.title')}
                 </CardTitle>
                 <SquareActivity className="ml-auto w-6 h-6 text-blue-400" />
               </div>
               <CardDescription>
-                Escolha o tipo de medição que deseja relizar.
+                {t('dashboard:newMeasurements.description')}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -571,14 +572,14 @@ export default function Home() {
                   
                   <HoverCardTrigger asChild>
                     <Button className="bg-blue-400 p-5 text-white w-[30%] hover:opacity-60" onClick={() => handlePage("/pages/stencil_automatic_medition")}>
-                      Tensão Automática
+                      {t('dashboard:newMeasurements.automaticTension')}
                     </Button>
 
                   </HoverCardTrigger>
                   <HoverCardContent>
                     <div className="flex items-start space-x-4 flex-col gap-3">
-                      <h3 className="font-bold ">Medir Tensão</h3>
-                      Esta função levará para uma aba específica para realizar medidas automáticas, obtidas pela execução do robô.
+                      <h3 className="font-bold ">{t('dashboard:newMeasurements.tension.title')}</h3>
+                      {t('dashboard:newMeasurements.tension.description')}
                     </div>
                   </HoverCardContent>
                 </HoverCard>
@@ -587,13 +588,13 @@ export default function Home() {
                 <HoverCard>
                   <HoverCardTrigger asChild>
                     <Button className="bg-blue-400 p-5 text-white w-[30%] hover:opacity-60" onClick={() => handlePage("/pages/automatic_medition")}>
-                      Medir Aranhões
+                      {t('dashboard:newMeasurements.measureScratches')}
                     </Button>
                   </HoverCardTrigger>
                   <HoverCardContent>
                     <div className="flex items-start space-x-4 flex-col gap-3">
-                      <h3 className="font-bold ">Medir Aranhões</h3>
-                      Esta função abre um modal onde será necessário escolher o Stencil a ser medido e iniciará o processo de conexão com o robô e demais processos e equipamentos.
+                      <h3 className="font-bold ">{t('dashboard:newMeasurements.scratches.title')}</h3>
+                      {t('dashboard:newMeasurements.scratches.description')}
                     </div>
                   </HoverCardContent>
                 </HoverCard>
@@ -614,7 +615,7 @@ export default function Home() {
                         className="bg-orange-400  text-white w-[25%] hover:opacity-60 p-1.5 rounded"
                       >
                         {({ blob, url, loading, error }) =>
-                          loading ? 'Gerando Relatório...' : 'Gerar relatório'
+                          loading ? t('dashboard.newMeasurements.generatingReport') : t('dashboard.newMeasurements.generateReport')
                         }
                       </PDFDownloadLink>
                       
@@ -622,8 +623,8 @@ export default function Home() {
 
                     <HoverCardContent>
                       <div className="flex items-start space-x-4 flex-col gap-3">
-                        <h3 className="font-bold ">Geração de relatório de conformidade</h3>
-                        Esta função gera um relatório referente a conformidade do stencil pesquisado e demais medidas realizadas.
+                        <h3 className="font-bold ">{t('dashboard:newMeasurements.report.title')}</h3>
+                        {t('dashboard:newMeasurements.report.description')}
                       </div>
                     </HoverCardContent>
                     

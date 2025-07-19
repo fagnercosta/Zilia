@@ -1,0 +1,57 @@
+{
+  "app": {
+    "title": "Stencil Vision",
+    "loading": "Loading...",
+    "loadingCycles": "Loading cycles...",
+    "error": "Error",
+    "success": "Success",
+    "search": "Search",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "undo": "UNDO",
+    "register": "Register",
+    "saveParameters": "Save Parameters",
+    "units": {
+      "tension": "N/cm²"
+    }
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "tensionMeasurements": "Tension Measurements",
+    "scratchMeasurements": "Scratch Measurements",
+    "manualMode": "Manual Mode",
+    "tensionMeasurement": "Tension Measurement",
+    "users": "Users",
+    "configurations": "Settings",
+    "logout": "Logout"
+  },
+  "pagination": {
+    "rowsPerPage": "Rows per page",
+    "of": "of",
+    "records": "records",
+    "noRecords": "0-0 of 0"
+  },
+  "messages": {
+    "noData": "No data available",
+    "notFound": "Not found",
+    "networkError": "Network error. There was a problem communicating with the server.",
+    "apiError": "Network error. There was a problem communicating with the API.",
+    "generalError": "An error occurred while fetching data. Please try again.",
+    "operationSuccess": "Operation completed successfully",
+    "operationError": "Error performing operation"
+  },
+  "validation": {
+    "required": "This field is required",
+    "minLength": "Must contain at least {{min}} characters",
+    "invalidEmail": "Invalid email address"
+  },
+  "actions": {
+    "actions": "Actions",
+    "advance": "Advance"
+  }
+}

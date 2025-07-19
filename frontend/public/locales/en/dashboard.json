@@ -1,0 +1,74 @@
+{
+  "search": {
+    "title": "Stencil Search",
+    "subtitle": "Search to check measurements",
+    "description": "Search to check measurements",
+    "placeholder": "Enter the identifier...",
+    "button": "Search",
+    "barcode": {
+      "title": "Barcode",
+      "description": "This function allows reading a barcode from a Stencil and transcribes it to the search field.",
+      "waiting": "Waiting for sensor to recognize a code...",
+      "found": "Code found!"
+    }
+  },
+  "cycles": {
+    "title": "Cycles",
+    "description": "Information about measurement cycles"
+  },
+  "status": {
+    "title": "Status",
+    "description": "Shows the Stencil status"
+  },
+  "lastMeasurement": {
+    "title": "Last measurement",
+    "description": "Shows the date of the last measurement"
+  },
+  "lastPoints": {
+    "title": "Last measured points",
+    "description": "Shows the tension value of points in the last measurement"
+  },
+  "lifeLimit": {
+    "title": "Estimated life limit",
+    "description": "Shows the estimated life limit of the Stencil"
+  },
+  "newMeasurements": {
+    "title": "New measurements",
+    "subtitle": "Choose the type of measurement you want to perform.",
+    "description": "Choose the type of measurement you want to perform",
+    "automaticTension": "Automatic Tension",
+    "measureScratches": "Measure Scratches",
+    "tension": {
+      "title": "Measure Tension",
+      "description": "This function will take you to a specific tab to perform automatic measurements, obtained by robot execution."
+    },
+    "scratches": {
+      "title": "Measure Scratches",
+      "description": "This function opens a modal where you need to choose the Stencil to be measured and will start the connection process with the robot and other processes and equipment."
+    },
+    "generateReport": "Generate report",
+    "generatingReport": "Generating Report...",
+    "report": {
+      "title": "Compliance report generation",
+      "description": "This function generates a report regarding the compliance of the searched stencil and other measurements performed."
+    }
+  },
+  "messages": {
+    "stencilNotFound": "Stencil not found",
+    "stencilNotFoundOrNoMeasurements": "Stencil not found. Or the Stencil has no scratch measurements",
+    "noScratchMeasurements": "Stencil without scratch measurements",
+    "stencilWithoutScratchMeasurement": "Stencil without scratch measurements",
+    "provideStencil": "Please provide a stencil",
+    "valuesFound": "Values found!",
+    "noValuesFound": "No values found for the Stencil",
+    "waitingSensor": "Waiting for sensor to recognize a code...",
+    "codeFound": "Code found!",
+    "networkError": "Network error. There was a problem communicating with the server.",
+    "stencilWithoutTensionMeasurements": "Stencil {{partNumber}} has no tension measurements",
+    "stencilFoundButNoScratchMeasurements": "Stencil {{partNumber}} was found, but has no scratch measurements",
+    "errorFetchingData": "An error occurred while fetching data. Please try again."
+  },
+  "alerts": {
+    "error": "Error"
+  }
+}

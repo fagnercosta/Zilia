@@ -1,0 +1,53 @@
+{
+  "modal": {
+    "title": "Settings",
+    "subtitle": "Settings tab",
+    "description": "To access this tab, you must have authorization and password to proceed.",
+    "password": "Password",
+    "advance": "Advance",
+    "correctPassword": "Correct password!",
+    "incorrectPassword": "Incorrect password!"
+  },
+  "settings": {
+    "title": "Settings",
+    "apiError": "Error, API problem.",
+    "processingSynchronization": "Processing synchronization!",
+    "syncError500": "Error during synchronization. Error 500",
+    "syncSuccess": "Synchronization completed successfully.",
+    "syncError": "Synchronization error. Try again.",
+    "preventiveMaintenanceAlert": "Preventive maintenance alert:",
+    "wipTrackConnectionTest": "WipTrack connection test:",
+    "startTest": "Start Test",
+    "automaticSyncActivation": "Activate automatic synchronization:",
+    "startSync": "Start Synchronization",
+    "machineLamps": "Machine lamps:",
+    "tensionLimit": "Tension limit:",
+    "min": "Min:",
+    "max": "Max:",
+    "scratchLimit": "Scratch limit:",
+    "saveParameters": "Save Parameters",
+    "parametersSavedSuccess": "Parameters Saved Successfully!"
+  },
+  "users": {
+    "title": "Register New User",
+    "editUser": "Edit User",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "E-mail",
+    "password": "Password",
+    "activeUser": "Active User",
+    "administrator": "Administrator",
+    "actions": "Actions",
+    "edit": "Edit",
+    "register": "Register",
+    "cancel": "CANCEL",
+    "registrationTitle": "User Registration",
+    "successMessage": "Registration completed successfully!",
+    "errorMessage": "Error performing operation.",
+    "validation": {
+      "invalidEmail": "Invalid email",
+      "minChars": "Minimum {{min}} characters",
+      "passwordMinChars": "Password must have at least {{min}} characters"
+    }
+  }
+}

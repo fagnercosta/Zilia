@@ -1,0 +1,57 @@
+{
+  "app": {
+    "title": "Stencil Vision",
+    "loading": "Carregando...",
+    "loadingCycles": "Carregando ciclos...",
+    "error": "Erro",
+    "success": "Sucesso",
+    "search": "Pesquisar",
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "edit": "Editar",
+    "delete": "Excluir",
+    "close": "Fechar",
+    "back": "Voltar",
+    "next": "Próximo",
+    "undo": "UNDO",
+    "register": "Cadastrar",
+    "saveParameters": "Salvar Parametros",
+    "units": {
+      "tension": "N/cm²"
+    }
+  },
+  "navigation": {
+    "dashboard": "Painel de controle",
+    "tensionMeasurements": "Medições de Tensão",
+    "scratchMeasurements": "Medições de Arranhões",
+    "manualMode": "Modo manual",
+    "tensionMeasurement": "Medição de tensão",
+    "users": "Usuários",
+    "configurations": "Configurações",
+    "logout": "Sair"
+  },
+  "pagination": {
+    "rowsPerPage": "Linhas por página",
+    "of": "de",
+    "records": "registros",
+    "noRecords": "0-0 de 0"
+  },
+  "messages": {
+    "noData": "Não há dados disponíveis",
+    "notFound": "Não encontrado",
+    "networkError": "Erro de rede. Houve um problema de comunicação com o servidor.",
+    "apiError": "Erro de rede. Houve um problema de comunicação com Api.",
+    "generalError": "Ocorreu um erro ao buscar os dados. Por favor, tente novamente.",
+    "operationSuccess": "Operação realizada com sucesso",
+    "operationError": "Erro ao realizar a operação"
+  },
+  "validation": {
+    "required": "Este campo é obrigatório",
+    "minLength": "Deve conter ao menos {{min}} caracteres",
+    "invalidEmail": "Email inválido"
+  },
+  "actions": {
+    "actions": "Ações",
+    "advance": "Avançar"
+  }
+}

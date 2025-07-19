@@ -26,8 +26,10 @@ import { Toast } from "@/components/ui/toast";
 import Snackbar, { SnackbarCloseReason } from '@mui/material/Snackbar';
 import { Alert, AlertColor } from "@mui/material";
 import { CircleX } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export default function Login() {
+    const { t } = useTranslation(['auth', 'common']);
     const [openSnackBar, setOpenSnackBar] = useState(false);
     const [messageSnack, setMessageSnack] = useState("");
     const [alert, setAlert] = useState<AlertColor>("success");
@@ -37,10 +39,10 @@ export default function Login() {
 
     const formSchema = z.object({
         username: z.string().min(2, {
-            message: "Nome de usuário deve conter ao menos 2 caracteres.",
+            message: t('auth:login.validation.usernameMin'),
         }),
         password: z.string().min(2, {
-            message: "A senha deve conter ao menos 2 caracteres."
+            message: t('auth:login.validation.passwordMin')
         }),
     });
 
@@ -69,7 +71,7 @@ export default function Login() {
     const action = (
         <React.Fragment>
             <Button color="secondary" size="sm" onClick={handleClose}>
-                UNDO
+                {t('common:app.undo')}
             </Button>
             <IconButton
                 size="small"
@@ -108,13 +110,13 @@ export default function Login() {
                     
                 }
             } else if (response.status === 401 || response.status === 400) {
-                setMessageSnack("Usuário ou senha inválidos");
+                setMessageSnack(t('auth:login.errors.invalidCredentials'));
                 setOpenSnackBar(true);
                 setAlert("error");
             }
         } catch (error: any) {
             if (error.message.includes('Failed to fetch')) {
-                setMessageSnack("Não foi possível conectar ao servidor. Verifique sua conexão ou tente novamente mais tarde.");
+                setMessageSnack(t('auth:login.errors.connectionError'));
                 setOpenSnackBar(true);
                 setAlert("info");
             }
@@ -132,7 +134,7 @@ export default function Login() {
                                 alt="Logo"
                                 className="object-contain"
                             />
-                            <CardTitle className="text-4xl font-bold">Stencil Vision</CardTitle>
+                            <CardTitle className="text-4xl font-bold">{t('common:app.title')}</CardTitle>
                         </div>
                     </CardHeader>
 
@@ -144,9 +146,9 @@ export default function Login() {
                                     name="username"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="h-12 text-lg">Email</FormLabel>
+                                            <FormLabel className="h-12 text-lg">{t('auth:login.email')}</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Digite seu email" className="h-12 text-lg" {...field} />
+                                                <Input placeholder={t('auth:login.emailPlaceholder')} className="h-12 text-lg" {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -157,15 +159,15 @@ export default function Login() {
                                     name="password"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="h-12 text-lg">Senha</FormLabel>
+                                            <FormLabel className="h-12 text-lg">{t('auth:login.password')}</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Digite sua senha" type="password" className="h-12 text-lg" {...field} />
+                                                <Input placeholder={t('auth:login.passwordPlaceholder')} type="password" className="h-12 text-lg" {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
                                     )}
                                 />
-                                <Button type="submit" className="w-full bg-blue-500 text-sm p-5 font-bold">ENTRAR</Button>
+                                <Button type="submit" className="w-full bg-blue-500 text-sm p-5 font-bold">{t('auth:login.loginButton')}</Button>
                             </form>
                         </Form>
                     </CardContent>

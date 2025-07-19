@@ -16,13 +16,14 @@ import { SnackControl } from "@/types/utils"
 import { Settings } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { Dispatch, SetStateAction, useState } from "react"
+import { useTranslation } from "react-i18next"
 
 interface Props {
     setSnackControl: Dispatch<SetStateAction<SnackControl>>
 }
 
 export function ModalOpenConfigurations({ setSnackControl }: Props) {
-
+    const { t } = useTranslation('configuration');
     const [password, setPassword] = useState("")
     const router = useRouter()
 
@@ -30,14 +31,14 @@ export function ModalOpenConfigurations({ setSnackControl }: Props) {
         if (password === "admin") {
             setSnackControl({
                 alert: "success",
-                message: "Senha correta!",
+                message: t('modal.correctPassword'),
                 openSnackBar: true
             })
             router.push("/pages/configurations")
         } else {
             setSnackControl({
                 alert: "error",
-                message: "Senha incorreta!",
+                message: t('modal.incorrectPassword'),
                 openSnackBar: true
             })
         }
@@ -46,15 +47,15 @@ export function ModalOpenConfigurations({ setSnackControl }: Props) {
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <span className="">Configurações</span>
+                <span className="">{t('modal.title')}</span>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[500px]" >
                 <DialogHeader >
                     <DialogTitle className="text-[28px]">
-                        Aba de configurações
+                        {t('modal.subtitle')}
                     </DialogTitle>
                     <DialogDescription className="text-[18px]">
-                        Para acessar esta aba, é necessário que esteja em posse de autorização e senha para prosseguir.
+                        {t('modal.description')}
                     </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
@@ -70,7 +71,7 @@ export function ModalOpenConfigurations({ setSnackControl }: Props) {
                     </div> */}
                     <div className="grid grid-cols-4 items-center gap-4">
                         <Label htmlFor="password" className="text-center text-[18px]">
-                            Senha
+                            {t('modal.password')}
                         </Label>
                         <Input
                             id="username"
@@ -82,7 +83,7 @@ export function ModalOpenConfigurations({ setSnackControl }: Props) {
                     </div>
                 </div>
                 <DialogFooter>
-                    <Button type="submit" className="bg-blue-400" onClick={loginMethod}>Avançar</Button>
+                    <Button type="submit" className="bg-blue-400" onClick={loginMethod}>{t('modal.advance')}</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>

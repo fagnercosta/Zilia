@@ -1,0 +1,15 @@
+{
+  "title": "Users",
+  "registerNewUser": "Register New User",
+  "editUser": "Edit User",
+  "firstName": "First Name",
+  "email": "E-mail",
+  "actions": "Actions",
+  "edit": "Edit",
+  "register": "Register",
+  "loading": "Loading...",
+  "validation": {
+    "invalidEmail": "Invalid email",
+    "minLength": "Minimum {{min}} characters"
+  }
+}

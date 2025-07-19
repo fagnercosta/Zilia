@@ -9,6 +9,9 @@ import { metadata } from "../types/metadata";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { AuthProvider } from "@/contexts/auth/AuthContext";
+import { I18nextProvider } from 'react-i18next';
+import i18n from '@/lib/i18n';
+import I18nLoader from '@/components/I18nLoader';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -55,12 +58,16 @@ export default function RootLayout({
           inter.className
         )}
       >
-        <AuthProvider>
-          <ToastProvider>
-            {children}
-            <Toast />
-          </ToastProvider>
-        </AuthProvider>
+        <I18nextProvider i18n={i18n}>
+          <I18nLoader>
+            <AuthProvider>
+              <ToastProvider>
+                {children}
+                <Toast />
+              </ToastProvider>
+            </AuthProvider>
+          </I18nLoader>
+        </I18nextProvider>
       </body>
     </html>
   );

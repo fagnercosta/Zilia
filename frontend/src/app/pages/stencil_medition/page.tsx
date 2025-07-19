@@ -10,6 +10,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import React, { ChangeEvent, FormEvent, useEffect, useState, useCallback } from "react";
 import cookie from "cookie";
+import { useTranslation } from 'react-i18next';
 
 interface FormData {
     p1: number | null;
@@ -24,6 +25,7 @@ interface FormData {
 }
 
 export default function StencilMedition() {
+    const { t } = useTranslation(['stencil', 'common']);
     const [stencilList, setStencilList] = useState<Stencil[]>([]);
     const [stencilSelected, setStencilSelected] = useState<Stencil | null>(null);
     const [openSnackBar, setOpenSnackBar] = useState(false);
@@ -50,12 +52,12 @@ export default function StencilMedition() {
                 if (response?.data?.results?.length > 0) {
                     setStencilList(response.data.results);
                 } else {
-                    setMessage('Não há stencils cadastrados.');
+                    setMessage(t('stencil:manual.noStencils'));
                     setAlert("warning");
                     setOpenSnackBar(true);
                 }
             } catch (error: any) {
-                setMessage('Erro ao buscar os stencils.');
+                setMessage(t('stencil:manual.errorLoading'));
                 setAlert("error");
                 setOpenSnackBar(true);
             }
@@ -97,12 +99,12 @@ export default function StencilMedition() {
         event.preventDefault();
         try {
             await axios.post(`${BASE_URL}api/stencilTensionValues/`, formData);
-            setMessage("Cadastro realizado com sucesso");
+            setMessage(t('stencil:manual.success'));
             setAlert("success");
             setOpenSnackBar(true);
             navigate.push("/pages/list_stencil_medition");
         } catch (error) {
-            setMessage("Erro ao realizar a operação.");
+            setMessage(t('stencil:manual.error'));
             setAlert("error");
             setOpenSnackBar(true);
         }
@@ -114,7 +116,7 @@ export default function StencilMedition() {
             <div className="w-full min-h-screen mt-10 flex flex-col items-start justify-start relative">
                 <Card className="w-[90%] bg-slate-50">
                     <CardHeader>
-                        <CardTitle className="text-2xl font-bold">Medição manual dos valores de tensão</CardTitle>
+                        <CardTitle className="text-2xl font-bold">{t('stencil:manual.title')}</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <form onSubmit={handleSubmit}>
@@ -147,7 +149,7 @@ export default function StencilMedition() {
                                         value={stencilSelected}
                                         onChange={handleChangeAutocomplete}
                                         renderInput={(params) => (
-                                            <TextField {...params} label="Stencils" size="small" required />
+                                            <TextField {...params} label={t('stencil:manual.stencils')} size="small" required />
                                         )}
                                     />
                                 </Grid>
@@ -155,7 +157,7 @@ export default function StencilMedition() {
                                     <TextField
                                         fullWidth
                                         type="number"
-                                        label="Ciclos"
+                                        label={t('stencil:manual.cycles')}
                                         name="cicles"
                                         size="small"
                                         required
@@ -167,7 +169,7 @@ export default function StencilMedition() {
                                     <TextField
                                         fullWidth
                                         type="datetime-local"
-                                        label="Data da medição"
+                                        label={t('stencil:manual.measurementDate')}
                                         name="measurement_datetime"
                                         size="small"
                                         required
@@ -178,7 +180,7 @@ export default function StencilMedition() {
                                 </Grid>
                                 <Grid item xs={12}>
                                     <Button type="submit" disabled={!stencilList.length} variant="contained" color="primary">
-                                        Cadastrar
+                                        {t('stencil:manual.register')}
                                     </Button>
                                 </Grid>
                             </Grid>

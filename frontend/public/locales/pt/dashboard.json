@@ -1,0 +1,74 @@
+{
+  "search": {
+    "title": "Pesquisa de Stencil",
+    "subtitle": "Pesquise para verificar as medições",
+    "description": "Pesquise para verificar as medições",
+    "placeholder": "Digite o identificador...",
+    "button": "Pesquisar",
+    "barcode": {
+      "title": "Código de barras",
+      "description": "Esta função permite ler um código de barras de um Stencil e transcreve para o campo de pesquisa.",
+      "waiting": "Esperando o sensor reconhecer um código...",
+      "found": "Código encontrado!"
+    }
+  },
+  "cycles": {
+    "title": "Ciclos",
+    "description": "Informações sobre os ciclos das medidas"
+  },
+  "status": {
+    "title": "Status",
+    "description": "Mostra o status do Stencil"
+  },
+  "lastMeasurement": {
+    "title": "Ultima medição",
+    "description": "Mostra a data referente a última medição"
+  },
+  "lastPoints": {
+    "title": "Ultimos pontos medidos",
+    "description": "Mostra o valor de tensão dos pontos na ultima medição"
+  },
+  "lifeLimit": {
+    "title": "Limite de vida estimado",
+    "description": "Mostra o limite de vida estimado do Stencil"
+  },
+  "newMeasurements": {
+    "title": "Novas medições",
+    "subtitle": "Escolha o tipo de medição que deseja relizar.",
+    "description": "Escolha o tipo de medição que deseja realizar",
+    "automaticTension": "Tensão Automática",
+    "measureScratches": "Medir Arranhões",
+    "tension": {
+      "title": "Medir Tensão",
+      "description": "Esta função levará para uma aba específica para realizar medidas automáticas, obtidas pela execução do robô."
+    },
+    "scratches": {
+      "title": "Medir Aranhões",
+      "description": "Esta função abre um modal onde será necessário escolher o Stencil a ser medido e iniciará o processo de conexão com o robô e demais processos e equipamentos."
+    },
+    "generateReport": "Gerar relatório",
+    "generatingReport": "Gerando Relatório...",
+    "report": {
+      "title": "Geração de relatório de conformidade",
+      "description": "Esta função gera um relatório referente a conformidade do stencil pesquisado e demais medidas realizadas."
+    }
+  },
+  "messages": {
+    "stencilNotFound": "Stencil não encontrado",
+    "stencilNotFoundOrNoMeasurements": "Stencil não encontrado. Ou o Stencil está sem medições de arranhões",
+    "noScratchMeasurements": "Stencil sem medição de arranhões",
+    "stencilWithoutScratchMeasurement": "Stencil sem medição de arranhões",
+    "provideStencil": "Forneça um stencil",
+    "valuesFound": "Valores encontrados!",
+    "noValuesFound": "Não foram encontrados valores para o Stencil",
+    "waitingSensor": "Esperando o sensor reconhecer um código...",
+    "codeFound": "Código encontrado!",
+    "networkError": "Erro de rede. Houve um problema de comunicação com o servidor.",
+    "stencilWithoutTensionMeasurements": "Stencil {{partNumber}} está sem medições de tensão",
+    "stencilFoundButNoScratchMeasurements": "Stencil {{partNumber}} foi encontrado, mas está sem medições de arranhões",
+    "errorFetchingData": "Ocorreu um erro ao buscar os dados. Por favor, tente novamente."
+  },
+  "alerts": {
+    "error": "Error"
+  }
+}

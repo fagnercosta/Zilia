@@ -1,0 +1,53 @@
+{
+  "selectStencil": "Select stencil",
+  "manual": {
+    "title": "Manual tension value measurement",
+    "stencils": "Stencils",
+    "cycles": "Cycles",
+    "measurementDate": "Measurement date",
+    "register": "Register",
+    "noStencils": "No registered stencils.",
+    "errorLoading": "Error loading stencils.",
+    "success": "Registration completed successfully",
+    "error": "Error performing operation."
+  },
+  "tensionList": {
+    "title": "Measurement history",
+    "searchButton": "Search Stencil Measurements",
+    "manualMeasurement": "Perform Manual Measurement",
+    "automaticMeasurement": "Perform Automatic Measurement",
+    "columns": {
+      "p1": "P1",
+      "p2": "P2",
+      "p3": "P3",
+      "p4": "P4",
+      "cycles": "Cycles",
+      "date": "Measurement Date"
+    },
+    "messages": {
+      "found": "Measurements found!",
+      "notFound": "No measurements found for this Stencil!",
+      "error": "Error processing request..."
+    }
+  },
+  "scratchList": {
+    "title": "Measurement history",
+    "searchButton": "Search Stencil Measurements",
+    "automaticMeasurement": "Perform Automatic Measurement",
+    "columns": {
+      "scratchCount": "Number of Scratches",
+      "date": "Measurement Date"
+    },
+    "messages": {
+      "found": "Measurements found!",
+      "notFound": "No measurements found for this Stencil!",
+      "error": "Error processing request..."
+    }
+  },
+  "terms": {
+    "stencil": "Stencil",
+    "tension": "Tension",
+    "scratches": "Scratches",
+    "cycles": "Cycles"
+  }
+}

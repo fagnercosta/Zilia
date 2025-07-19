@@ -1,0 +1,53 @@
+{
+  "modal": {
+    "title": "Configurações",
+    "subtitle": "Aba de configurações",
+    "description": "Para acessar esta aba, é necessário que esteja em posse de autorização e senha para prosseguir.",
+    "password": "Senha",
+    "advance": "Avançar",
+    "correctPassword": "Senha correta!",
+    "incorrectPassword": "Senha incorreta!"
+  },
+  "settings": {
+    "title": "Configurações",
+    "apiError": "Erro, problema com a api.",
+    "processingSynchronization": "Processando a sincronização!",
+    "syncError500": "Erro durante a sincronização. Erro 500",
+    "syncSuccess": "Sincronização realizada com sucesso.",
+    "syncError": "Erro ao sincronizar. Tente novamente.",
+    "preventiveMaintenanceAlert": "Alerta de manuntenção preventiva:",
+    "wipTrackConnectionTest": "Teste de conexão com o WipTrack:",
+    "startTest": "Iniciar Teste",
+    "automaticSyncActivation": "Ativar a sincronização automática:",
+    "startSync": "Iniciar Sincronização",
+    "machineLamps": "Lâmpadas da máquina:",
+    "tensionLimit": "Limite de tensão:",
+    "min": "Min:",
+    "max": "Máx:",
+    "scratchLimit": "Limite de arranhões:",
+    "saveParameters": "Salvar Parametros",
+    "parametersSavedSuccess": "Parametros Salvos Com Sucesso!"
+  },
+  "users": {
+    "title": "Cadastrar Novo Usuário",
+    "editUser": "Editar Usuário",
+    "firstName": "Primeiro Nome",
+    "lastName": "Último Nome",
+    "email": "E-mail",
+    "password": "Senha",
+    "activeUser": "Usuário Ativo",
+    "administrator": "Administrador",
+    "actions": "Ações",
+    "edit": "Editar",
+    "register": "Cadastrar",
+    "cancel": "CANCELAR",
+    "registrationTitle": "Cadastro de Usuários",
+    "successMessage": "Cadastro realizado com sucesso!",
+    "errorMessage": "Erro ao realizar a operação.",
+    "validation": {
+      "invalidEmail": "E-mail inválido",
+      "minChars": "Mínimo {{min}} caracteres",
+      "passwordMinChars": "A senha deve ter pelo menos {{min}} caracteres"
+    }
+  }
+}

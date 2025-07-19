@@ -22,6 +22,7 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover"
 import { Stencil } from "@/types/models"
+import { useTranslation } from 'react-i18next'
 
 type Status = {
     value: string
@@ -59,6 +60,7 @@ interface Props {
 }
 
 export function SelectHistory({ stencils, setSelectedStencil, selectedStencil }: Props) {
+    const { t } = useTranslation('stencil');
     const [open, setOpen] = React.useState(false)
     //   const isDesktop = useMediaQuery("(min-width: 768px)")
     
@@ -67,14 +69,14 @@ export function SelectHistory({ stencils, setSelectedStencil, selectedStencil }:
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
                 <Button variant="outline" className="w-[30%] justify-start h-[50px]">
-                    {selectedStencil ? <>{selectedStencil.stencil_part_nbr}</> : <>Selecione o stencil</>}
+                    {selectedStencil ? <>{selectedStencil.stencil_part_nbr}</> : <>{t('selectStencil')}</>}
                 </Button>
             </PopoverTrigger>
             <PopoverContent className="w-[300px] p-0" align="start">
                 <Command>
-                    <CommandInput placeholder="Pesquise por identificadores..." />
+                    <CommandInput placeholder={t('common:app.search') + '...'} />
                     <CommandList>
-                        <CommandEmpty>Não existem stencils no sistema.</CommandEmpty>
+                        <CommandEmpty>{t('manual.noStencils')}</CommandEmpty>
                         <CommandGroup>
                             {stencils.map((status) => (
                                 <CommandItem

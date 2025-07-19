@@ -16,6 +16,7 @@ import InovaBottomImage from "@/components/InovaBottomImage";
 import Stopwatch from "@/components/StopWatch";
 import { SelectHistory } from "@/components/Select/SelectHistory";
 import AlertItem from "@/components/AlertItem";
+import { useTranslation } from 'react-i18next';
 
 interface RequestRobot {
     id: number
@@ -28,13 +29,14 @@ interface RequestRobot {
 }
 
 export default function AutomaticMedition() {
+    const { t } = useTranslation(['automatic', 'common']);
 
 
 
     const [alert, setAlert] = useState<AlertColor>("success");
     const [title, setTitle] = useState<string>("Success");
     const [viewAltert, setViewAltert] = useState(false);
-    const [titlePage, setTitlePage] = useState("Medição Automática de Arranhão")
+    const [titlePage, setTitlePage] = useState(t('automatic:scratch.title'))
 
     const router = useRouter()
     const [stencils, setStencils] = useState<Stencil[]>([])
@@ -43,7 +45,7 @@ export default function AutomaticMedition() {
     const [loadingRobot, setLoadingRobot] = useState(false)
     const [time, setTime] = useState(18000)
 
-    const [message, setMessage] = useState("Erro na comunicação com o robo")
+    const [message, setMessage] = useState(t('automatic:scratch.error'))
     const [erroRobot, setErroRobot] = useState(false)
 
     const [selectedStencil, setSelectedStencil] = useState<Stencil | null>(
@@ -68,19 +70,19 @@ export default function AutomaticMedition() {
 
 
     const takephotorequest = async () => {
-        setTitlePage("Medição Automática de Arranhão")
+        setTitlePage(t('automatic:scratch.title'))
         setResposta(undefined)
         setViewAltert(false)
         setErroRobot(false)
         setLoadingRobot(true)
         console.log(stencilSelected)
         try {
-            const response = await axios.post(`http://127.0.0.1:8000/api/takephoto/${selectedStencil?.stencil_id}/`)
+            const response = await axios.post(`${BASE_URL}api/takephoto/${selectedStencil?.stencil_id}/`)
             if (response) {
                 setLoadingRobot(false)
                 console.log(response.data)
                 setResposta(response.data)
-                setTitlePage("Medição  de Arranhão finalizada!")
+                setTitlePage(t('automatic:scratch.completed'))
 
 
                 // setStencils(response.data)
@@ -142,7 +144,7 @@ export default function AutomaticMedition() {
                             <CardTitle className="text-2xl font-bold  " style={style}>{titlePage}</CardTitle>
                             {resposta ?
                                 <Link href={"/"} className="h-[40px]  bg-green-400  gap-2 rounded-[6px] px-20 text-white m font-bold hover:opacity-60 flex items-center" style={{ marginLeft: '20px' }}>
-                                    OK
+                                    {t('automatic:scratch.ok')}
 
                                 </Link> : <></>
                             }
@@ -170,7 +172,7 @@ export default function AutomaticMedition() {
                                 onClick={takephotorequest}
                                 disabled={loadingRobot}
                             >
-                                Iniciar Medição
+                                {t('automatic:scratch.start')}
                             </Button>
 
                         </header>
@@ -180,7 +182,7 @@ export default function AutomaticMedition() {
                                 ?
                                 <div className="flex w-full items-start justify-center">
                                     <div className="flex w-full items-center justify-between">
-                                        <span className="text-2xl font-bold text-blue-300" >Processando medição de aranhões. Tempo  estimado...</span>
+                                        <span className="text-2xl font-bold text-blue-300" >{t('automatic:scratch.processing')}</span>
 
                                         <div className="
                                             flex 
@@ -209,7 +211,7 @@ export default function AutomaticMedition() {
                                 resposta ?
 
                                     <div className="w-full flex relative">
-                                        <img src={`http://localhost:8000/${resposta.image_path}`} alt="imagem" className="w-full object-cover" />
+                                        <img src={`${BASE_URL}${resposta.image_path}`} alt="imagem" className="w-full object-cover" />
                                         <label className="absolute top-0 left-0 p-2 text-green-500 text-4xl font-bold">
                                             {resposta.scratch_count}
                                         </label>
@@ -222,7 +224,7 @@ export default function AutomaticMedition() {
                         {
                             erroRobot ?
                                 <div>
-                                    <span className="text-1xl font-bold text-red-400" >Erro na comunicação com o CLP. Verifique se o mesmo está em funcionamento</span>
+                                    <span className="text-1xl font-bold text-red-400" >{t('automatic:scratch.clpError')}</span>
                                 </div>
                                 : <></>
                         }
