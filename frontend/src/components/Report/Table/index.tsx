@@ -3,11 +3,15 @@ import { View, StyleSheet, Text } from "@react-pdf/renderer";
 import { StencilTensionValues } from '@/types/models';
 import { formatDateTime } from '@/functions/functions';
 
+import { useTranslation } from 'react-i18next';
+
 interface Props {
     tensionValues: StencilTensionValues[] | undefined;
 }
 
 const Table: React.FC<Props> = ({ tensionValues }) => {
+
+    const { t } = useTranslation(['reports']);
 
     const styles = StyleSheet.create({
         container: {
@@ -66,7 +70,7 @@ const Table: React.FC<Props> = ({ tensionValues }) => {
         },
     });
 
-    const arrayTitles: string[] = ["Date", "Status", "P1", "P2", "P3", "P4", "Cicles"];
+    const arrayTitles: string[] = [t('reports:report.a-date'), t('reports:report.situacao'), "P1", "P2", "P3", "P4", t('reports:report.t-ciclos')];
 
     return (
         <View style={styles.container}>

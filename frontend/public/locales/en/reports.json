@@ -4,5 +4,23 @@
   "compliance": "Compliance Report",
   "export": "Export",
   "download": "Download PDF",
-  "identificacao":"Identification"
+  "identificacao":"Identification",
+  "situacao":"Status",
+  "fabricacao":"Manufacturing Date",
+  "espessura":"Thickness",
+  "destino":"Destination",
+  "localizacao":"Location",
+  "ultima_medicao":"Last Measurement",
+  "ultima_medida_arranha":"Last Scratch Measurement",
+  "responsavel":"Measurement Responsible",
+  "title_medidas_tensao":"Voltage Readings",
+  "title_medidas_arranhoes":"Scratch Measurements",
+  "title_not-found-arranhoes":"There are no scratch measurements for this Stencil",
+  "t-date":"Date",
+    "t-hora":"Hour",
+    "t-ciclos":"Cicles",
+    "a-date":"Date",
+    "a-hora":"Hour",
+    "a-arranhoes":"Scratches"
+
 }}

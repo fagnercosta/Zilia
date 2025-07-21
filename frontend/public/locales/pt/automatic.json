@@ -28,6 +28,8 @@
     "register": "Cadastrar",
     "savingData": "Salvando dados....",
     "startDataCollection": "Iniciar coleta de dados",
+    "restartDataCollection":"Refazer Coleta",
+    "botao_cancelar":"Cancelar",
     "collectedImages": "Imagens coletadas",
     "point1": "Ponto 01",
     "point2": "Ponto 2",

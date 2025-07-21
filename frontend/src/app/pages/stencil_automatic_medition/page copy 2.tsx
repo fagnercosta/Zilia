@@ -11,9 +11,6 @@ import { Form } from "@/components/ui/form";
 import { BASE_URL } from "@/types/api";
 import { Stencil } from "@/types/models";
 import { ConfigurationsModel } from "@/types/utils";
-
-
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
     Alert,
@@ -51,7 +48,6 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useTranslation } from 'react-i18next';
 
-
 interface FormData {
     p1: number | string | null;
     p2: number | string | null;
@@ -88,7 +84,6 @@ interface RequestRaspy {
 
 export default function StencilAutomaticMedition() {
     const { t } = useTranslation(['automatic', 'common']);
-  
     // Estados principais
     const [stencilList, setStencilList] = useState<Stencil[] | undefined>([]);
     const [stencilSelected, setStencilSelected] = useState(0);
@@ -119,8 +114,6 @@ export default function StencilAutomaticMedition() {
         scratchesValue: 0
     });
 
-    const [titleButtonColeta,setTitleButtonColeta ] =useState(t('automatic:tension.startDataCollection'))
-
     // Estados para o diálogo de confirmação
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
     const [formDataToSubmit, setFormDataToSubmit] = useState<FormData | null>(null);
@@ -149,10 +142,6 @@ export default function StencilAutomaticMedition() {
         console.log("Estado do diálogo alterado:", openConfirmDialog);
         console.log("Dados para submissão:", formDataToSubmit);
     }, [openConfirmDialog, formDataToSubmit]);
-
-    function cancelar(){
-        navigate.push("/");
-    }
 
     // Funções de validação
     const checkApprovalStatus = (p1: number | string | null, p2: number | string | null, p3: number | string | null, p4: number | string | null) => {
@@ -245,8 +234,6 @@ export default function StencilAutomaticMedition() {
                     newFormData.p3,
                     newFormData.p4
                 );
-
-                console.log("Aprovado...",shouldApprove)
                 
                 setFormData({
                     ...newFormData,
@@ -769,22 +756,13 @@ export default function StencilAutomaticMedition() {
                                         </div>
                                     )}
                                     {!loadingRobot && (
-                                        <div >
-
-                                            <Button
-                                                variant="contained"
-                                                onClick={() => cancelar()}
-                                                style={{ backgroundColor: 'rgb(96 165 250)', color: 'white', marginRight:'10px' }}
-                                            >
-                                                {t('automatic:tension.botao_cancelar')}
-                                            </Button>
-
+                                        <div>
                                             <Button
                                                 variant="contained"
                                                 onClick={() => takePhotoRaspRequest(stencilSelected)}
                                                 style={{ backgroundColor: 'rgb(96 165 250)', color: 'white' }}
                                             >
-                                                {!resposta ? t('automatic:tension.startDataCollection'):t('automatic:tension.restartDataCollection')}
+                                                {t('automatic:tension.startDataCollection')}
                                             </Button>
                                         </div>
                                     )}
@@ -793,8 +771,6 @@ export default function StencilAutomaticMedition() {
                         </form>
                     </CardContent>
                 </Card>
-
-                
 
                 {resposta && (
                     <Card className="mt-4 p rounded-none w-[100%] bg-slate-50" style={{ minHeight: '300px' }}>

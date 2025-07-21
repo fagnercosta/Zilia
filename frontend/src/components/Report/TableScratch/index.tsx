@@ -3,11 +3,15 @@ import { View, StyleSheet, Text } from "@react-pdf/renderer";
 import { StencilRobotMedition, StencilTensionValues } from '@/types/models';
 import { formatDateTime, formatDateTimeToHour } from '@/functions/functions';
 
+import { te } from 'date-fns/locale';
+import { useTranslation } from 'react-i18next';
 interface Props {
     arranhoesList: StencilRobotMedition [] | undefined;
 }
 
 const TableScratch: React.FC<Props> = ({ arranhoesList }) => {
+
+    const { t } = useTranslation(['reports']);
 
     const styles = StyleSheet.create({
         container: {
@@ -66,7 +70,9 @@ const TableScratch: React.FC<Props> = ({ arranhoesList }) => {
         },
     });
 
-    const arrayTitles: string[] = ["Data","Hora","Arranhões"];
+
+
+    const arrayTitles: string[] = [t('reports:report.a-date'),t('reports:report.a-hora'),t('reports:report.a-arranhoes')];
 
     return (
         <View style={styles.container}>

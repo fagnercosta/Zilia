@@ -28,6 +28,8 @@
     "register": "Register",
     "savingData": "Saving data....",
     "startDataCollection": "Start data collection",
+    "restartDataCollection":"Start data collection",
+    "botao_cancelar":"Cancel Operation",
     "collectedImages": "Collected images",
     "point1": "Point 01",
     "point2": "Point 2",

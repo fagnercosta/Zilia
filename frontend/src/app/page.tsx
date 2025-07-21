@@ -250,9 +250,9 @@ export default function Home() {
             }
 
           } else {
-            setMessageSnack(t('dashboard:messages.stencilNotFound'));
-            setOpenSnackBar(true);
-            setAlert("error")
+            //setMessageSnack(t('dashboard:messages.stencilNotFound'));
+            //setOpenSnackBar(true);
+            //setAlert("error")
           }
 
         } else {
@@ -629,7 +629,7 @@ export default function Home() {
                     </HoverCardContent>
                     
                   </HoverCard>
-                  :<div className="w-[30%]"> 01 </div>
+                  :<div className="w-[30%]">  </div>
                 }
 
               </div>

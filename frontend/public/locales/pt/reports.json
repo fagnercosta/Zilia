@@ -6,7 +6,25 @@
     "compliance": "Relatório de Conformidade",
     "export": "Exportar",
     "download": "Baixar PDF",
-    "identificacao":"Identificação"
+    "identificacao":"Identificação",
+    "situacao":"Situação",
+    "fabricacao":"Data Fabricação",
+    "espessura":"Espessura",
+    "destino":"Destino",
+    "localizacao":"Localização",
+    "ultima_medicao":"Ultima Medição",
+    "ultima_medida_arranha":"Última Medição de Arranhão",
+    "responsavel":"Responsável pela medição",
+    "title_medidas_tensao":"Medidas dos Valores de tensão",
+    "title_medidas_arranhoes":"Medidas de Arranhões",
+
+    "title_not-found-arranhoes":"Não há medições de arranhões para este Stencil",
+    "t-date":"Data",
+    "t-hora":"Hora",
+    "t-ciclos":"Cilcos",
+    "a-date":"Data",
+    "a-hora":"Hora",
+    "a-arranhoes":"Arranhões"
   }
 
 }

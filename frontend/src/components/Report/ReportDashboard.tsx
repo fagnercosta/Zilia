@@ -182,7 +182,7 @@ const stylesSignature = StyleSheet.create({
         justifyContent: "center",
         padding: 10,
         gap: 3,
-        marginTop: 55
+        marginTop: 40
     },
     fieldSignature: {
         width: "40%",
@@ -282,7 +282,7 @@ const StencilReport = ({
 
                         />
                     </View>
-                    <Text style={styles.tittleReport}>Relatório de Conformidade</Text>
+                    <Text style={styles.tittleReport}>{t('reports:report.compliance')}</Text>
                 </View>
                 <View style={stylesBody.containerItemsInfo}>
                     <CardInfos
@@ -290,30 +290,30 @@ const StencilReport = ({
                         attribute={stencil.stencil_part_nbr}
                     />
                     <CardInfos
-                        textHeader="Situação"
+                        textHeader={t('reports:report.situacao')}
                         attribute={stencil.status}
                     />
                     <CardInfos
-                        textHeader="Data de Fabricação"
+                        textHeader={t('reports:report.fabricacao')}
                         attribute={formatDateTime(stencil.mfg_date) ?? "N/A"}
                     />
                 </View>
                 <View style={stylesBody.containerItemsInfo}>
                     <CardInfos
-                        textHeader='Espessura'
+                        textHeader={t('reports:report.espessura')}
                         attribute={`${stencil.thickness} mm`}
                     />
                     <CardInfos
-                        textHeader='Destino'
+                        textHeader={t('reports:report.destino')}
                         attribute={stencil.stencil_destination}
                     />
                     <CardInfos
-                        textHeader='Localização'
+                        textHeader={t('reports:report.localizacao')}
                         attribute={stencil.location}
                     />
                 </View>
                 <View style={stylesBody.containerStencilInfo}>
-                    <CardPerformed textHeader='Ultima Medição ' dataTime={
+                    <CardPerformed textHeader={t('reports:report.ultima_medicao')} dataTime={
                         tensionValues && tensionValues.length > 0
                             ? String(
                                 tensionValues[tensionValues.length - 1]?.measurement_datetime
@@ -420,7 +420,7 @@ const StencilReport = ({
                         </View>
                     </CardPerformed>
                 </View>
-                <Text style={{ ...styles.tittleReport, marginLeft: 20, marginTop: 30 }}>Medidas dos Valores de tensão</Text>
+                <Text style={{ ...styles.tittleReport, marginLeft: 20, marginTop: 30 }}>{t('reports:report.title_medidas_tensao')}</Text>
                 <View style={stylesListTensionPoints.container}>
                     
                     <div style={stylesListTensionPoints.containerImagens}>
@@ -465,7 +465,7 @@ const StencilReport = ({
                     />
                 </View>
 
-                <Text style={{ ...styles.tittleReport, marginLeft: 20, marginTop: 150 }}>Medidas de Arranhões</Text>
+                <Text style={{ ...styles.tittleReport, marginLeft: 20, marginTop: 150 }}>{t('reports:report.title_medidas_arranhoes')}</Text>
 
                 <View style={stylesListTensionPoints.container}>
                     < TableScratch
@@ -473,7 +473,7 @@ const StencilReport = ({
                     />
                 </View>
                 <View style={stylesBody.containerStencilInfo}>
-                    <CardPerformed textHeader='Última Medição de Arranhão' dataTime={String(lastRobotMedition?.timestamp ? formatDateTime(lastRobotMedition.timestamp) : "")} >
+                    <CardPerformed textHeader={t('reports:report.ultima_medida_arranha')} dataTime={String(lastRobotMedition?.timestamp ? formatDateTime(lastRobotMedition.timestamp) : "")} >
                         <View style={stylesCountScratchs.container}>
                             <View style={stylesCountScratchs.containerImages}>
                                 {
@@ -514,7 +514,7 @@ const StencilReport = ({
                                             alignItems: "center"
                                         }}>
 
-                                            <Text>Não há medições de arranhões para este Stencil.</Text>
+                                            <Text>{t('reports:report.title_not-found-arranhoes')}</Text>
                                         </View>
                                 }
                             </View>
@@ -523,15 +523,10 @@ const StencilReport = ({
                 </View>
                 <View style={stylesSignature.container}>
                     <View style={stylesSignature.fieldSignature}></View>
-                    <Text style={stylesSignature.textSignature}> Responsável pela medição: {tensionValues?.[0]?.responsable || 'Não informado'}</Text>
+                    <Text style={stylesSignature.textSignature}> {t('reports:report.responsavel')}: {tensionValues?.[0]?.responsable || 'Não informado'}</Text>
                 </View>
             </Page>
-            <Page size="A4" style={styles.page}>
-
-
-
-
-            </Page>
+            
         </Document>
     )
 
